@@ -22,14 +22,14 @@ public class bassetball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("player"))
+        if (other.gameObject.CompareTag("player") && !shoot)
         {
             player = other.gameObject;
             bbrb.isKinematic = true;
             bbrb.detectCollisions = false;
             bbrb.useGravity = false;
             playerholding = true;
-            Debug.Log("KONNECT");
+            Debug.Log("KONNECT: " + other.gameObject);
         }
     }
     public void shooter(int shootingskill, int smeter)
@@ -99,7 +99,7 @@ public class bassetball : MonoBehaviour
             Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, count);
             transform.position = Vector3.Lerp(m1, m2, count);
         }
-        else if (setarch)
+        else if (setarch) //after shot
         {
             Debug.Log("setarchturnoff");
             bbrb.useGravity = true;
@@ -109,9 +109,13 @@ public class bassetball : MonoBehaviour
             count = 0.0f;
             setarch = false;
         }
-        else if (playerholding)
+    }
+    void Update()
+    {
+        if (playerholding && !shoot)
         {
             transform.position = player.gameObject.transform.position;
         }
     }
+
 }

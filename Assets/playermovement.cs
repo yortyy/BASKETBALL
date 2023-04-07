@@ -9,6 +9,7 @@ public class playermovement : MonoBehaviour
 
     private Rigidbody rb;
     private ParticleSystem ps;
+    public SHOTMETER shotmeterscript;
     public GameObject basketballobj;
     private bassetball bballscript;
     private Vector2 movementVector;
@@ -17,6 +18,7 @@ public class playermovement : MonoBehaviour
     public float jscale = 5f;
     public int shootingskill;
     public int smeter;
+    public bool shootbutton;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -36,19 +38,31 @@ public class playermovement : MonoBehaviour
     }
     public void shootimp(InputAction.CallbackContext value)
     {
-        if(bballscript.playerholding)
+        if (value.started)
         {
-            //check for skill and shotmeter then put into shooter()
-            //for this example, shootingskill is 1 (excellent), smeter is green (1)
-            // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
-            // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
-            if(smeter == 1)
+            shootbutton = false;
+            shotmeterscript.shotmetercalc(false);
+        }
+        if (value.canceled)
+        {
+            shootbutton = true;
+            if (bballscript.playerholding)
             {
-                ps.Play();
+                
+                //check for skill and shotmeter then put into shooter()
+                //for this example, shootingskill is 1 (excellent), smeter is green (1)
+                // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
+                // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
+                shotmeterscript.shotmetercalc(true);
+                if (smeter == 1)
+                {
+                    ps.Play();
+                }
+                bballscript.shooter(shootingskill, smeter);
             }
-            bballscript.shooter(shootingskill, smeter);
         }
     }
+
 
     void FixedUpdate()
     {
