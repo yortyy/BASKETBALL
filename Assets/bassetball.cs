@@ -63,8 +63,12 @@ public class bassetball : MonoBehaviour
     Vector3 targetpoint;
     Vector3 offset;
     bool setarch;
-    void FixedUpdate()
+    void Update()
     {
+        if (playerholding && !shoot)
+        {
+            transform.position = player.gameObject.transform.position;
+        }
         if (count < 1.0f && shoot)
         {
 
@@ -108,13 +112,6 @@ public class bassetball : MonoBehaviour
             shoot = false;
             count = 0.0f;
             setarch = false;
-        }
-    }
-    void Update()
-    {
-        if (playerholding && !shoot)
-        {
-            transform.position = player.gameObject.transform.position;
         }
     }
 

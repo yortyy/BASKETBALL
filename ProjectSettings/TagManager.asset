@@ -41,6 +41,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: DAME1
+    uniqueID: 1098439129
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: DAME2
+    uniqueID: 2408277285
     locked: 0
