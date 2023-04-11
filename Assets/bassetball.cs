@@ -34,7 +34,7 @@ public class bassetball : MonoBehaviour
     }
     public void shooter(int shootingskill, int smeter)
     {
-        bbrb.detectCollisions = true;
+        bbrb.detectCollisions = false;
         playerholding = false;
         shotpercent = 100 - (shootingskill * 2) - (smeter * 5); //out of 100, green - 95, slight early - 80, slight late - 70, early - 50, late - 40, very early/late - 10, nah - 0
         shotresultnum = (shotpercent - Random.Range(0, 100));
@@ -63,12 +63,16 @@ public class bassetball : MonoBehaviour
     Vector3 targetpoint;
     Vector3 offset;
     bool setarch;
-    void Update()
+    private void Update()
     {
         if (playerholding && !shoot)
         {
             transform.position = player.gameObject.transform.position;
         }
+    }
+    void FixedUpdate()
+    {
+
         if (count < 1.0f && shoot)
         {
 

@@ -1006,6 +1006,17 @@ MonoBehaviour:
   fadedtextobj: {fileID: 1666960783}
   fire: {fileID: 1036754703}
   vidspeed: 0.8
+  musicclips:
+  - {fileID: 8300000, guid: fc7a07644cd5c694e82428f9e300794b, type: 3}
+  - {fileID: 8300000, guid: a6ba4f18eb08e0d43ba73d5765c326fb, type: 3}
+  - {fileID: 8300000, guid: 82d79b18a4b67d84f8115c94704d4e98, type: 3}
+  - {fileID: 8300000, guid: bff82944f0176844aa6dc708e5d87df6, type: 3}
+  musicdrops:
+  - 7.33
+  - 3.192
+  - 9.12
+  - 10.1
+  songno: 1
 --- !u!82 &1119342565
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1016,7 +1027,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: fc7a07644cd5c694e82428f9e300794b, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

@@ -8,20 +8,23 @@ using TMPro;
 public class SHOTMETER : MonoBehaviour
 {
     public GameObject player;
+    public GameObject target;
     public GameObject ShotMeterUI;
     private playermovement playermov;
     public float shotmetertimer;
     public Slider shotmeterslider;
     private bool shoottimeron;
     public TMP_Text shottext;
+    Vector3 targ;
     private void Start()
     {
         playermov = player.GetComponent<playermovement>();
     }
     void Update()
     {
-        ShotMeterUI.transform.position = (Camera.main.WorldToScreenPoint(player.transform.position) + new Vector3(35,20,0));
-        if(shoottimeron)
+        targ = (Camera.main.WorldToScreenPoint(target.transform.position) + new Vector3(40, 0, 0));
+        ShotMeterUI.transform.position = targ;
+        if (shoottimeron)
         {
             shotmeterslider.value = (Time.time - shotmetertimer) * 1.5f;
         }

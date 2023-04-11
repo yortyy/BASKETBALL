@@ -24,17 +24,24 @@ public class MenuScript : MonoBehaviour
 
     public float vidspeed = 0.8f;
 
+    [SerializeField] AudioClip[] musicclips;
+    [SerializeField] float[] musicdrops = { 7.33f, 3.21f, 9.12f, 10.10f};
+    public int songno;
+
 
     void Awake()
     {
+        songno = Random.Range(0, musicclips.Length);
         fadedimg = faded.GetComponent<Image>();
         fadedtext = fadedtextobj.GetComponent<TMP_Text>();
         maintheme = gameObject.GetComponent<AudioSource>();
+        maintheme.clip = musicclips[songno];
+        maintheme.Play();
     }
     private void Update()
     {
         //Debug.Log("REEEEEEEEE: " + maintheme.time); //7.5 is beat drop
-        if (maintheme.time >= (7.33f - (2.04f * (2 - vidspeed))) && !musdrop)
+        if (maintheme.time >= (musicdrops[songno] - (2.04f * (2 - vidspeed))) && !musdrop)
         {
             //Debug.Log("YURRRRRRR" + maintheme.time); //5
             faded.SetActive(false);
@@ -47,6 +54,12 @@ public class MenuScript : MonoBehaviour
         {
             fadedimg.color = new Color(0, 0, 0, 1.3f - (Time.time / 5.1f));
             fadedtext.color = new Color(1, 1, 1, 1.3f - (Time.time / 5.1f));
+        }
+
+        if(maintheme.time >= (musicdrops[songno] + 8))
+        {
+            fire.transform.GetChild(0).gameObject.SetActive(false);
+            vp.Play();
         }
 
         //Debug.Log(vp.clockTime);
