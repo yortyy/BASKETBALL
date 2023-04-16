@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 using static UnityEditor.PlayerSettings;
 
 public class playermovement : MonoBehaviour
@@ -14,6 +15,7 @@ public class playermovement : MonoBehaviour
     public SHOTMETER shotmeterscript;
     public GameObject basketballobj;
     private bassetball bballscript;
+    private Rigidbody bbrb;
     private Vector2 movementVector;
     private bool jumpon;
     public float mscale = 5f;
@@ -22,6 +24,16 @@ public class playermovement : MonoBehaviour
     public int smeter;
     public bool shootbutton;
 
+
+
+    public int shotpercent;
+    private int shotresultnum;
+    public bool shotresult;
+    public int shotscore;
+    private bool in3ptline;
+    public TMP_Text shotscoretext;
+
+
     [SerializeField] Material[] ParticleMaterials;
     void Awake()
     {
@@ -29,6 +41,7 @@ public class playermovement : MonoBehaviour
         ps = GetComponent<ParticleSystem>();
         psr = GetComponent<ParticleSystemRenderer>();
         bballscript = basketballobj.GetComponent<bassetball>();
+        bbrb = basketballobj.GetComponent<Rigidbody>();
     }
 
     public void moveinp(InputAction.CallbackContext movementValue)
@@ -68,9 +81,77 @@ public class playermovement : MonoBehaviour
                     psr.material = ParticleMaterials[1];
                     ps.Play();
                 }
-                bballscript.shooter(shootingskill, smeter);
+                shooter(shootingskill, smeter);
             }
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("3ptline"))
+        {
+            in3ptline = true;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("3ptline"))
+        {
+            in3ptline = false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    public void shooter(int shootingskill, int smeter)
+    {
+        bbrb.detectCollisions = false;
+        bballscript.playerholding = false;
+        shotpercent = 100 - (shootingskill * 2) - (smeter * 5); //out of 100, green - 95, slight early - 80, slight late - 70, early - 50, late - 40, very early/late - 10, nah - 0
+        shotresultnum = (shotpercent - Random.Range(0, 100));
+        if (shotresultnum > 0)
+        {
+            //shots good
+            shotresult = true;
+            if(in3ptline)
+            {
+                shotscore += 2;
+            }
+            else
+            {
+                shotscore += 3;
+            }
+
+        }
+        else if (shotresultnum < 0)
+        {
+            //shots bad
+            shotresult = false;
+        }
+        else if (shotresultnum == 0)
+        {
+            //special shot animation
+            shotresult = true;
+            if (in3ptline)
+            {
+                shotscore += 2;
+            }
+            else
+            {
+                shotscore += 3;
+            }
+        }
+        Debug.Log("Shotresult: " + shotresult + " | Shotresultnum: " + shotresultnum + " | Shotpercentage: " + shotpercent);
+        Debug.Log(shotresultnum);
+        bballscript.shoot = true;
+
     }
 
 

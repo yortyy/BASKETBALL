@@ -8,12 +8,10 @@ public class bassetball : MonoBehaviour
 {
     public Transform target;
     private GameObject player;
-    private bool shoot;
+    private playermovement ps;
+    public bool shoot;
     public bool playerholding;
     private Rigidbody bbrb;
-    public int shotpercent;
-    private int shotresultnum;
-    public bool shotresult;
     float count = 0.0f;
     void Awake()
     {
@@ -25,6 +23,7 @@ public class bassetball : MonoBehaviour
         if (other.gameObject.CompareTag("player") && !shoot)
         {
             player = other.gameObject;
+            ps = player.GetComponent<playermovement>();
             bbrb.isKinematic = true;
             bbrb.detectCollisions = false;
             bbrb.useGravity = false;
@@ -32,32 +31,6 @@ public class bassetball : MonoBehaviour
             Debug.Log("KONNECT: " + other.gameObject);
         }
     }
-    public void shooter(int shootingskill, int smeter)
-    {
-        bbrb.detectCollisions = false;
-        playerholding = false;
-        shotpercent = 100 - (shootingskill * 2) - (smeter * 5); //out of 100, green - 95, slight early - 80, slight late - 70, early - 50, late - 40, very early/late - 10, nah - 0
-        shotresultnum = (shotpercent - Random.Range(0, 100));
-        if(shotresultnum > 0)
-        {
-            //shots good
-            shotresult = true;
-        }
-        else if(shotresultnum < 0)
-        {
-            //shots bad
-            shotresult = false;
-        }
-        else if (shotresultnum == 0)
-        {
-            //special shot animation
-            shotresult = true;
-        }
-        Debug.Log("Shotresult: " + shotresult + " | Shotresultnum: " + shotresultnum + " | Shotpercentage: " + shotpercent);
-        Debug.Log(shotresultnum);
-        shoot = true;
-    }
-
     Vector3 startpoint;
     Vector3 archpoint;
     Vector3 targetpoint;
@@ -80,7 +53,7 @@ public class bassetball : MonoBehaviour
             {
                 archpoint = transform.position + (target.position - transform.position) / 2 + Vector3.up * 8.0f;
                 startpoint = transform.position;
-                if (!shotresult)
+                if (!ps.shotresult)
                 {
                     if(1 == Random.Range(1, 2))
                     {
@@ -113,6 +86,7 @@ public class bassetball : MonoBehaviour
             bbrb.useGravity = true;
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
+            ps.shotscoretext.text = ps.shotscore.ToString();
             shoot = false;
             count = 0.0f;
             setarch = false;

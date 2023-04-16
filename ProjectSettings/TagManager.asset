@@ -8,6 +8,7 @@ TagManager:
   - bassetball
   - player
   - FIRE
+  - 3ptline
   layers:
   - Default
   - TransparentFX
