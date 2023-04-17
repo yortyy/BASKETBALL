@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.GraphicsBuffer;
@@ -87,6 +88,10 @@ public class bassetball : MonoBehaviour
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
             ps.shotscoretext.text = ps.shotscore.ToString();
+            if(ps.threeptcontest)
+            {
+                ps.ess.threeptcontest(ps.shotscore); //move to bassetball shot
+            }
             shoot = false;
             count = 0.0f;
             setarch = false;

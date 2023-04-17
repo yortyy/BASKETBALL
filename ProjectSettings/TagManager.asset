@@ -9,6 +9,7 @@ TagManager:
   - player
   - FIRE
   - 3ptline
+  - 3ptzoneforcontest
   layers:
   - Default
   - TransparentFX

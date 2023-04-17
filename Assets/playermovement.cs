@@ -23,16 +23,25 @@ public class playermovement : MonoBehaviour
     public int shootingskill;
     public int smeter;
     public bool shootbutton;
-
+    [SerializeField] private Transform HoopLookAt;
+    [SerializeField] private Transform Hoop;
 
 
     public int shotpercent;
     private int shotresultnum;
     public bool shotresult;
     public int shotscore;
+    public float shotdistance;
     private bool in3ptline;
     public TMP_Text shotscoretext;
+    public TMP_Text shotdistancetext;
+    [SerializeField] public EventScriptSystem ess;
 
+    private bool inthreeptzone;
+    public bool threeptcontest;
+
+    [SerializeField] private GameObject ShotUI;
+    [SerializeField] private GameObject PauseUI;
 
     [SerializeField] Material[] ParticleMaterials;
     void Awake()
@@ -85,12 +94,23 @@ public class playermovement : MonoBehaviour
             }
         }
     }
+    public void pauseimp(InputAction.CallbackContext value)
+    {
+        PauseUI.SetActive(true);
+        ShotUI.SetActive(false);
+        Time.timeScale = 0;
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("3ptline"))
         {
             in3ptline = true;
+        }
+        if (other.gameObject.CompareTag("3ptzoneforcontest"))
+        {
+            inthreeptzone = true;
         }
     }
     private void OnTriggerExit(Collider other)
@@ -99,54 +119,78 @@ public class playermovement : MonoBehaviour
         {
             in3ptline = false;
         }
+        if (other.gameObject.CompareTag("3ptzoneforcontest"))
+        {
+            inthreeptzone = false;
+        }
     }
-
-
-
-
-
-
-
 
 
 
     public void shooter(int shootingskill, int smeter)
     {
+        shotdistance = Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z));
+        shotdistancetext.text = Mathf.RoundToInt(shotdistance * 2.1872265966754155730533683289589f) + " ft";
+
+
         bbrb.detectCollisions = false;
         bballscript.playerholding = false;
-        shotpercent = 100 - (shootingskill * 2) - (smeter * 5); //out of 100, green - 95, slight early - 80, slight late - 70, early - 50, late - 40, very early/late - 10, nah - 0
-        shotresultnum = (shotpercent - Random.Range(0, 100));
-        if (shotresultnum > 0)
+        if(smeter  == 1 || smeter == 0)
         {
-            //shots good
-            shotresult = true;
-            if(in3ptline)
+            if (in3ptline)
             {
-                shotscore += 2;
+                shotpercent = 100 - (shootingskill); //calc
             }
             else
             {
-                shotscore += 3;
+                shotpercent = 100 - ((shootingskill) * 2); //calc
+            }
+        }
+        else
+        {
+            if (in3ptline)
+            {
+                shotpercent = 100 - (shootingskill) - (smeter * 4); //60 late
+            }
+            else
+            {
+                shotpercent = 100 - ((shootingskill) * 2) - (smeter * 6); //40 late
+            }
+        }
+
+
+        //out of 100, green - 99, slight early - 80, slight late - 70, early - 50, late - 40, very early/late - 10, nah - 0
+
+
+        shotresultnum = (shotpercent - Random.Range(0, 100));
+        if (shotresultnum >= 0)
+        {
+            if(threeptcontest) //3ptcontest
+            {
+                if(inthreeptzone)
+                {
+                    shotscore += 1;
+                }
+            }
+            else //normal shooting
+            {
+                if (in3ptline)
+                {
+                    shotscore += 2;
+                }
+                else
+                {
+                    shotscore += 3;
+                }
             }
 
+            //shots good or special 0 wet like water
+            shotresult = true;
         }
         else if (shotresultnum < 0)
         {
             //shots bad
             shotresult = false;
-        }
-        else if (shotresultnum == 0)
-        {
-            //special shot animation
-            shotresult = true;
-            if (in3ptline)
-            {
-                shotscore += 2;
-            }
-            else
-            {
-                shotscore += 3;
-            }
         }
         Debug.Log("Shotresult: " + shotresult + " | Shotresultnum: " + shotresultnum + " | Shotpercentage: " + shotpercent);
         Debug.Log(shotresultnum);
@@ -157,9 +201,19 @@ public class playermovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if((movementVector.x > 0 || movementVector.x < 0) || (movementVector.y > 0 || movementVector.y < 0))
+        if ((movementVector.x > 0 || movementVector.x < 0) || (movementVector.y > 0 || movementVector.y < 0))
         {
-            rb.AddForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+            if(0.5f > Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z + 0.5f - transform.position.z))
+            {
+                Debug.Log("TRIPPING");
+                transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+            }
+            else
+            {
+                Debug.Log(Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z - transform.position.z));
+                transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+            }
+            rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
         }
 
     }
