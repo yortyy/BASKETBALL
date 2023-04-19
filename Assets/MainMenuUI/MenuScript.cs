@@ -34,6 +34,7 @@ public class MenuScript : MonoBehaviour
         songno = Random.Range(0, musicclips.Length);
         fadedimg = faded.GetComponent<Image>();
         fadedtext = fadedtextobj.GetComponent<TMP_Text>();
+        vp.url = System.IO.Path.Combine(Application.streamingAssetsPath, "DAMEFULL.mp4");
         maintheme = gameObject.GetComponent<AudioSource>();
         maintheme.clip = musicclips[songno];
         maintheme.Play();

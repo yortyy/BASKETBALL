@@ -750,7 +750,7 @@ VideoPlayer:
   - {fileID: 0}
   m_DirectAudioVolumes:
   - 1
-  m_Url: https://github.com/yortyy/BASKETBALL/blob/main/Assets/MainMenuUI/DAMEFULL.mp4?raw=true
+  m_Url: System.IO.Path.Combine (Application.streamingAssetsPath,"DAMEFULL.mp4");
   m_EnabledAudioTracks: 00
   m_DirectAudioMutes: 01
   m_ControlledAudioTrackCount: 1
