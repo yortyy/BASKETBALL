@@ -75,9 +75,9 @@ public class MenuScript : MonoBehaviour
         if(fadeon == true)
         {
             //fadedval = (Time.time - fadedval) / 15;
-            fadedimg.color = new Color(0, 0, 0, ((Time.time - fadedval) / 11) - 1);
+            fadedimg.color = new Color(0, 0, 0, ((Time.time - fadedval) / 6) - 1);
 
-            if((((Time.time - fadedval) / 11) - 1) >= 1)
+            if((((Time.time - fadedval) / 6) - 1) >= 1)
             {
                 SceneManager.LoadScene(1);
             }

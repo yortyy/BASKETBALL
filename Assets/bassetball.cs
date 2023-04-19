@@ -37,11 +37,30 @@ public class bassetball : MonoBehaviour
     Vector3 targetpoint;
     Vector3 offset;
     bool setarch;
+    int rotat;
     private void Update()
     {
         if (playerholding && !shoot)
         {
             transform.position = player.gameObject.transform.position;
+        }
+        if(count < 1.0f && shoot)
+        {
+            if(rotat == 0)
+            {
+                transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
+                rotat = 5;
+            }
+            else
+            {
+                rotat += 5;
+                Quaternion rotation = Quaternion.Euler(rotat, transform.rotation.y, transform.rotation.z);
+                transform.rotation = rotation;
+            }
+        }
+        else if(rotat != 0)
+        {
+            rotat = 0;
         }
     }
     void FixedUpdate()
@@ -52,19 +71,16 @@ public class bassetball : MonoBehaviour
 
             if (!setarch)
             {
-                archpoint = transform.position + (target.position - transform.position) / 2 + Vector3.up * 8.0f;
+                archpoint = transform.position + (target.position - transform.position) / 2 + Vector3.up * 10.0f;
                 startpoint = transform.position;
                 if (!ps.shotresult)
                 {
-                    if(1 == Random.Range(1, 2))
+                    offset.x = Random.Range(-0.8f, 0.8f);
+                    offset.z = Random.Range(-0.8f, 0.1f);
+                    if (Mathf.Abs(offset.x) < 0.4f && Mathf.Abs(offset.z) < 0.4f)
                     {
-                        offset.x = Random.Range(0.5f, 1f);
-                        offset.z = Random.Range(-1f, -0.5f);
-                    }
-                    else
-                    {
-                        offset.x = Random.Range(-1f, -0.5f);
-                        offset.z = Random.Range(-1f, -0.5f);
+                        offset.x = Random.Range(-0.5f, 0.5f);
+                        offset.z = Random.Range(-0.5f, 0.5f);
                     }
                     targetpoint = (target.position + offset);
                 }

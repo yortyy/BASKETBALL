@@ -47,7 +47,7 @@ public class SHOTMETER : MonoBehaviour
                 shottext.color = Color.blue;
                 shottext.text = "WET LIKE WATER";
             }
-            else if (shotmetertimer <= 3)
+            else if (shotmetertimer <= 2)
             {
                 playermov.smeter = 1;
                 shottext.color = Color.green;

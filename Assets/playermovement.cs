@@ -4,7 +4,6 @@ using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using static UnityEditor.PlayerSettings;
 
 public class playermovement : MonoBehaviour
 {
@@ -25,6 +24,7 @@ public class playermovement : MonoBehaviour
     public bool shootbutton;
     [SerializeField] private Transform HoopLookAt;
     [SerializeField] private Transform Hoop;
+    [SerializeField] private GameObject HoopProtector;
 
 
     public int shotpercent;
@@ -33,6 +33,7 @@ public class playermovement : MonoBehaviour
     public int shotscore;
     public float shotdistance;
     private bool in3ptline;
+    private float shotdistancechanger;
     public TMP_Text shotscoretext;
     public TMP_Text shotdistancetext;
     [SerializeField] public EventScriptSystem ess;
@@ -129,22 +130,30 @@ public class playermovement : MonoBehaviour
 
     public void shooter(int shootingskill, int smeter)
     {
-        shotdistance = Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z));
-        shotdistancetext.text = Mathf.RoundToInt(shotdistance * 2.1872265966754155730533683289589f) + " ft";
+        //in 00.0 ft
+        shotdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
+        shotdistancetext.text = shotdistance + " ft";
 
 
         bbrb.detectCollisions = false;
         bballscript.playerholding = false;
-        if(smeter  == 1 || smeter == 0)
+
+        if(smeter == 0)
         {
-            if (in3ptline)
+            shotpercent = 100 - (shootingskill); //green
+
+            if (shotdistance >= 45)
             {
-                shotpercent = 100 - (shootingskill); //calc
-            }
-            else
+                shotpercent -= Mathf.RoundToInt(((shotdistance - 45) * 0.78f)) + 40;
+            } //90 feet should be 20% 45 should be 60%
+            else if (shotdistance >= 30)
             {
-                shotpercent = 100 - ((shootingskill) * 2); //calc
+                shotpercent -= Mathf.RoundToInt((shotdistance - 30) * 2.667f) ;
             }
+        }
+        else if(smeter == 1)
+        {
+            shotpercent = 100 - (shootingskill); //green
         }
         else
         {
@@ -155,6 +164,15 @@ public class playermovement : MonoBehaviour
             else
             {
                 shotpercent = 100 - ((shootingskill) * 2) - (smeter * 6); //40 late
+
+                if (shotdistance >= 45)
+                {
+                    shotpercent -= Mathf.RoundToInt(((shotdistance - 45) * 0.78f)) + 40;
+                } //90 feet should be 20% 45 should be 60%
+                else if (shotdistance >= 30)
+                {
+                    shotpercent -= Mathf.RoundToInt(((shotdistance - 30) * 2.667f));
+                }
             }
         }
 
@@ -185,11 +203,13 @@ public class playermovement : MonoBehaviour
             }
 
             //shots good or special 0 wet like water
+            HoopProtector.SetActive(false);
             shotresult = true;
         }
         else if (shotresultnum < 0)
         {
             //shots bad
+            HoopProtector.SetActive(true);
             shotresult = false;
         }
         Debug.Log("Shotresult: " + shotresult + " | Shotresultnum: " + shotresultnum + " | Shotpercentage: " + shotpercent);
@@ -205,12 +225,12 @@ public class playermovement : MonoBehaviour
         {
             if(0.5f > Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z + 0.5f - transform.position.z))
             {
-                Debug.Log("TRIPPING");
+                //Debug.Log("TRIPPING");
                 transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
             }
             else
             {
-                Debug.Log(Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z - transform.position.z));
+                //Debug.Log(Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z - transform.position.z));
                 transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
             }
             rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
