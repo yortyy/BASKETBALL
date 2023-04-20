@@ -13,10 +13,13 @@ public class bassetball : MonoBehaviour
     public bool shoot;
     public bool playerholding;
     private Rigidbody bbrb;
+    private AudioSource asc;
     float count = 0.0f;
+    [SerializeField] private ParticleSystem HoopEff;
     void Awake()
     {
         bbrb = GetComponent<Rigidbody>();
+        asc = GetComponent<AudioSource>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -104,12 +107,19 @@ public class bassetball : MonoBehaviour
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
             ps.shotscoretext.text = ps.shotscore.ToString();
-            if(ps.threeptcontest)
+
+            if (ps.threeptcontest && ps.shotscore != 0)
             {
                 ps.ess.threeptcontest(ps.shotscore); //move to bassetball shot
             }
+            if(ps.shotresult)
+            {
+                HoopEff.Play();
+                asc.Play();
+            }
             shoot = false;
             count = 0.0f;
+            bbrb.AddForce(0,-3,0, ForceMode.Impulse);
             setarch = false;
         }
     }

@@ -40,38 +40,56 @@ public class SHOTMETER : MonoBehaviour
         else if(shoot)
         {
             shoottimeron = false;
-            shotmetertimer = (Mathf.Abs((Mathf.RoundToInt(shotmeterslider.value * 100) - 77)));
+            shotmetertimer = (Mathf.RoundToInt(shotmeterslider.value * 100) - 77);
             if(shotmetertimer == 0)
             {
                 playermov.smeter = 0;
                 shottext.color = Color.blue;
                 shottext.text = "WET LIKE WATER";
             }
-            else if (shotmetertimer <= 2)
+            else if (-2 <= shotmetertimer && shotmetertimer <= 2) //not 0, between -2 and 2
             {
                 playermov.smeter = 1;
                 shottext.color = Color.green;
                 shottext.text = "IRISH SPRING GREEN GREEN";
             } //0-3 is ex, 4 - 8 is sl/se, 9-
-            else if(shotmetertimer <= 7)
+            else if(3 <= shotmetertimer && shotmetertimer <= 7) //not -2 to 2, 3 to 7
             {
                 playermov.smeter = 4;
                 shottext.color = Color.yellow;
-                shottext.text = "Slightly Late / Slightly Early";
+                shottext.text = "Slightly Late";
             }
-            else if (shotmetertimer <= 18)
+            else if (3 <= shotmetertimer && shotmetertimer <= 18) //not -2 to 7, 8 to 18
             {
                 playermov.smeter = 10;
                 shottext.color = Color.yellow;
-                shottext.text = "Late / Early";
+                shottext.text = "Late";
             }
-            else if (shotmetertimer <= 32)
+            else if (3 <= shotmetertimer && shotmetertimer <= 32) //not -2 to 18, 19 to 32
             {
                 playermov.smeter = 18;
                 shottext.color = Color.red;
-                shottext.text = "Very Late / Very Early";
+                shottext.text = "Very Late";
             }
-            else if (33 <= shotmetertimer)
+            else if(-7 <= shotmetertimer && shotmetertimer <= -3) //not -2 to 32, -7 to -2
+            {
+                playermov.smeter = 4;
+                shottext.color = Color.yellow;
+                shottext.text = "Slightly Early";
+            }
+            else if (-18 <= shotmetertimer && shotmetertimer <= -3) //not -2 to 7, 8 to 18
+            {
+                playermov.smeter = 10;
+                shottext.color = Color.yellow;
+                shottext.text = "Early";
+            }
+            else if (-32 <= shotmetertimer && shotmetertimer <= -3) //not -2 to 18, 19 to 32
+            {
+                playermov.smeter = 18;
+                shottext.color = Color.red;
+                shottext.text = "Very Early";
+            }
+            else if (shotmetertimer <= -33 || 33 <= shotmetertimer) //bigger than 32
             {
                 playermov.smeter = 20;
                 shottext.color = Color.black;

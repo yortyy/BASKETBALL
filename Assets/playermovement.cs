@@ -137,8 +137,11 @@ public class playermovement : MonoBehaviour
 
         bbrb.detectCollisions = false;
         bballscript.playerholding = false;
-
-        if(smeter == 1)
+        if (smeter == 0)
+        {
+            shotpercent = 100 - (shootingskill); //green
+        }
+        else if (smeter == 1)
         {
             shotpercent = 100 - (shootingskill); //green
 
@@ -151,12 +154,13 @@ public class playermovement : MonoBehaviour
                 shotpercent -= Mathf.RoundToInt((shotdistance - 30) * 2.667f) ;
             }
         }
-        else if(smeter == 0)
+        else if(smeter == 20)
         {
-            shotpercent = 100 - (shootingskill); //green
+            shotpercent = 1;
         }
         else
         {
+            
             if (in3ptline)
             {
                 shotpercent = 100 - (shootingskill) - (smeter * 4); //60 late
