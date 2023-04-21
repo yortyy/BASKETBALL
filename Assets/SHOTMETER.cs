@@ -20,7 +20,7 @@ public class SHOTMETER : MonoBehaviour
     {
         playermov = player.GetComponent<playermovement>();
     }
-    void Update()
+    void LateUpdate()
     {
         targ = (Camera.main.WorldToScreenPoint(target.transform.position) + new Vector3(40, 0, 0));
         ShotMeterUI.transform.position = targ;

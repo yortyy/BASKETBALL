@@ -4,6 +4,7 @@ using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 public class playermovement : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class playermovement : MonoBehaviour
     private bassetball bballscript;
     private Rigidbody bbrb;
     private Vector2 movementVector;
+    private Quaternion qTo;
     private bool jumpon;
     public float mscale = 5f;
     public float jscale = 5f;
@@ -41,10 +43,12 @@ public class playermovement : MonoBehaviour
     private bool inthreeptzone;
     public bool threeptcontest;
 
+    private bool paused;
     [SerializeField] private GameObject ShotUI;
     [SerializeField] private GameObject PauseUI;
 
     [SerializeField] Material[] ParticleMaterials;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -97,9 +101,20 @@ public class playermovement : MonoBehaviour
     }
     public void pauseimp(InputAction.CallbackContext value)
     {
-        PauseUI.SetActive(true);
-        ShotUI.SetActive(false);
-        Time.timeScale = 0;
+        if(!paused)
+        {
+            paused = true;
+            PauseUI.SetActive(true);
+            ShotUI.SetActive(false);
+            Time.timeScale = 0;
+        }
+        else if (paused)
+        {
+            paused = false;
+            PauseUI.SetActive(false);
+            ShotUI.SetActive(true);
+            Time.timeScale = 1;
+        }
     }
 
 
@@ -221,22 +236,40 @@ public class playermovement : MonoBehaviour
         bballscript.shoot = true;
 
     }
+    bool resetrot;
 
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if ((movementVector.x > 0 || movementVector.x < 0) || (movementVector.y > 0 || movementVector.y < 0))
         {
-            if(0.5f > Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z + 0.5f - transform.position.z))
+            //if(0.5f > Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z + 0.5f - transform.position.z))
+            //{
+            //Debug.Log("TRIPPING");
+            //    transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+            //}
+            //else
+            //{
+            //Debug.Log(Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z - transform.position.z));
+            //    transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+            //}
+
+            if(ess.CameraVer == 0)
             {
-                //Debug.Log("TRIPPING");
-                transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+                if(resetrot == true)
+                {
+                    resetrot = false;
+                }
+                qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
+                qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
+                rb.MoveRotation(qTo);
             }
-            else
+            else if(!resetrot)
             {
-                //Debug.Log(Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z - transform.position.z));
-                transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+                rb.MoveRotation((Quaternion.identity));
+                resetrot = true;
             }
+
             rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
         }
 
