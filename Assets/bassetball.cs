@@ -14,9 +14,9 @@ public class bassetball : MonoBehaviour
     public bool shoot;
     public bool playerholding;
     private Rigidbody bbrb;
-    private AudioSource asc;
     float count = 0.0f;
     [SerializeField] private ParticleSystem HoopEff;
+    [SerializeField] private AudioSource[] asc;
     private EmissionModule HoopEffEmission;
     [SerializeField] private ParticleSystemRenderer HoopEffrnr;
     [SerializeField] private GameObject firehoop;
@@ -27,7 +27,6 @@ public class bassetball : MonoBehaviour
     void Awake()
     {
         bbrb = GetComponent<Rigidbody>();
-        asc = GetComponent<AudioSource>();
         HoopEffEmission = HoopEff.emission;
     }
 
@@ -84,7 +83,6 @@ public class bassetball : MonoBehaviour
             if (!setarch)
             {
 
-                
                 startpoint = transform.position;
                 if (!ps.shotresult)
                 {
@@ -102,6 +100,7 @@ public class bassetball : MonoBehaviour
                     targetpoint = target.position;
                     if(40 < ps.shotdistance)
                     {
+                        asc[1].Play();
                         bballeff.Play();
                     }
                 }
@@ -123,11 +122,25 @@ public class bassetball : MonoBehaviour
                     shotinairtime = 30 / ps.shotdistance;
                     setcount = true;
                 }
-                else if (ps.shotdistance > 30 && !setcount)
+                else if (ps.shotdistance <= 50 && !setcount)
                 {
                     Debug.Log("shottype: 3");
                     riselength = Mathf.Tan(2 * Mathf.PI / 9) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                     shotinairtime = 30f/30f;
+                    setcount = true;
+                }
+                else if (ps.shotdistance <= 70 && !setcount)
+                {
+                    Debug.Log("shottype: 3");
+                    riselength = Mathf.Tan(7* Mathf.PI / 36) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
+                    shotinairtime = 30f / 30f;
+                    setcount = true;
+                }
+                else if (ps.shotdistance > 70 && !setcount)
+                {
+                    Debug.Log("shottype: 3");
+                    riselength = Mathf.Tan(Mathf.PI / 6) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
+                    shotinairtime = 30f / 30f;
                     setcount = true;
                 }
 
@@ -149,7 +162,7 @@ public class bassetball : MonoBehaviour
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
             ps.shotscoretext.text = ps.shotscore.ToString();
-            if (ps.threeptcontest && ps.shotscore != 0)
+            if (ps.ess.gamemode == 2 && ps.shotscore != 0)
             {
                 ps.ess.threeptcontest(ps.shotscore); //move to bassetball shot
             }
@@ -184,8 +197,8 @@ public class bassetball : MonoBehaviour
                     HoopEff.Play();
                 }
 
-                
-                asc.Play();
+
+                asc[0].Play();
             }
             shoot = false;
             count = 0.0f;

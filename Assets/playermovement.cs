@@ -41,13 +41,14 @@ public class playermovement : MonoBehaviour
     [SerializeField] public EventScriptSystem ess;
 
     private bool inthreeptzone;
-    public bool threeptcontest;
 
-    private bool paused;
     [SerializeField] private GameObject ShotUI;
     [SerializeField] private GameObject PauseUI;
 
     [SerializeField] Material[] ParticleMaterials;
+
+
+    public bool recenterlookat;
 
     void Awake()
     {
@@ -97,23 +98,6 @@ public class playermovement : MonoBehaviour
                 }
                 shooter(shootingskill, smeter);
             }
-        }
-    }
-    public void pauseimp(InputAction.CallbackContext value)
-    {
-        if(!paused)
-        {
-            paused = true;
-            PauseUI.SetActive(true);
-            ShotUI.SetActive(false);
-            Time.timeScale = 0;
-        }
-        else if (paused)
-        {
-            paused = false;
-            PauseUI.SetActive(false);
-            ShotUI.SetActive(true);
-            Time.timeScale = 1;
         }
     }
 
@@ -202,7 +186,7 @@ public class playermovement : MonoBehaviour
         shotresultnum = (shotpercent - Random.Range(0, 100));
         if (shotresultnum >= 0)
         {
-            if(threeptcontest) //3ptcontest
+            if(ess.gamemode == 2) //3ptcontest
             {
                 if(inthreeptzone)
                 {
@@ -236,12 +220,13 @@ public class playermovement : MonoBehaviour
         bballscript.shoot = true;
 
     }
+
     bool resetrot;
 
 
     private void FixedUpdate()
     {
-        if ((movementVector.x > 0 || movementVector.x < 0) || (movementVector.y > 0 || movementVector.y < 0))
+        if (((movementVector.x > 0 || movementVector.x < 0) || (movementVector.y > 0 || movementVector.y < 0)))
         {
             //if(0.5f > Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z + 0.5f - transform.position.z))
             //{
@@ -271,6 +256,16 @@ public class playermovement : MonoBehaviour
             }
 
             rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+        }
+        if(recenterlookat)
+        {
+            if (resetrot == true)
+            {
+                resetrot = false;
+            }
+            qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
+            qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
+            rb.MoveRotation(qTo);
         }
 
     }

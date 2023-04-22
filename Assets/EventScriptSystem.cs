@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEngine.InputSystem;
+using static Cinemachine.CinemachineTriggerAction.ActionSettings;
 
 public class EventScriptSystem : MonoBehaviour
 {
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject basketball;
+    private Rigidbody prb;
+    private Rigidbody brb;
     private Transform[] tpmarkers = new Transform[5];
     private GameObject tpzone;
 
@@ -15,6 +20,7 @@ public class EventScriptSystem : MonoBehaviour
     private bassetball bb;
 
 
+    private bool paused;
     [SerializeField] private GameObject ShotUI;
     [SerializeField] private GameObject PauseUI;
     [SerializeField] private TMP_Text timertext;
@@ -29,12 +35,20 @@ public class EventScriptSystem : MonoBehaviour
     [SerializeField] private GameObject skycam;
     [SerializeField] private GameObject replaycam;
 
+    private AudioSource asc;
+    [SerializeField] AudioClip[] music;
+
+    public int gamemode;
+
+
     public int CameraVer;
 
     void Awake()
     {
         ps = player.GetComponent<playermovement>();
         bb = basketball.GetComponent<bassetball>();
+        prb = player.GetComponent<Rigidbody>();
+        brb = basketball.GetComponent<Rigidbody>();
         tpmarkers[0] = transform.GetChild(0);
         tpmarkers[1] = transform.GetChild(1);
         tpmarkers[2] = transform.GetChild(2);
@@ -42,6 +56,7 @@ public class EventScriptSystem : MonoBehaviour
         tpmarkers[4] = transform.GetChild(4);
         tpzone = transform.GetChild(5).gameObject;
         kcamtracker = transform.GetChild(6);
+        asc = GetComponent<AudioSource>();
     }
     public void camchange(int version)
     {
@@ -83,22 +98,33 @@ public class EventScriptSystem : MonoBehaviour
     {
         if (tpmarkerno == 0)
         {
+            exitpause();
+            if(CameraVer == 0)
+            {
+                ps.recenterlookat = true;
+            }
+            asc.clip = music[2];
+            asc.Play();
             ps.shotscore = 0;
             ps.shotscoretext.text = ps.shotscore.ToString();
-            PauseUI.SetActive(false);
-            ShotUI.SetActive(true);
             tpzone.SetActive(true);
             tmptimer = Time.time;
             timeron = true;
-            Time.timeScale = 1;
-            ps.threeptcontest = true;
-            player.transform.position = tpmarkers[0].position + new Vector3(0,1.25f,0);
-            basketball.transform.position = tpmarkers[0].position + new Vector3(0, 1.25f, 0);
+            gamemode = 2;
+            prb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
+            brb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
+            //player.transform.position = tpmarkers[0].position + new Vector3(0,1.25f,0);
+            //basketball.transform.position = tpmarkers[0].position + new Vector3(0, 1.25f, 0);
         }
+        if(tpmarkerno == 1)
+        {
+            ps.recenterlookat = false;
+        }
+
         if(tpmarkerno == 5)
         {
             timeron = false;
-            ps.threeptcontest = false;
+            ps.ess.gamemode = 0;
             tpzone.SetActive(false);
         }
         else
@@ -110,19 +136,68 @@ public class EventScriptSystem : MonoBehaviour
     }
     public void oneonone()
     {
+        gamemode = 1;
+        timeron = false;
+        ps.shotscore = 0;
+        exitpause();
+        asc.clip = music[1];
+        asc.Play();
+        prb.MovePosition(Vector3.zero);
+        brb.MovePosition(Vector3.zero);
+        //player.transform.position = Vector3.zero;
+        //basketball.transform.position = Vector3.zero;
+    }
+    public void practicemode()
+    {
+
+        gamemode = 0;
         timeron = false;
         ps.shotscore = 0;
         ps.shotscoretext.text = ps.shotscore.ToString();
-        ps.threeptcontest = false;
-        PauseUI.SetActive(false);
-        ShotUI.SetActive(true);
-        Time.timeScale = 1;
-        player.transform.position = Vector3.zero;
-        basketball.transform.position = Vector3.zero;
+        exitpause();
+        asc.clip = music[0];
+        asc.Play();
+        prb.MovePosition(Vector3.zero);
+        brb.MovePosition(Vector3.zero);
+        //player.transform.position = Vector3.zero;
+        //basketball.transform.position = Vector3.zero;
     }
+
+
     public void quitgame()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(0);
+    }
+
+    public void pauseimp(InputAction.CallbackContext value)
+    {
+        if(value.started)
+        {
+            if (!paused)
+            {
+                asc.volume = 0.2f;
+                PauseUI.SetActive(true);
+                ShotUI.SetActive(false);
+                Time.timeScale = 0;
+                paused = true;
+            }
+            else if (paused)
+            {
+                exitpause();
+            }
+        }
+    }
+    private void exitpause()
+    {
+        if (paused)
+        {
+            asc.volume = 0.5f;
+            PauseUI.SetActive(false);
+            ShotUI.SetActive(true);
+            Time.timeScale = 1;
+            paused = false;
+        }
     }
 
     private void Update()
