@@ -16,17 +16,28 @@ public class SHOTMETER : MonoBehaviour
     private bool shoottimeron;
     public TMP_Text shottext;
     Vector3 targ;
+    [SerializeField] float smSpeed = 1.5f;
+    [SerializeField] int greencenterval = 100;
+
     private void Start()
     {
         playermov = player.GetComponent<playermovement>();
     }
     void LateUpdate()
     {
-        targ = (Camera.main.WorldToScreenPoint(target.transform.position) + new Vector3(40, 0, 0));
+        targ = (Camera.main.WorldToScreenPoint(target.transform.position) + new Vector3(50, 0, 0));
         ShotMeterUI.transform.position = targ;
         if (shoottimeron)
         {
-            shotmeterslider.value = (Time.time - shotmetertimer) * 1.5f;
+            if(1 <= (Time.time - shotmetertimer) * smSpeed)
+            {
+                shotmeterslider.value = 1 - (((Time.time - shotmetertimer) * smSpeed) - 1);
+                Debug.Log("suck: " + shotmeterslider.value);
+            }
+            else
+            {
+                shotmeterslider.value = (Time.time - shotmetertimer) * smSpeed;
+            }
         }
     }
     public void shotmetercalc(bool shoot)
@@ -40,7 +51,7 @@ public class SHOTMETER : MonoBehaviour
         else if(shoot)
         {
             shoottimeron = false;
-            shotmetertimer = (Mathf.RoundToInt(shotmeterslider.value * 100) - 77);
+            shotmetertimer = (Mathf.RoundToInt((Time.time - shotmetertimer) * smSpeed * 100) - greencenterval);
             if(shotmetertimer == 0)
             {
                 playermov.smeter = 0;

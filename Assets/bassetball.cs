@@ -87,11 +87,11 @@ public class bassetball : MonoBehaviour
                 if (!ps.shotresult)
                 {
                     offset.x = Random.Range(-0.8f, 0.8f);
-                    offset.z = Random.Range(-0.8f, 0.1f);
-                    if (Mathf.Abs(offset.x) < 0.4f && Mathf.Abs(offset.z) < 0.4f)
+                    offset.z = Random.Range(-0.8f, -0.5f);
+                    if (Mathf.Abs(offset.x) < 0.5f && Mathf.Abs(offset.z) < 0.5f)
                     {
-                        offset.x = Random.Range(-0.5f, 0.5f);
-                        offset.z = Random.Range(-0.5f, 0.5f);
+                        offset.x = Random.Range(-0.8f, 0.8f);
+                        offset.z = Random.Range(-0.8f, -0.5f);
                     }
                     targetpoint = (target.position + offset);
                 }
@@ -200,6 +200,7 @@ public class bassetball : MonoBehaviour
 
                 asc[0].Play();
             }
+            ps.shotmeterscript.shotmeterslider.value = 0;
             shoot = false;
             count = 0.0f;
             setcount = false;

@@ -47,9 +47,6 @@ public class playermovement : MonoBehaviour
 
     [SerializeField] Material[] ParticleMaterials;
 
-
-    public bool recenterlookat;
-
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -150,16 +147,16 @@ public class playermovement : MonoBehaviour
             } //90 feet should be 20% 45 should be 60%
             else if (shotdistance >= 30)
             {
-                shotpercent -= Mathf.RoundToInt((shotdistance - 30) * 2.667f) ;
+                shotpercent -= Mathf.RoundToInt((shotdistance - 30) * 2.667f);
             }
         }
-        else if(smeter == 20)
+        else if (smeter == 20)
         {
-            shotpercent = 1;
+            shotpercent = 0;
         }
         else
         {
-            
+
             if (in3ptline)
             {
                 shotpercent = 100 - (shootingskill) - (smeter * 4); //60 late
@@ -186,9 +183,9 @@ public class playermovement : MonoBehaviour
         shotresultnum = (shotpercent - Random.Range(0, 100));
         if (shotresultnum >= 0)
         {
-            if(ess.gamemode == 2) //3ptcontest
+            if (ess.gamemode == 2) //3ptcontest
             {
-                if(inthreeptzone)
+                if (inthreeptzone)
                 {
                     shotscore += 1;
                 }
@@ -226,38 +223,7 @@ public class playermovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (((movementVector.x > 0 || movementVector.x < 0) || (movementVector.y > 0 || movementVector.y < 0)))
-        {
-            //if(0.5f > Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z + 0.5f - transform.position.z))
-            //{
-            //Debug.Log("TRIPPING");
-            //    transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
-            //}
-            //else
-            //{
-            //Debug.Log(Mathf.Abs(HoopLookAt.position.x - transform.position.x) + Mathf.Abs(HoopLookAt.position.z - transform.position.z));
-            //    transform.LookAt(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
-            //}
-
-            if(ess.CameraVer == 0)
-            {
-                if(resetrot == true)
-                {
-                    resetrot = false;
-                }
-                qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
-                qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
-                rb.MoveRotation(qTo);
-            }
-            else if(!resetrot)
-            {
-                rb.MoveRotation((Quaternion.identity));
-                resetrot = true;
-            }
-
-            rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
-        }
-        if(recenterlookat)
+        if (ess.CameraVer == 0)
         {
             if (resetrot == true)
             {
@@ -267,7 +233,13 @@ public class playermovement : MonoBehaviour
             qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
             rb.MoveRotation(qTo);
         }
+        else if (!resetrot)
+        {
+            rb.MoveRotation((Quaternion.identity));
+            resetrot = true;
+        }
+
+        rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
 
     }
-
 }

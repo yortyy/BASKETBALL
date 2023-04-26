@@ -13,7 +13,7 @@ public class EventScriptSystem : MonoBehaviour
     [SerializeField] private GameObject basketball;
     private Rigidbody prb;
     private Rigidbody brb;
-    private Transform[] tpmarkers = new Transform[5];
+    private Transform[] tpmarkers = new Transform[8];
     private GameObject tpzone;
 
     private playermovement ps;
@@ -54,8 +54,10 @@ public class EventScriptSystem : MonoBehaviour
         tpmarkers[2] = transform.GetChild(2);
         tpmarkers[3] = transform.GetChild(3);
         tpmarkers[4] = transform.GetChild(4);
-        tpzone = transform.GetChild(5).gameObject;
-        kcamtracker = transform.GetChild(6);
+        tpmarkers[5] = transform.GetChild(5);
+        tpmarkers[6] = transform.GetChild(6);
+        tpzone = transform.GetChild(7).gameObject;
+        kcamtracker = transform.GetChild(8);
         asc = GetComponent<AudioSource>();
     }
     public void camchange(int version)
@@ -99,10 +101,6 @@ public class EventScriptSystem : MonoBehaviour
         if (tpmarkerno == 0)
         {
             exitpause();
-            if(CameraVer == 0)
-            {
-                ps.recenterlookat = true;
-            }
             asc.clip = music[2];
             asc.Play();
             ps.shotscore = 0;
@@ -116,12 +114,8 @@ public class EventScriptSystem : MonoBehaviour
             //player.transform.position = tpmarkers[0].position + new Vector3(0,1.25f,0);
             //basketball.transform.position = tpmarkers[0].position + new Vector3(0, 1.25f, 0);
         }
-        if(tpmarkerno == 1)
-        {
-            ps.recenterlookat = false;
-        }
 
-        if(tpmarkerno == 5)
+        if(tpmarkerno == 7)
         {
             timeron = false;
             ps.ess.gamemode = 0;
