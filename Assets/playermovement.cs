@@ -34,7 +34,7 @@ public class playermovement : MonoBehaviour
     public bool shotresult;
     public int shotscore;
     public float shotdistance;
-    private bool in3ptline;
+    public bool in3ptline;
     private float shotdistancechanger;
     public TMP_Text shotscoretext;
     public TMP_Text shotdistancetext;
@@ -219,19 +219,35 @@ public class playermovement : MonoBehaviour
     }
 
     bool resetrot;
+    float hoopdistance;
 
 
     private void FixedUpdate()
     {
+        hoopdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
+
         if (ess.CameraVer == 0)
         {
             if (resetrot == true)
             {
                 resetrot = false;
             }
-            qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
-            qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
-            rb.MoveRotation(qTo);
+            if(hoopdistance <= 5f)
+            {
+                Debug.Log("test");
+            }
+            else if (hoopdistance <= 22f)
+            {
+                qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
+                qTo = Quaternion.Slerp(transform.rotation, qTo, 3 * Time.deltaTime);
+                rb.MoveRotation(qTo);
+            }
+            else
+            {
+                qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
+                qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
+                rb.MoveRotation(qTo);
+            }
         }
         else if (!resetrot)
         {
