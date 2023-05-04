@@ -95,6 +95,34 @@ public class EventScriptSystem : MonoBehaviour
 
     }
 
+    public void practicemode()
+    {
+
+        gamemode = 0;
+        timeron = false;
+        ps.shotscore = 0;
+        ps.shotscoretext.text = ps.shotscore.ToString();
+        exitpause();
+        asc.clip = music[0];
+        asc.Play();
+        prb.MovePosition(Vector3.zero);
+        brb.MovePosition(Vector3.zero);
+        //player.transform.position = Vector3.zero;
+        //basketball.transform.position = Vector3.zero;
+    }
+    public void oneonone()
+    {
+        gamemode = 1;
+        timeron = false;
+        ps.shotscore = 0;
+        exitpause();
+        asc.clip = music[1];
+        asc.Play();
+        prb.MovePosition(Vector3.zero);
+        brb.MovePosition(Vector3.zero);
+        //player.transform.position = Vector3.zero;
+        //basketball.transform.position = Vector3.zero;
+    }
 
     public void threeptcontest(int tpmarkerno)
     {
@@ -128,28 +156,26 @@ public class EventScriptSystem : MonoBehaviour
 
 
     }
-    public void oneonone()
+    public void threeonthreewii()
     {
-        gamemode = 1;
+        gamemode = 3;
         timeron = false;
         ps.shotscore = 0;
         exitpause();
-        asc.clip = music[1];
+        asc.clip = music[3];
         asc.Play();
         prb.MovePosition(Vector3.zero);
         brb.MovePosition(Vector3.zero);
         //player.transform.position = Vector3.zero;
         //basketball.transform.position = Vector3.zero;
     }
-    public void practicemode()
+    public void threeonthree()
     {
-
-        gamemode = 0;
+        gamemode = 4;
         timeron = false;
         ps.shotscore = 0;
-        ps.shotscoretext.text = ps.shotscore.ToString();
         exitpause();
-        asc.clip = music[0];
+        asc.clip = music[3];
         asc.Play();
         prb.MovePosition(Vector3.zero);
         brb.MovePosition(Vector3.zero);
@@ -195,7 +221,7 @@ public class EventScriptSystem : MonoBehaviour
     }
     public float progress;
     public bool progressreset;
-    bool progressresettwo;
+    Vector3 tempkcampos;
 
     private void Update()
     {
@@ -213,17 +239,18 @@ public class EventScriptSystem : MonoBehaviour
             }
 
             //kcamtracker.position = (new Vector3(0,0,player.transform.position.z - 8));
-            if(Mathf.Abs(player.transform.position.x) <= 4 && player.transform.position.z >= 18)
+            if(Mathf.Abs(player.transform.position.x) <= 5 && player.transform.position.z >= 14)
             {
 
                 if (progressreset == false && progress != 0) //reset  so that when changed the zoom can start from true kcampos
                 {
                     progress = 0;
+                    tempkcampos = kcamtracker.transform.position;   
                     progressreset = true; //if progress is leftover (no reset and had value), then reset to 0
                 } //how would I turn on progressreset then?
 
-                progress = Mathf.Clamp01(progress + 0.5f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(kcamtracker.position, (new Vector3(0, 0.5f, 12)), progress);
+                progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 12)), progress);
 
             }
             else if (player.transform.position.z >= 6) //move kcam to 6
@@ -231,11 +258,12 @@ public class EventScriptSystem : MonoBehaviour
                 if (progressreset == true && progress != 0)
                 {
                     progress = 0;
+                    tempkcampos = kcamtracker.transform.position;
                     progressreset = false;
                 }
 
-                progress = Mathf.Clamp01(progress + 0.5f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(kcamtracker.position, (new Vector3(0, 0.5f, 8)), progress);
+                progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 9)), progress);
 
             }
             else if(player.transform.position.z >= 0) //move kcam to player

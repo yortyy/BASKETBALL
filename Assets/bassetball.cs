@@ -197,8 +197,7 @@ public class bassetball : MonoBehaviour
                     HoopEff.Play();
                 }
 
-
-                asc[0].Play();
+                asc[0].Play(); //swishsound
             }
             ps.shotmeterscript.shotmeterslider.value = 0;
             shoot = false;

@@ -24,6 +24,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Pass",
+                    "type": "Button",
+                    "id": "39d75b5b-4c01-46d2-acb8-f1cd039c1d4f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Shoot",
                     "type": "Button",
                     "id": "5b29cf9c-284e-450e-8fc0-307076fbc4ed",
@@ -260,6 +269,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e9502482-9682-43ba-89a3-4dbf58da268b",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pass",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

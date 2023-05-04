@@ -47,6 +47,9 @@ public class playermovement : MonoBehaviour
 
     [SerializeField] Material[] ParticleMaterials;
 
+
+    [SerializeField] private GameObject[] TeamMates;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -65,7 +68,7 @@ public class playermovement : MonoBehaviour
         rb.AddForce(0, jscale * mscale, 0, ForceMode.Impulse);
         Debug.Log("Jump");
     }
-    public void shootimp(InputAction.CallbackContext value)
+    public void shootinp(InputAction.CallbackContext value)
     {
         if (bballscript.playerholding)
         {
@@ -95,6 +98,21 @@ public class playermovement : MonoBehaviour
                 }
                 shooter(shootingskill, smeter);
             }
+        }
+    }
+
+    float passANGLE;
+
+    public void passinp(InputAction.CallbackContext value)
+    {
+        if(bballscript.playerholding)
+        {
+            passANGLE = Vector2.SignedAngle(Vector2.right, new Vector2(movementVector.x, movementVector.y));
+            Debug.Log(passANGLE);
+            passANGLE = Vector2.SignedAngle(Vector2.right + new Vector2(transform.position.x, transform.position.z), new Vector2(TeamMates[0].transform.position.x, TeamMates[0].transform.position.y));
+            Debug.Log(passANGLE);
+            passANGLE = Vector2.SignedAngle(Vector2.right + new Vector2(transform.position.x, transform.position.z), new Vector2(TeamMates[1].transform.position.x, TeamMates[1].transform.position.y));
+            Debug.Log(passANGLE);
         }
     }
 
