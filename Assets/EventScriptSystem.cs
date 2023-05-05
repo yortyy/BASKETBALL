@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine.InputSystem;
 using static Cinemachine.CinemachineTriggerAction.ActionSettings;
+using Cinemachine;
+using System.Linq;
 
 public class EventScriptSystem : MonoBehaviour
 {
@@ -18,7 +20,7 @@ public class EventScriptSystem : MonoBehaviour
 
     private playermovement ps;
     private bassetball bb;
-
+    [SerializeField] private SHOTMETER sm;
 
     private bool paused;
     [SerializeField] private GameObject ShotUI;
@@ -34,14 +36,25 @@ public class EventScriptSystem : MonoBehaviour
     [SerializeField] private GameObject playerlockcam;
     [SerializeField] private GameObject skycam;
     [SerializeField] private GameObject replaycam;
+    [SerializeField] private CinemachineTargetGroup targetGroup;
+    [SerializeField] private CinemachineVirtualCamera plvcam;
 
     private AudioSource asc;
     [SerializeField] AudioClip[] music;
 
     public int gamemode;
 
-
     public int CameraVer;
+
+
+    [SerializeField] private GameObject[] teammates;
+    private Rigidbody[] teammatesrb = new Rigidbody[2];
+    private Vector3 pccamtempstartvector;
+    private bool pccamsmooth;
+
+    private float progress;
+    private bool[] progressreset = new bool[4];
+    private Vector3 tempkcampos;
 
     void Awake()
     {
@@ -59,6 +72,10 @@ public class EventScriptSystem : MonoBehaviour
         tpzone = transform.GetChild(7).gameObject;
         kcamtracker = transform.GetChild(8);
         asc = GetComponent<AudioSource>();
+        plvcam = playerlockcam.GetComponent<CinemachineVirtualCamera>();
+
+        teammatesrb[0] = teammates[0].GetComponent<Rigidbody>();
+        teammatesrb[1] = teammates[1].GetComponent<Rigidbody>();
     }
     public void camchange(int version)
     {
@@ -95,6 +112,28 @@ public class EventScriptSystem : MonoBehaviour
 
     }
 
+    public void PlayerChange(GameObject newplayer)
+    {
+        pccamtempstartvector = kcamtracker.position;
+        plvcam.Follow = newplayer.transform;
+        targetGroup.RemoveMember(player.transform);
+        targetGroup.AddMember(newplayer.transform, 4, 1);
+        ps.enabled = false;
+
+        player = newplayer;
+        ps = player.GetComponent<playermovement>();
+        ps.enabled = true;
+        player.GetComponent<PlayerInput>().actions.Enable();
+        pccamsmooth = true;
+
+        sm.player = player;
+        sm.playermov = ps;
+
+        bb.PlayerChangeBBALL(player);
+
+        //change camera, everything with player to new one
+    }
+
     public void practicemode()
     {
 
@@ -105,6 +144,8 @@ public class EventScriptSystem : MonoBehaviour
         exitpause();
         asc.clip = music[0];
         asc.Play();
+        teammates[0].SetActive(false);
+        teammates[1].SetActive(false);
         prb.MovePosition(Vector3.zero);
         brb.MovePosition(Vector3.zero);
         //player.transform.position = Vector3.zero;
@@ -118,6 +159,8 @@ public class EventScriptSystem : MonoBehaviour
         exitpause();
         asc.clip = music[1];
         asc.Play();
+        teammates[0].SetActive(false);
+        teammates[1].SetActive(false);
         prb.MovePosition(Vector3.zero);
         brb.MovePosition(Vector3.zero);
         //player.transform.position = Vector3.zero;
@@ -137,6 +180,8 @@ public class EventScriptSystem : MonoBehaviour
             tmptimer = Time.time;
             timeron = true;
             gamemode = 2;
+            teammates[0].SetActive(false);
+            teammates[1].SetActive(false);
             prb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
             brb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
             //player.transform.position = tpmarkers[0].position + new Vector3(0,1.25f,0);
@@ -159,6 +204,10 @@ public class EventScriptSystem : MonoBehaviour
     public void threeonthreewii()
     {
         gamemode = 3;
+        teammates[0].SetActive(true);
+        teammatesrb[0].MovePosition(tpmarkers[1].position);
+        teammates[1].SetActive(true);
+        teammatesrb[1].MovePosition(tpmarkers[5].position);
         timeron = false;
         ps.shotscore = 0;
         exitpause();
@@ -172,6 +221,10 @@ public class EventScriptSystem : MonoBehaviour
     public void threeonthree()
     {
         gamemode = 4;
+        teammates[0].SetActive(true);
+        teammatesrb[0].MovePosition(tpmarkers[1].position);
+        teammates[1].SetActive(true);
+        teammatesrb[1].MovePosition(tpmarkers[5].position);
         timeron = false;
         ps.shotscore = 0;
         exitpause();
@@ -219,13 +272,11 @@ public class EventScriptSystem : MonoBehaviour
             paused = false;
         }
     }
-    public float progress;
-    public bool progressreset;
-    Vector3 tempkcampos;
 
     private void Update()
     {
-        if(CameraVer == 1)
+
+        if (CameraVer == 1)
         {
             if(player.transform.position.z > 7) //if at -21, then should be -3, if at 0 should be -1, if at 4 should be 0
             {
@@ -242,12 +293,28 @@ public class EventScriptSystem : MonoBehaviour
             if(Mathf.Abs(player.transform.position.x) <= 5 && player.transform.position.z >= 14)
             {
 
-                if (progressreset == false && progress != 0) //reset  so that when changed the zoom can start from true kcampos
-                {
+                if ((progressreset[0] == false && progress != 0) || pccamsmooth) //reset  so that when changed the zoom can start from true kcampos
+                { //how to when changing zones, reset everything once
                     progress = 0;
-                    tempkcampos = kcamtracker.transform.position;   
-                    progressreset = true; //if progress is leftover (no reset and had value), then reset to 0
+                    if(pccamsmooth)
+                    {
+                        tempkcampos = pccamtempstartvector;
+                    }
+                    else
+                    {
+                        tempkcampos = kcamtracker.transform.position;
+                    }
+                    for (int i = 0; i < progressreset.Length; i++)
+                    {
+                        progressreset[i] = false;
+                    }
+                    pccamsmooth = false;
+                    progressreset[0] = true; //if progress is leftover (no reset and had value), then reset to 0
                 } //how would I turn on progressreset then?
+                if (progressreset[0] && pccamsmooth)
+                {
+                    pccamsmooth = false;
+                }
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
                 kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 12)), progress);
@@ -255,11 +322,27 @@ public class EventScriptSystem : MonoBehaviour
             }
             else if (player.transform.position.z >= 6) //move kcam to 6
             {
-                if (progressreset == true && progress != 0)
+                if ((progressreset[1] == false && progress != 0) || pccamsmooth)
                 {
                     progress = 0;
-                    tempkcampos = kcamtracker.transform.position;
-                    progressreset = false;
+                    if (pccamsmooth)
+                    {
+                        tempkcampos = pccamtempstartvector;
+                    }
+                    else
+                    {
+                        tempkcampos = kcamtracker.transform.position;
+                    }
+                    for (int i = 0; i < progressreset.Length; i++)
+                    {
+                        progressreset[i] = false;
+                    }
+                    pccamsmooth = false;
+                    progressreset[1] = true;
+                }
+                if (progressreset[1] && pccamsmooth)
+                {
+                    pccamsmooth = false;
                 }
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
@@ -268,26 +351,62 @@ public class EventScriptSystem : MonoBehaviour
             }
             else if(player.transform.position.z >= 0) //move kcam to player
             {
-                if (progressreset == false && progress != 0)
+
+                if ((progressreset[2] == false && progress != 0) || pccamsmooth)
                 {
                     progress = 0;
-                    progressreset = true;
+                    if (pccamsmooth)
+                    {
+                        tempkcampos = pccamtempstartvector;
+                    }
+                    else
+                    {
+                        tempkcampos = kcamtracker.transform.position;
+                    }
+                    for (int i = 0; i < progressreset.Length; i++)
+                    {
+                        progressreset[i] = false;
+                    }
+                    pccamsmooth = false;
+                    progressreset[2] = true;
+                }
+                if (progressreset[2] && pccamsmooth)
+                {
+                    pccamsmooth = false;
                 }
 
-                progress = Mathf.Clamp01(progress + 0.5f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(kcamtracker.position, (new Vector3(0, 0.5f, player.transform.position.z)), progress);
+
+                progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z)), progress);
 
 
             }
             else if(player.transform.position.z <= 0) //move kcam to player -2
             {
-                if (progressreset == true && progress != 0)
+
+                if ((progressreset[3] == false && progress != 0) || pccamsmooth)
                 {
                     progress = 0;
-                    progressreset = false;
+                    if (pccamsmooth)
+                    {
+                        tempkcampos = pccamtempstartvector;
+                    }
+                    else
+                    {
+                        tempkcampos = kcamtracker.transform.position;
+                    }
+                    for (int i = 0; i < progressreset.Length; i++)
+                    {
+                        progressreset[i] = false;
+                    }
+                    Debug.Log("Should be just one");
+                    pccamsmooth = false;
+                    progressreset[3] = true;
                 }
-                progress = Mathf.Clamp01(progress + 0.5f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(kcamtracker.position, (new Vector3(0, 0.5f, player.transform.position.z - 2)), progress);
+
+
+                progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z - 2)), progress);
 
             }
 

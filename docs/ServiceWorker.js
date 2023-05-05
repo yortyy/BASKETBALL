@@ -1,9 +1,9 @@
 const cacheName = "fire company-BASSETBALL-0.1";
 const contentToCache = [
     "Build/docs.loader.js",
-    "Build/530345911dc1961b0e0f70fd233522e9.js",
-    "Build/c3db29f5e6fb02e71e6763ba03293ff3.data",
-    "Build/374118896871948b7aa1ec51be03ff38.wasm",
+    "Build/fc301f1c624c71529979ff3e8b70ccb8.js",
+    "Build/29c893f9cbe38fd400ea2611fde53936.data",
+    "Build/ef4a33a014d2662a01ddbc200fa21b0c.wasm",
     "TemplateData/style.css"
 
 ];

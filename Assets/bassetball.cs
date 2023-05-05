@@ -11,6 +11,7 @@ public class bassetball : MonoBehaviour
     public Transform target;
     private GameObject player;
     private playermovement ps;
+    [SerializeField] private EventScriptSystem ess;
     public bool shoot;
     public bool playerholding;
     private Rigidbody bbrb;
@@ -23,6 +24,21 @@ public class bassetball : MonoBehaviour
     [SerializeField] private ParticleSystem bballeff;
     [SerializeField] Material[] ParticleMaterials;
 
+    Vector3 startpoint;
+    Vector3 archpoint;
+    Vector3 targetpoint;
+    float riselength;
+    float shotinairtime;
+    Vector3 offset;
+    bool setarch;
+    bool setcount;
+    int rotat;
+
+    public bool playerchange;
+    Vector3 pastballpos;
+    float progress;
+    bool playerswitching;
+
 
     void Awake()
     {
@@ -32,7 +48,7 @@ public class bassetball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("player") && !shoot)
+        if (other.gameObject.CompareTag("player") && !shoot && !playerswitching)
         {
             player = other.gameObject;
             ps = player.GetComponent<playermovement>();
@@ -43,17 +59,28 @@ public class bassetball : MonoBehaviour
             Debug.Log("KONNECT: " + other.gameObject);
         }
     }
-    Vector3 startpoint;
-    Vector3 archpoint;
-    Vector3 targetpoint;
-    float riselength;
-    float shotinairtime;
-    Vector3 offset;
-    bool setarch;
-    bool setcount;
-    int rotat;
+    public void PlayerChangeBBALL(GameObject newplayer)
+    {
+        pastballpos = transform.position;
+        player = newplayer;
+        ps = newplayer.GetComponent<playermovement>();
+        playerholding = false;
+        playerswitching = true;
+    }
+
     private void Update()
     {
+        if(playerswitching)
+        {
+            progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
+            transform.position = Vector3.Lerp(pastballpos, player.transform.position, progress);
+        }
+        if (progress == 1)
+        {
+            playerholding = true;
+            playerswitching = false;
+            progress = 0;
+        }
         if (playerholding && !shoot)
         {
             transform.position = player.gameObject.transform.position;
@@ -162,9 +189,9 @@ public class bassetball : MonoBehaviour
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
             ps.shotscoretext.text = ps.shotscore.ToString();
-            if (ps.ess.gamemode == 2 && ps.shotscore != 0)
+            if (ess.gamemode == 2 && ps.shotscore != 0)
             {
-                ps.ess.threeptcontest(ps.shotscore); //move to bassetball shot
+                ess.threeptcontest(ps.shotscore); //move to bassetball shot
             }
             if(ps.shotresult)
             {

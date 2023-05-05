@@ -8,9 +8,8 @@ using TMPro;
 public class SHOTMETER : MonoBehaviour
 {
     public GameObject player;
-    public GameObject target;
     public GameObject ShotMeterUI;
-    private playermovement playermov;
+    public playermovement playermov;
     public float shotmetertimer;
     public Slider shotmeterslider;
     private bool shoottimeron;
@@ -25,7 +24,7 @@ public class SHOTMETER : MonoBehaviour
     }
     void LateUpdate()
     {
-        targ = (Camera.main.WorldToScreenPoint(target.transform.position) + new Vector3(50, 0, 0));
+        targ = (Camera.main.WorldToScreenPoint(player.transform.position) + new Vector3(50, 0, 0));
         ShotMeterUI.transform.position = targ;
         if (shoottimeron)
         {

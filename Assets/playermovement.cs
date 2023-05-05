@@ -23,7 +23,8 @@ public class playermovement : MonoBehaviour
     public float jscale = 5f;
     public int shootingskill;
     public int smeter;
-    public bool shootbutton;
+    public bool shootbuttonbuffer;
+    public bool smcalcstarted;
     [SerializeField] private Transform HoopLookAt;
     [SerializeField] private Transform Hoop;
     [SerializeField] private GameObject HoopProtector;
@@ -70,49 +71,92 @@ public class playermovement : MonoBehaviour
     }
     public void shootinp(InputAction.CallbackContext value)
     {
-        if (bballscript.playerholding)
+        if (value.started)
         {
-            if (value.started)
+            shootbuttonbuffer = true;
+            Debug.Log("shootbuttonbuffer on");
+            if(bballscript.playerholding)
             {
-                shootbutton = false;
                 shotmeterscript.shotmetercalc(false);
             }
-            if (value.canceled)
-            {
-                shootbutton = true;
+        }
+        if (value.canceled && bballscript.playerholding)
+        {
+            shootbuttonbuffer = false;
 
-                //check for skill and shotmeter then put into shooter()
-                //for this example, shootingskill is 1 (excellent), smeter is green (1)
-                // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
-                // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
-                shotmeterscript.shotmetercalc(true);
-                if (smeter == 0)
-                {
-                    psr.material = ParticleMaterials[0];
-                    ps.Play();
-                }
-                else if (smeter == 1)
-                {
-                    psr.material = ParticleMaterials[1];
-                    ps.Play();
-                }
-                shooter(shootingskill, smeter);
+            //check for skill and shotmeter then put into shooter()
+            //for this example, shootingskill is 1 (excellent), smeter is green (1)
+            // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
+            // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
+            shotmeterscript.shotmetercalc(true);
+            if (smeter == 0)
+            {
+                psr.material = ParticleMaterials[0];
+                ps.Play();
             }
+            else if (smeter == 1)
+            {
+                psr.material = ParticleMaterials[1];
+                ps.Play();
+            }
+            shooter(shootingskill, smeter);
+        }
+    }
+
+    private void Update()
+    {
+        if(shootbuttonbuffer && bballscript.playerholding) //shootbuttonbuffer buffering/waiting for bball hold
+        {
+            shotmeterscript.shotmetercalc(false);
+            shootbuttonbuffer = false;
         }
     }
 
     float passANGLE;
+    float passANGLE2;
+    float passANGLE3;
 
     public void passinp(InputAction.CallbackContext value)
     {
-        if(bballscript.playerholding)
+        if (ess.gamemode == 3 || ess.gamemode == 4)
         {
-            passANGLE = Vector2.SignedAngle(Vector2.right, new Vector2(movementVector.x, movementVector.y));
-            Debug.Log(passANGLE);
-            passANGLE = Vector2.SignedAngle(Vector2.right + new Vector2(transform.position.x, transform.position.z), new Vector2(TeamMates[0].transform.position.x, TeamMates[0].transform.position.y));
-            Debug.Log(passANGLE);
-            passANGLE = Vector2.SignedAngle(Vector2.right + new Vector2(transform.position.x, transform.position.z), new Vector2(TeamMates[1].transform.position.x, TeamMates[1].transform.position.y));
-            Debug.Log(passANGLE);
+            if (bballscript.playerholding && value.started)
+            {
+                passANGLE = Vector2.SignedAngle(Vector2.down, new Vector2(movementVector.x, movementVector.y));
+                if (passANGLE < 0)
+                {
+                    passANGLE += 360;
+                }
+                else if (movementVector.x == 0 && movementVector.y == 0)
+                {
+                    passANGLE = -1;
+                }
+
+                passANGLE2 = Vector2.SignedAngle(Vector2.down, new Vector2(TeamMates[0].transform.position.x - transform.position.x, TeamMates[0].transform.position.z - transform.position.z));
+                if (passANGLE2 < 0)
+                {
+                    passANGLE2 += 360;
+                }
+
+                passANGLE3 = Vector2.SignedAngle(Vector2.down, new Vector2(TeamMates[1].transform.position.x - transform.position.x, TeamMates[1].transform.position.z - transform.position.z));
+                if (passANGLE3 < 0)
+                {
+                    passANGLE3 += 360;
+                }
+
+                if (Mathf.Abs(passANGLE2 - passANGLE) <= Mathf.Abs(passANGLE3 - passANGLE)) //if the ang between tm1 and p is closer to 0
+                {
+                    Debug.Log("TeamMate 1 BRUH");
+                    gameObject.GetComponent<PlayerInput>().actions.Disable();
+                    ess.PlayerChange(TeamMates[0]);
+                }
+                else if (Mathf.Abs(passANGLE3 - passANGLE) < Mathf.Abs(passANGLE2 - passANGLE))
+                {
+                    Debug.Log("TeamMate 2 BRUH");
+                    gameObject.GetComponent<PlayerInput>().actions.Disable();
+                    ess.PlayerChange(TeamMates[1]);
+                }
+            }
         }
     }
 
@@ -250,9 +294,8 @@ public class playermovement : MonoBehaviour
             {
                 resetrot = false;
             }
-            if(hoopdistance <= 5f)
+            if (hoopdistance <= 5f)
             {
-                Debug.Log("test");
             }
             else if (hoopdistance <= 22f)
             {
