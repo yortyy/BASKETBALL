@@ -110,7 +110,7 @@ public class bassetball : MonoBehaviour
             if (!setarch)
             {
 
-                startpoint = transform.position;
+                startpoint = player.gameObject.transform.position;
                 if (!ps.shotresult)
                 {
                     offset.x = Random.Range(-0.8f, 0.8f);

@@ -48,8 +48,10 @@ public class playermovement : MonoBehaviour
 
     [SerializeField] Material[] ParticleMaterials;
 
-
     [SerializeField] private GameObject[] TeamMates;
+    private bool shootboolwii;
+
+
 
     void Awake()
     {
@@ -71,7 +73,7 @@ public class playermovement : MonoBehaviour
     }
     public void shootinp(InputAction.CallbackContext value)
     {
-        if (value.started)
+        if (value.started && (shootboolwii || ess.gamemode != 3))
         {
             shootbuttonbuffer = true;
             Debug.Log("shootbuttonbuffer on");
@@ -80,7 +82,13 @@ public class playermovement : MonoBehaviour
                 shotmeterscript.shotmetercalc(false);
             }
         }
-        if (value.canceled && bballscript.playerholding)
+        else if(value.started && !shootboolwii && ess.gamemode == 3) 
+        {
+            ess.CameraVer = 0;
+            ess.camchange(0);
+            shootboolwii = true;
+        }
+        if (value.canceled && bballscript.playerholding && ((shootbuttonbuffer && shootboolwii) || ess.gamemode != 3))
         {
             shootbuttonbuffer = false;
 
@@ -100,12 +108,16 @@ public class playermovement : MonoBehaviour
                 ps.Play();
             }
             shooter(shootingskill, smeter);
+            if(ess.gamemode == 3)
+            {
+                shootboolwii = false;
+            }
         }
     }
 
     private void Update()
     {
-        if(shootbuttonbuffer && bballscript.playerholding) //shootbuttonbuffer buffering/waiting for bball hold
+        if(shootbuttonbuffer && bballscript.playerholding && ess.gamemode != 3) //shootbuttonbuffer buffering/waiting for bball hold
         {
             shotmeterscript.shotmetercalc(false);
             shootbuttonbuffer = false;
@@ -120,7 +132,7 @@ public class playermovement : MonoBehaviour
     {
         if (ess.gamemode == 3 || ess.gamemode == 4)
         {
-            if (bballscript.playerholding && value.started)
+            if (bballscript.playerholding && value.started && !shootboolwii)
             {
                 passANGLE = Vector2.SignedAngle(Vector2.down, new Vector2(movementVector.x, movementVector.y));
                 if (passANGLE < 0)
@@ -147,13 +159,11 @@ public class playermovement : MonoBehaviour
                 if (Mathf.Abs(passANGLE2 - passANGLE) <= Mathf.Abs(passANGLE3 - passANGLE)) //if the ang between tm1 and p is closer to 0
                 {
                     Debug.Log("TeamMate 1 BRUH");
-                    gameObject.GetComponent<PlayerInput>().actions.Disable();
                     ess.PlayerChange(TeamMates[0]);
                 }
                 else if (Mathf.Abs(passANGLE3 - passANGLE) < Mathf.Abs(passANGLE2 - passANGLE))
                 {
                     Debug.Log("TeamMate 2 BRUH");
-                    gameObject.GetComponent<PlayerInput>().actions.Disable();
                     ess.PlayerChange(TeamMates[1]);
                 }
             }
@@ -315,8 +325,10 @@ public class playermovement : MonoBehaviour
             rb.MoveRotation((Quaternion.identity));
             resetrot = true;
         }
-
-        rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+        if(ess.gamemode != 3)
+        {
+            rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+        }
 
     }
 }

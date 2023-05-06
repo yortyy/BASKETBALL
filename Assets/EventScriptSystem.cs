@@ -11,6 +11,7 @@ using System.Linq;
 
 public class EventScriptSystem : MonoBehaviour
 {
+    [SerializeField] private GameObject trueplayer;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject basketball;
     private Rigidbody prb;
@@ -48,7 +49,9 @@ public class EventScriptSystem : MonoBehaviour
 
 
     [SerializeField] private GameObject[] teammates;
+    [SerializeField] private GameObject[] enemies;
     private Rigidbody[] teammatesrb = new Rigidbody[2];
+    private Rigidbody[] enemiesrb = new Rigidbody[3];
     private Vector3 pccamtempstartvector;
     private bool pccamsmooth;
 
@@ -76,6 +79,12 @@ public class EventScriptSystem : MonoBehaviour
 
         teammatesrb[0] = teammates[0].GetComponent<Rigidbody>();
         teammatesrb[1] = teammates[1].GetComponent<Rigidbody>();
+        enemiesrb[0] = enemies[0].GetComponent<Rigidbody>();
+        enemiesrb[1] = enemies[1].GetComponent<Rigidbody>();
+        enemiesrb[2] = enemies[2].GetComponent<Rigidbody>();
+
+        CameraVer = 1;
+        camchange(0);
     }
     public void camchange(int version)
     {
@@ -114,6 +123,8 @@ public class EventScriptSystem : MonoBehaviour
 
     public void PlayerChange(GameObject newplayer)
     {
+        player.GetComponent<PlayerInput>().actions.Disable();
+
         pccamtempstartvector = kcamtracker.position;
         plvcam.Follow = newplayer.transform;
         targetGroup.RemoveMember(player.transform);
@@ -136,12 +147,12 @@ public class EventScriptSystem : MonoBehaviour
 
     public void practicemode()
     {
-
         gamemode = 0;
         timeron = false;
         ps.shotscore = 0;
         ps.shotscoretext.text = ps.shotscore.ToString();
         exitpause();
+        PlayerChange(trueplayer);
         asc.clip = music[0];
         asc.Play();
         teammates[0].SetActive(false);
@@ -157,6 +168,7 @@ public class EventScriptSystem : MonoBehaviour
         timeron = false;
         ps.shotscore = 0;
         exitpause();
+        PlayerChange(trueplayer);
         asc.clip = music[1];
         asc.Play();
         teammates[0].SetActive(false);
@@ -172,6 +184,7 @@ public class EventScriptSystem : MonoBehaviour
         if (tpmarkerno == 0)
         {
             exitpause();
+            PlayerChange(trueplayer);
             asc.clip = music[2];
             asc.Play();
             ps.shotscore = 0;
@@ -205,16 +218,28 @@ public class EventScriptSystem : MonoBehaviour
     {
         gamemode = 3;
         teammates[0].SetActive(true);
-        teammatesrb[0].MovePosition(tpmarkers[1].position);
+        teammatesrb[0].MovePosition(tpmarkers[0].position + new Vector3(0,1,0));
         teammates[1].SetActive(true);
-        teammatesrb[1].MovePosition(tpmarkers[5].position);
+        teammatesrb[1].MovePosition(tpmarkers[6].position + new Vector3(0, 1, 0));
+
+
+        enemies[0].SetActive(true);
+        enemiesrb[0].MovePosition(tpmarkers[0].position + new Vector3(-3, 1, 0));
+        enemies[1].SetActive(true);
+        enemiesrb[1].MovePosition(tpmarkers[6].position + new Vector3(3, 1, 0));
+        enemies[2].SetActive(true);
+        enemiesrb[2].MovePosition(tpmarkers[3].position + new Vector3(0, 1, 3));
+
         timeron = false;
         ps.shotscore = 0;
         exitpause();
+        PlayerChange(trueplayer);
+        CameraVer = 1;
+        camchange(0);
         asc.clip = music[3];
         asc.Play();
-        prb.MovePosition(Vector3.zero);
-        brb.MovePosition(Vector3.zero);
+        prb.MovePosition(tpmarkers[3].position + new Vector3(0, 1, 0));
+        brb.MovePosition(tpmarkers[3].position + new Vector3(0, 1, 0));
         //player.transform.position = Vector3.zero;
         //basketball.transform.position = Vector3.zero;
     }
@@ -228,6 +253,7 @@ public class EventScriptSystem : MonoBehaviour
         timeron = false;
         ps.shotscore = 0;
         exitpause();
+        PlayerChange(trueplayer);
         asc.clip = music[3];
         asc.Play();
         prb.MovePosition(Vector3.zero);
@@ -239,6 +265,7 @@ public class EventScriptSystem : MonoBehaviour
 
     public void quitgame()
     {
+        PlayerChange(trueplayer);
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
