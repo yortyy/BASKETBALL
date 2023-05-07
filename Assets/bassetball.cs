@@ -40,8 +40,17 @@ public class bassetball : MonoBehaviour
     bool playerswitching;
 
 
+    [SerializeField] private Transform bballholdref;
+    [SerializeField] private float jumpshottime = 0.5f;
+    private float progressjs;
+    private float progressshoot;
+    private Vector3 bballholdreftemppos;
+    private GameObject bballRend;
+
+
     void Awake()
     {
+        bballRend = transform.GetChild(0).gameObject;
         bbrb = GetComponent<Rigidbody>();
         HoopEffEmission = HoopEff.emission;
     }
@@ -70,6 +79,7 @@ public class bassetball : MonoBehaviour
 
     private void Update()
     {
+
         if(playerswitching)
         {
             progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
@@ -83,20 +93,24 @@ public class bassetball : MonoBehaviour
         }
         if (playerholding && !shoot)
         {
-            transform.position = player.gameObject.transform.position;
+            transform.position = bballholdref.position;
+            transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
+
         }
-        if (count < 1.0f && shoot)
+
+
+        if (count > jumpshottime && count < (1.0f + jumpshottime) && shoot)
         {
             if (rotat == 0)
             {
-                transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
+                transform.LookAt(new Vector3(target.position.x, bballRend.transform.position.y, target.position.z + 0.5f));
                 rotat = 5;
             }
             else
             {
                 rotat += 5;
-                Quaternion rotation = Quaternion.Euler(rotat, transform.rotation.y, transform.rotation.z);
-                transform.rotation = rotation;
+                Quaternion rotation = Quaternion.Euler(rotat, bballRend.transform.rotation.y, bballRend.transform.rotation.z);
+                bballRend.transform.rotation = rotation;
             }
         }
         else if (rotat != 0)
@@ -104,13 +118,12 @@ public class bassetball : MonoBehaviour
             rotat = 0;
         }
 
-        if (count < 1.0f && shoot)
+        if (count > jumpshottime && count < (1.0f + jumpshottime) && shoot) //jumpshottimeneeded to movebball ref up in animation
         {
-
             if (!setarch)
             {
 
-                startpoint = player.gameObject.transform.position;
+                startpoint = bballholdref.position;
                 if (!ps.shotresult)
                 {
                     offset.x = Random.Range(-0.8f, 0.8f);
@@ -175,12 +188,29 @@ public class bassetball : MonoBehaviour
                 setarch = true;
             }
 
-            count += shotinairtime * Time.deltaTime; //shotinairtime should = 1 at around 3pt line
+            //if (count < jumpshottime)
+            //{
+            //    if (bballholdreftemppos == Vector3.zero)
+            //    {
+            //        bballholdreftemppos = bballholdref.position;
+            //    }
+            //    progressjs = Mathf.Clamp01(count / jumpshottime);
+            //   bballholdref.position = Vector3.Lerp(bballholdreftemppos, (new Vector3(bballholdreftemppos.x, bballholdreftemppos.y + 0.5f, bballholdreftemppos.z)), progressjs);
+            //    Debug.Log(count);
+            //}
+            //else 
+            if (jumpshottime < count)
+            {
+                progressshoot = Mathf.Clamp01((count - jumpshottime));
+                Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
+                Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
+                transform.position = Vector3.Lerp(m1, m2, progressshoot);
+            }
+            //countjs += shotinairtime/jumpshottime * Time.deltaTime; I was thinking it could be seperate timer so more smooth lerping by frame
+            count += shotinairtime * Time.deltaTime; //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
 
             //Vector3 archpoint = new Vector3((target.position.x - transform.position.x)/2, (target.position.y - transform.position.y)/2 + 3, (target.position.z - transform.position.z)/2);
-            Vector3 m1 = Vector3.Lerp(startpoint, archpoint, count);
-            Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, count);
-            transform.position = Vector3.Lerp(m1, m2, count);
+
         }
         else if (setarch) //after shot
         {
@@ -228,6 +258,10 @@ public class bassetball : MonoBehaviour
             }
             ps.shotmeterscript.shotmeterslider.value = 0;
             shoot = false;
+            progressjs = 0f;
+            progressshoot = 0f;
+            //bballholdref.position = bballholdreftemppos;
+            //bballholdreftemppos = Vector3.zero;
             count = 0.0f;
             setcount = false;
             bbrb.AddForce(0,-3,0, ForceMode.Impulse);
