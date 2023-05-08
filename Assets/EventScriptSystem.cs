@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 using static Cinemachine.CinemachineTriggerAction.ActionSettings;
 using Cinemachine;
 using System.Linq;
+using UnityEngine.Animations.Rigging;
 
 public class EventScriptSystem : MonoBehaviour
 {
@@ -139,6 +140,11 @@ public class EventScriptSystem : MonoBehaviour
 
         sm.player = player;
         sm.playermov = ps;
+
+        ps.charactermodel = player.transform.GetChild(0).gameObject;
+        ps.characteranimator = ps.charactermodel.GetComponent<Animator>();
+        ps.characterrigs[0] = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 2).GetComponent<Rig>();
+        ps.characterrigs[1] = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 1).GetComponent<Rig>();
 
         bb.PlayerChangeBBALL(player);
 
@@ -373,7 +379,7 @@ public class EventScriptSystem : MonoBehaviour
                 }
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 9)), progress);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 8.5f)), progress);
 
             }
             else if(player.transform.position.z >= 0) //move kcam to player
@@ -404,7 +410,7 @@ public class EventScriptSystem : MonoBehaviour
 
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z)), progress);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z - 1f)), progress);
 
 
             }

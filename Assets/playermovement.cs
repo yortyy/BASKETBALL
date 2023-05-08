@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEngine.Animations.Rigging;
 
 public class playermovement : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class playermovement : MonoBehaviour
     public float jscale = 5f;
     public int shootingskill;
     public int smeter;
+    public bool shootbuttonon;
     public bool shootbuttonbuffer;
     public bool smcalcstarted;
     [SerializeField] private Transform HoopLookAt;
@@ -51,6 +53,13 @@ public class playermovement : MonoBehaviour
     [SerializeField] private GameObject[] TeamMates;
     private bool shootboolwii;
 
+    public GameObject charactermodel;
+    public Animator characteranimator;
+    public Rig[] characterrigs = new Rig[2]; //0 is head, 1 is bball
+    private Vector2 rightstick;
+    private bool emoteson;
+    private int emotenum;
+
 
 
     void Awake()
@@ -60,6 +69,10 @@ public class playermovement : MonoBehaviour
         psr = GetComponent<ParticleSystemRenderer>();
         bballscript = basketballobj.GetComponent<bassetball>();
         bbrb = basketballobj.GetComponent<Rigidbody>();
+        charactermodel = transform.GetChild(0).gameObject;
+        characteranimator = charactermodel.GetComponent<Animator>();
+        characterrigs[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 2).GetComponent<Rig>();
+        characterrigs[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetComponent<Rig>();
     }
 
     public void moveinp(InputAction.CallbackContext movementValue)
@@ -75,11 +88,14 @@ public class playermovement : MonoBehaviour
     {
         if (value.started && (shootboolwii || ess.gamemode != 3))
         {
+            shootbuttonon = true;
             shootbuttonbuffer = true;
             Debug.Log("shootbuttonbuffer on");
             if(bballscript.playerholding)
             {
+                characteranimator.SetBool("ShootNow", true);
                 shotmeterscript.shotmetercalc(false);
+                Debug.Log("Test");
             }
         }
         else if(value.started && !shootboolwii && ess.gamemode == 3) 
@@ -88,41 +104,113 @@ public class playermovement : MonoBehaviour
             ess.camchange(0);
             shootboolwii = true;
         }
-        if (value.canceled && bballscript.playerholding && ((shootbuttonbuffer && shootboolwii) || ess.gamemode != 3))
+        if (value.canceled && (shootbuttonbuffer && shootboolwii || ess.gamemode != 3))
         {
+            shootbuttonon = false;
             shootbuttonbuffer = false;
 
-            //check for skill and shotmeter then put into shooter()
-            //for this example, shootingskill is 1 (excellent), smeter is green (1)
-            // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
-            // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
-            shotmeterscript.shotmetercalc(true);
-            if (smeter == 0)
+            if (bballscript.playerholding)
             {
-                psr.material = ParticleMaterials[0];
-                ps.Play();
+                characteranimator.speed = 1f;
+                //check for skill and shotmeter then put into shooter()
+                //for this example, shootingskill is 1 (excellent), smeter is green (1)
+                // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
+                // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
+                shotmeterscript.shotmetercalc(true);
+                if (smeter == 0)
+                {
+                    psr.material = ParticleMaterials[0];
+                    ps.Play();
+                }
+                else if (smeter == 1)
+                {
+                    psr.material = ParticleMaterials[1];
+                    ps.Play();
+                }
+                shooter(shootingskill, smeter);
+                if (ess.gamemode == 3)
+                {
+                    shootboolwii = false;
+                }
             }
-            else if (smeter == 1)
-            {
-                psr.material = ParticleMaterials[1];
-                ps.Play();
-            }
-            shooter(shootingskill, smeter);
-            if(ess.gamemode == 3)
-            {
-                shootboolwii = false;
-            }
+
         }
     }
 
     private void Update()
     {
-        if(shootbuttonbuffer && bballscript.playerholding && ess.gamemode != 3) //shootbuttonbuffer buffering/waiting for bball hold
+        if (shootbuttonbuffer && bballscript.playerholding && ess.gamemode != 3) //shootbuttonbuffer buffering/waiting for bball hold
         {
+            characteranimator.SetBool("ShootNow", true);
             shotmeterscript.shotmetercalc(false);
             shootbuttonbuffer = false;
         }
+        if (shootbuttonon && bballscript.playerholding && bballscript.bbrelease.pauseanimenow && characteranimator.speed == 1)
+        {
+            Debug.Log("FREEZE");
+            characteranimator.speed = 0.0f;
+        }
     }
+
+
+    public void emoteinp(InputAction.CallbackContext value)
+    {
+        if(value.started)
+        {
+            emoteson = true;
+        }
+        else if(value.canceled)
+        {
+            emoteson = false;
+            characteranimator.SetInteger("EmoteNum", 0);
+        }
+    }
+    public void rightstickinp(InputAction.CallbackContext value)
+    {
+        int tempangle;
+        rightstick = value.ReadValue<Vector2>();
+        if(emoteson)
+        {
+            tempangle = Mathf.RoundToInt(Vector2.SignedAngle(Vector2.right, rightstick));
+            Debug.Log(tempangle);
+            if (rightstick == Vector2.zero)
+            {
+                tempangle = -1;
+                emotenum = 0;
+            }
+            else
+            {
+            characteranimator.SetInteger("EmoteNum", emotenum);
+            }
+            if (0 <= tempangle && tempangle < 60)
+            {
+                emotenum = 1;
+            }
+            else if (60 <= tempangle && tempangle <= 120)
+            {
+                emotenum = 2;
+            }
+            else if (120 < tempangle && tempangle <= 180)
+            {
+                emotenum = 3;
+            }
+            else if (-60 <= tempangle && tempangle < 0)
+            {
+                emotenum = 4;
+            }
+            else if (-120 <= tempangle && tempangle < -60)
+            {
+                emotenum = 5;
+            }
+            else if (-180 < tempangle && tempangle < -120)
+            {
+                emotenum = 6;
+            }
+
+        }
+
+    }
+
 
     float passANGLE;
     float passANGLE2;
@@ -320,15 +408,32 @@ public class playermovement : MonoBehaviour
                 rb.MoveRotation(qTo);
             }
         }
+        else if (ess.CameraVer != 0)
+        {
+            qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
+            qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
+            rb.MoveRotation(qTo);
+            if (resetrot == true)
+            {
+                resetrot = false;
+            }
+        }
         else if (!resetrot)
         {
             rb.MoveRotation((Quaternion.identity));
             resetrot = true;
         }
+
         if(ess.gamemode != 3)
         {
-            rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+            if(ess.CameraVer == 0)
+            {
+                rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+            }
+            else
+            {
+                rb.AddForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+            }
         }
-
     }
 }

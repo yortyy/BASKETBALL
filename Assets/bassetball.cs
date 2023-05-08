@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.ParticleSystem;
@@ -41,12 +42,16 @@ public class bassetball : MonoBehaviour
 
 
     [SerializeField] private Transform bballholdref;
-    [SerializeField] private float jumpshottime = 0.5f;
-    private float progressjs;
+    private float jumpshottime = 0f;
+    //private float progressjs;
     private float progressshoot;
-    private Vector3 bballholdreftemppos;
+    //private Vector3 bballholdreftemppos;
     private GameObject bballRend;
 
+    [SerializeField] private float bballrigtime = 0.5f;
+    private float bballrigtimecount;
+    private bool bballrigset;
+    [SerializeField] public bballrelease bbrelease;
 
     void Awake()
     {
@@ -61,6 +66,7 @@ public class bassetball : MonoBehaviour
         {
             player = other.gameObject;
             ps = player.GetComponent<playermovement>();
+            //need to stop playback or go back to idle animation
             bbrb.isKinematic = true;
             bbrb.detectCollisions = false;
             bbrb.useGravity = false;
@@ -79,7 +85,6 @@ public class bassetball : MonoBehaviour
 
     private void Update()
     {
-
         if(playerswitching)
         {
             progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
@@ -91,15 +96,45 @@ public class bassetball : MonoBehaviour
             playerswitching = false;
             progress = 0;
         }
-        if (playerholding && !shoot)
+        if ((playerholding && !shoot) || bbrelease.ballposexception)
         {
             transform.position = bballholdref.position;
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
-
+            if (ps.characterrigs[1].weight != 1) //take existing weight, add by timecount then stop at 1
+            {
+                if(!bballrigset)
+                {
+                    bballrigtimecount = ps.characterrigs[1].weight;
+                    bballrigset = true;
+                }
+                if(bbrelease.rigoffnow)
+                {
+                    bbrelease.rigoffnow = false;
+                }
+                bballrigtimecount = Mathf.Clamp01(bballrigtimecount + 1f/bballrigtime * Time.deltaTime);
+                ps.characterrigs[1].weight = bballrigtimecount;
+            }
+        }
+        else if(!playerholding && (bbrelease.rigoffnow || !shoot))
+        {
+            if(bbrelease.rigoffnow)
+            {
+                ps.characteranimator.SetBool("ShootNow", false);
+            }
+            if(ps.characterrigs[1].weight != 0f)
+            {
+                if (!bballrigset)
+                {
+                    bballrigtimecount = ps.characterrigs[1].weight;
+                    bballrigset = true;
+                }
+                bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / bballrigtime * Time.deltaTime);
+                ps.characterrigs[1].weight = bballrigtimecount;
+            }
         }
 
 
-        if (count > jumpshottime && count < (1.0f + jumpshottime) && shoot)
+        if (count > jumpshottime && count < (1.0f + jumpshottime) && (shoot || bbrelease.shotreleasenow))
         {
             if (rotat == 0)
             {
@@ -118,7 +153,7 @@ public class bassetball : MonoBehaviour
             rotat = 0;
         }
 
-        if (count > jumpshottime && count < (1.0f + jumpshottime) && shoot) //jumpshottimeneeded to movebball ref up in animation
+        if (count < (1.0f + jumpshottime) && shoot && bbrelease.shotreleasenow) //jumpshottimeneeded to movebball ref up in animation
         {
             if (!setarch)
             {
@@ -256,9 +291,16 @@ public class bassetball : MonoBehaviour
 
                 asc[0].Play(); //swishsound
             }
+
+            Debug.Log("OFF");
+            bbrelease.rigoffnow = false;
+            bbrelease.shotreleasenow = false;
+            bbrelease.pauseanimenow = false;
+
+
             ps.shotmeterscript.shotmeterslider.value = 0;
             shoot = false;
-            progressjs = 0f;
+            //progressjs = 0f;
             progressshoot = 0f;
             //bballholdref.position = bballholdreftemppos;
             //bballholdreftemppos = Vector3.zero;
