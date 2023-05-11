@@ -148,7 +148,6 @@ public class EventScriptSystem : MonoBehaviour
 
         bb.PlayerChangeBBALL(player);
 
-        //change camera, everything with player to new one
     }
 
     public void practicemode()
@@ -353,7 +352,7 @@ public class EventScriptSystem : MonoBehaviour
                 kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 12)), progress);
 
             }
-            else if (player.transform.position.z >= 6) //move kcam to 6
+            else if (player.transform.position.z >= 8f) //move kcam to 6
             {
                 if ((progressreset[1] == false && progress != 0) || pccamsmooth)
                 {
@@ -379,7 +378,7 @@ public class EventScriptSystem : MonoBehaviour
                 }
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 8.5f)), progress);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 8f)), progress);
 
             }
             else if(player.transform.position.z >= 0) //move kcam to player

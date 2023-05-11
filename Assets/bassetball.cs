@@ -41,23 +41,25 @@ public class bassetball : MonoBehaviour
     bool playerswitching;
 
 
-    [SerializeField] private Transform bballholdref;
     private float jumpshottime = 0f;
     //private float progressjs;
     private float progressshoot;
     //private Vector3 bballholdreftemppos;
     private GameObject bballRend;
 
-    [SerializeField] private float bballrigtime = 0.5f;
+    private float bballrigtime = 0.5f;
     private float bballrigtimecount;
     private bool bballrigset;
-    [SerializeField] public bballrelease bbrelease;
+
+    [HideInInspector] public Transform bballholdref;
+    [HideInInspector] public bballrelease bbrelease;
 
     void Awake()
     {
         bballRend = transform.GetChild(0).gameObject;
         bbrb = GetComponent<Rigidbody>();
         HoopEffEmission = HoopEff.emission;
+        //player script gets bballholdref and bbrelease
     }
 
     private void OnTriggerEnter(Collider other)
@@ -79,6 +81,8 @@ public class bassetball : MonoBehaviour
         pastballpos = transform.position;
         player = newplayer;
         ps = newplayer.GetComponent<playermovement>();
+        bballholdref = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 3);
+        bbrelease = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 3).GetComponent<bballrelease>();
         playerholding = false;
         playerswitching = true;
     }
@@ -96,7 +100,7 @@ public class bassetball : MonoBehaviour
             playerswitching = false;
             progress = 0;
         }
-        if ((playerholding && !shoot) || bbrelease.ballposexception)
+        if ((playerholding && !shoot) || (shoot && !bbrelease.shotreleasenow)) //rigon
         {
             transform.position = bballholdref.position;
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
@@ -115,7 +119,7 @@ public class bassetball : MonoBehaviour
                 ps.characterrigs[1].weight = bballrigtimecount;
             }
         }
-        else if(!playerholding && (bbrelease.rigoffnow || !shoot))
+        else if(playerswitching || bbrelease.rigoffnow) //rigoff
         {
             if(bbrelease.rigoffnow)
             {
@@ -133,8 +137,7 @@ public class bassetball : MonoBehaviour
             }
         }
 
-
-        if (count > jumpshottime && count < (1.0f + jumpshottime) && (shoot || bbrelease.shotreleasenow))
+        if (count < (1.0f + jumpshottime) && shoot && bbrelease.shotreleasenow) //jumpshottimeneeded to movebball ref up in animation
         {
             if (rotat == 0)
             {
@@ -147,27 +150,22 @@ public class bassetball : MonoBehaviour
                 Quaternion rotation = Quaternion.Euler(rotat, bballRend.transform.rotation.y, bballRend.transform.rotation.z);
                 bballRend.transform.rotation = rotation;
             }
-        }
-        else if (rotat != 0)
-        {
-            rotat = 0;
-        }
 
-        if (count < (1.0f + jumpshottime) && shoot && bbrelease.shotreleasenow) //jumpshottimeneeded to movebball ref up in animation
-        {
             if (!setarch)
             {
 
                 startpoint = bballholdref.position;
                 if (!ps.shotresult)
                 {
-                    offset.x = Random.Range(-0.8f, 0.8f);
-                    offset.z = Random.Range(-0.8f, -0.5f);
-                    if (Mathf.Abs(offset.x) < 0.5f && Mathf.Abs(offset.z) < 0.5f)
+                    offset.x = Random.Range(-0.6f, 0.6f);
+                    offset.z = Random.Range(-0.6f, -0.2f);
+                    if (Mathf.Abs(offset.x) < 0.3f && Mathf.Abs(offset.z) < 0.3f)
                     {
-                        offset.x = Random.Range(-0.8f, 0.8f);
-                        offset.z = Random.Range(-0.8f, -0.5f);
+                        offset.x = Random.Range(-0.6f, 0.6f);
+                        offset.z = Random.Range(-0.6f, -0.2f);
                     }
+
+
                     targetpoint = (target.position + offset);
                 }
                 else
@@ -223,17 +221,6 @@ public class bassetball : MonoBehaviour
                 setarch = true;
             }
 
-            //if (count < jumpshottime)
-            //{
-            //    if (bballholdreftemppos == Vector3.zero)
-            //    {
-            //        bballholdreftemppos = bballholdref.position;
-            //    }
-            //    progressjs = Mathf.Clamp01(count / jumpshottime);
-            //   bballholdref.position = Vector3.Lerp(bballholdreftemppos, (new Vector3(bballholdreftemppos.x, bballholdreftemppos.y + 0.5f, bballholdreftemppos.z)), progressjs);
-            //    Debug.Log(count);
-            //}
-            //else 
             if (jumpshottime < count)
             {
                 progressshoot = Mathf.Clamp01((count - jumpshottime));
@@ -241,15 +228,13 @@ public class bassetball : MonoBehaviour
                 Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
                 transform.position = Vector3.Lerp(m1, m2, progressshoot);
             }
-            //countjs += shotinairtime/jumpshottime * Time.deltaTime; I was thinking it could be seperate timer so more smooth lerping by frame
             count += shotinairtime * Time.deltaTime; //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
-
-            //Vector3 archpoint = new Vector3((target.position.x - transform.position.x)/2, (target.position.y - transform.position.y)/2 + 3, (target.position.z - transform.position.z)/2);
 
         }
         else if (setarch) //after shot
         {
             Debug.Log("setarchturnoff");
+            rotat = 0;
             bbrb.useGravity = true;
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
@@ -293,12 +278,8 @@ public class bassetball : MonoBehaviour
             }
 
             Debug.Log("OFF");
-            bbrelease.rigoffnow = false;
-            bbrelease.shotreleasenow = false;
-            bbrelease.pauseanimenow = false;
-
-
             ps.shotmeterscript.shotmeterslider.value = 0;
+            bbrelease.shotreleasenow = false;
             shoot = false;
             //progressjs = 0f;
             progressshoot = 0f;

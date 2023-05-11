@@ -53,9 +53,9 @@ public class playermovement : MonoBehaviour
     [SerializeField] private GameObject[] TeamMates;
     private bool shootboolwii;
 
-    public GameObject charactermodel;
-    public Animator characteranimator;
-    public Rig[] characterrigs = new Rig[2]; //0 is head, 1 is bball
+    [HideInInspector] public GameObject charactermodel;
+    [HideInInspector] public Animator characteranimator;
+    [HideInInspector] public Rig[] characterrigs = new Rig[2]; //0 is head, 1 is bball
     private Vector2 rightstick;
     private bool emoteson;
     private int emotenum;
@@ -64,15 +64,17 @@ public class playermovement : MonoBehaviour
 
     void Awake()
     {
+        charactermodel = transform.GetChild(0).gameObject;
+        characteranimator = charactermodel.GetComponent<Animator>();
+        characterrigs[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 2).GetComponent<Rig>();
+        characterrigs[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetComponent<Rig>();
         rb = GetComponent<Rigidbody>();
         ps = GetComponent<ParticleSystem>();
         psr = GetComponent<ParticleSystemRenderer>();
         bballscript = basketballobj.GetComponent<bassetball>();
         bbrb = basketballobj.GetComponent<Rigidbody>();
-        charactermodel = transform.GetChild(0).gameObject;
-        characteranimator = charactermodel.GetComponent<Animator>();
-        characterrigs[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 2).GetComponent<Rig>();
-        characterrigs[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetComponent<Rig>();
+        bballscript.bballholdref = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3);
+        bballscript.bbrelease = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3).GetComponent<bballrelease>();
     }
 
     public void moveinp(InputAction.CallbackContext movementValue)
@@ -93,9 +95,9 @@ public class playermovement : MonoBehaviour
             Debug.Log("shootbuttonbuffer on");
             if(bballscript.playerholding)
             {
+                characteranimator.SetInteger("EmoteNum", 0);
                 characteranimator.SetBool("ShootNow", true);
                 shotmeterscript.shotmetercalc(false);
-                Debug.Log("Test");
             }
         }
         else if(value.started && !shootboolwii && ess.gamemode == 3) 
@@ -141,6 +143,7 @@ public class playermovement : MonoBehaviour
     {
         if (shootbuttonbuffer && bballscript.playerholding && ess.gamemode != 3) //shootbuttonbuffer buffering/waiting for bball hold
         {
+            characteranimator.SetInteger("EmoteNum", 0);
             characteranimator.SetBool("ShootNow", true);
             shotmeterscript.shotmetercalc(false);
             shootbuttonbuffer = false;
@@ -424,15 +427,18 @@ public class playermovement : MonoBehaviour
             resetrot = true;
         }
 
-        if(ess.gamemode != 3)
+        if (ess.gamemode != 3)
         {
-            if(ess.CameraVer == 0)
-            {
-                rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
-            }
-            else
-            {
-                rb.AddForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+            if ((!shootbuttonon && (!bballscript.shoot && (bballscript.bbrelease.shotreleasenow || bballscript.bbrelease.rigoffnow))))
+            { //IN THE MIDDLE OF TRYING TO STOP MOVEMENT WHEN SHOOTING
+                if (ess.CameraVer == 0)
+                {
+                    rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+                }
+                else
+                {
+                    rb.AddForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+                }
             }
         }
     }
