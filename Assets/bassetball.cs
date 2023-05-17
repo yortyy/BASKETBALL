@@ -235,6 +235,7 @@ public class bassetball : MonoBehaviour
         {
             Debug.Log("setarchturnoff");
             rotat = 0;
+            transform.position = targetpoint;
             bbrb.useGravity = true;
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
