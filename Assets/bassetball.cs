@@ -94,7 +94,7 @@ public class bassetball : MonoBehaviour
             progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
             transform.position = Vector3.Lerp(pastballpos, player.transform.position, progress);
         }
-        if (progress == 1)
+        if (progress >= 1)
         {
             playerholding = true;
             playerswitching = false;
@@ -119,19 +119,14 @@ public class bassetball : MonoBehaviour
                 ps.characterrigs[1].weight = bballrigtimecount;
             }
         }
-        else if(playerswitching || bbrelease.rigoffnow) //rigoff
+        else if((playerswitching || bbrelease.rigoffnow) && bballrigset) //rigoff
         {
-            if(bbrelease.rigoffnow)
+            if (bbrelease.rigoffnow)
             {
                 ps.characteranimator.SetBool("ShootNow", false);
             }
-            if(ps.characterrigs[1].weight != 0f)
+            if (ps.characterrigs[1].weight != 0f)
             {
-                if (!bballrigset)
-                {
-                    bballrigtimecount = ps.characterrigs[1].weight;
-                    bballrigset = true;
-                }
                 bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / bballrigtime * Time.deltaTime);
                 ps.characterrigs[1].weight = bballrigtimecount;
             }
@@ -228,21 +223,21 @@ public class bassetball : MonoBehaviour
                 Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
                 transform.position = Vector3.Lerp(m1, m2, progressshoot);
             }
-            count += shotinairtime * Time.deltaTime; //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
+            count += Mathf.Clamp01(shotinairtime * Time.deltaTime); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
 
         }
-        else if (setarch) //after shot
+        else if (count >= (1.0f + jumpshottime) && setarch) //after shot
         {
             Debug.Log("setarchturnoff");
             rotat = 0;
-            transform.position = targetpoint;
+            //transform.position = targetpoint;
             bbrb.useGravity = true;
             bbrb.isKinematic = false;
             bbrb.detectCollisions = true;
-            ps.shotscoretext.text = ps.shotscore.ToString();
-            if (ess.gamemode == 2 && ps.shotscore != 0)
+            ess.shotscoretext.text = ess.shotscore.ToString();
+            if (ess.gamemode == 2 && ess.shotscore != 0)
             {
-                ess.threeptcontest(ps.shotscore); //move to bassetball shot
+                ess.threeptcontest(ess.shotscore); //move to bassetball shot
             }
             if(ps.shotresult)
             {
@@ -292,5 +287,6 @@ public class bassetball : MonoBehaviour
             setarch = false;
         }
     }
+
 
 }

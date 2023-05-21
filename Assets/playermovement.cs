@@ -35,12 +35,8 @@ public class playermovement : MonoBehaviour
     public int shotpercent;
     private int shotresultnum;
     public bool shotresult;
-    public int shotscore;
     public float shotdistance;
     public bool in3ptline;
-    private float shotdistancechanger;
-    public TMP_Text shotscoretext;
-    public TMP_Text shotdistancetext;
     [SerializeField] public EventScriptSystem ess;
 
     private bool inthreeptzone;
@@ -80,6 +76,7 @@ public class playermovement : MonoBehaviour
     public void moveinp(InputAction.CallbackContext movementValue)
     {
         movementVector = movementValue.ReadValue<Vector2>();
+        Debug.Log(movementVector);
     }
     public void jumpinp(InputAction.CallbackContext value)
     {
@@ -291,7 +288,7 @@ public class playermovement : MonoBehaviour
     {
         //in 00.0 ft
         shotdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
-        shotdistancetext.text = shotdistance + " ft";
+        ess.shotdistancetext.text = shotdistance + " ft";
 
 
         bbrb.detectCollisions = false;
@@ -350,18 +347,18 @@ public class playermovement : MonoBehaviour
             {
                 if (inthreeptzone)
                 {
-                    shotscore += 1;
+                    ess.shotscore += 1;
                 }
             }
             else //normal shooting
             {
                 if (in3ptline)
                 {
-                    shotscore += 2;
+                    ess.shotscore += 2;
                 }
                 else
                 {
-                    shotscore += 3;
+                    ess.shotscore += 3;
                 }
             }
 
@@ -426,11 +423,16 @@ public class playermovement : MonoBehaviour
             rb.MoveRotation((Quaternion.identity));
             resetrot = true;
         }
-
         if (ess.gamemode != 3)
         {
-            if ((!shootbuttonon && (!bballscript.shoot && (bballscript.bbrelease.shotreleasenow || bballscript.bbrelease.rigoffnow))))
-            { //IN THE MIDDLE OF TRYING TO STOP MOVEMENT WHEN SHOOTING
+            if (!shootbuttonon && !bballscript.shoot && bballscript.bbrelease.rigoffnow && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
+            {
+                if (!characteranimator.GetBool("Moving"))
+                {
+                    characteranimator.SetBool("Moving", true);
+                }
+                characteranimator.SetFloat("ForwardAngleX", movementVector.x, 0.1f, Time.deltaTime);
+                characteranimator.SetFloat("ForwardAngleY", movementVector.y, 0.1f, Time.deltaTime);
                 if (ess.CameraVer == 0)
                 {
                     rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
@@ -439,6 +441,10 @@ public class playermovement : MonoBehaviour
                 {
                     rb.AddForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
                 }
+            }
+            else if(characteranimator.GetBool("Moving"))
+            {
+                characteranimator.SetBool("Moving", false);
             }
         }
     }

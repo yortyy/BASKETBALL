@@ -9,6 +9,7 @@ using static Cinemachine.CinemachineTriggerAction.ActionSettings;
 using Cinemachine;
 using System.Linq;
 using UnityEngine.Animations.Rigging;
+using Unity.VisualScripting;
 
 public class EventScriptSystem : MonoBehaviour
 {
@@ -59,6 +60,11 @@ public class EventScriptSystem : MonoBehaviour
     private float progress;
     private bool[] progressreset = new bool[4];
     private Vector3 tempkcampos;
+
+
+    public int shotscore;
+    public TMP_Text shotscoretext;
+    public TMP_Text shotdistancetext;
 
     void Awake()
     {
@@ -150,62 +156,94 @@ public class EventScriptSystem : MonoBehaviour
 
     }
 
-    public void practicemode()
+    public void changemode(int gamem)
     {
-        gamemode = 0;
-        timeron = false;
-        ps.shotscore = 0;
-        ps.shotscoretext.text = ps.shotscore.ToString();
+        //practice = 0, 1on1 = 1, threept = 2, threewii = 3, 3on3 = 4
+        gamemode = gamem;
+        shotscore = 0;
+        shotscoretext.text = shotscore.ToString();
         exitpause();
         PlayerChange(trueplayer);
-        asc.clip = music[0];
+        if (gamem == 4)
+        {
+            asc.clip = music[3];
+        }
+        else
+        {
+            asc.clip = music[gamem];
+        }
         asc.Play();
-        teammates[0].SetActive(false);
-        teammates[1].SetActive(false);
-        prb.MovePosition(Vector3.zero);
-        brb.MovePosition(Vector3.zero);
-        //player.transform.position = Vector3.zero;
-        //basketball.transform.position = Vector3.zero;
+
+        if (gamem == 0 || gamem == 1 || gamem == 2)
+        {
+            teammates[0].SetActive(false);
+            teammates[1].SetActive(false);
+        }
+        else if(gamem == 3 || gamem == 4)
+        {
+            teammates[0].SetActive(true);
+            teammates[1].SetActive(true);
+
+        }
+
+        if(gamem == 2 || gamem == 3)
+        {
+            if (gamem == 2)
+            {
+                prb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
+                brb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
+            }
+            else if(gamem == 3)
+            {
+                CameraVer = 1;
+                camchange(0);
+                teammatesrb[0].MovePosition(tpmarkers[0].position + new Vector3(0, 1, 0));
+                teammatesrb[1].MovePosition(tpmarkers[6].position + new Vector3(0, 1, 0));
+                prb.MovePosition(tpmarkers[3].position + new Vector3(0, 1, 0));
+                brb.MovePosition(tpmarkers[3].position + new Vector3(0, 1, 0));
+                enemies[0].SetActive(true);
+                enemiesrb[0].MovePosition(tpmarkers[0].position + new Vector3(-3, 1, 0));
+                enemies[1].SetActive(true);
+                enemiesrb[1].MovePosition(tpmarkers[6].position + new Vector3(3, 1, 0));
+                enemies[2].SetActive(true);
+                enemiesrb[2].MovePosition(tpmarkers[3].position + new Vector3(0, 1, 3));
+            }
+            timeron = true;
+        }
+        else if(gamem == 4)
+        {
+            teammatesrb[0].MovePosition(tpmarkers[1].position);
+            teammatesrb[1].MovePosition(tpmarkers[5].position);
+            timeron = false;
+        }
+        else
+        {
+            timeron = false;
+            prb.MovePosition(Vector3.zero);
+            brb.MovePosition(Vector3.zero);
+        }
+
     }
-    public void oneonone()
+    private void exitpause()
     {
-        gamemode = 1;
-        timeron = false;
-        ps.shotscore = 0;
-        exitpause();
-        PlayerChange(trueplayer);
-        asc.clip = music[1];
-        asc.Play();
-        teammates[0].SetActive(false);
-        teammates[1].SetActive(false);
-        prb.MovePosition(Vector3.zero);
-        brb.MovePosition(Vector3.zero);
-        //player.transform.position = Vector3.zero;
-        //basketball.transform.position = Vector3.zero;
+        if (paused)
+        {
+            asc.volume = 0.5f;
+            PauseUI.SetActive(false);
+            ShotUI.SetActive(true);
+            Time.timeScale = 1;
+            paused = false;
+        }
     }
 
     public void threeptcontest(int tpmarkerno)
     {
         if (tpmarkerno == 0)
         {
-            exitpause();
-            PlayerChange(trueplayer);
-            asc.clip = music[2];
-            asc.Play();
-            ps.shotscore = 0;
-            ps.shotscoretext.text = ps.shotscore.ToString();
+            changemode(2);
             tpzone.SetActive(true);
             tmptimer = Time.time;
-            timeron = true;
-            gamemode = 2;
-            teammates[0].SetActive(false);
-            teammates[1].SetActive(false);
-            prb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
-            brb.MovePosition(tpmarkers[0].position + new Vector3(0, 1.25f, 0));
-            //player.transform.position = tpmarkers[0].position + new Vector3(0,1.25f,0);
-            //basketball.transform.position = tpmarkers[0].position + new Vector3(0, 1.25f, 0);
         }
-
         if(tpmarkerno == 7)
         {
             timeron = false;
@@ -218,53 +256,6 @@ public class EventScriptSystem : MonoBehaviour
         }
 
 
-    }
-    public void threeonthreewii()
-    {
-        gamemode = 3;
-        teammates[0].SetActive(true);
-        teammatesrb[0].MovePosition(tpmarkers[0].position + new Vector3(0,1,0));
-        teammates[1].SetActive(true);
-        teammatesrb[1].MovePosition(tpmarkers[6].position + new Vector3(0, 1, 0));
-
-
-        enemies[0].SetActive(true);
-        enemiesrb[0].MovePosition(tpmarkers[0].position + new Vector3(-3, 1, 0));
-        enemies[1].SetActive(true);
-        enemiesrb[1].MovePosition(tpmarkers[6].position + new Vector3(3, 1, 0));
-        enemies[2].SetActive(true);
-        enemiesrb[2].MovePosition(tpmarkers[3].position + new Vector3(0, 1, 3));
-
-        timeron = false;
-        ps.shotscore = 0;
-        exitpause();
-        PlayerChange(trueplayer);
-        CameraVer = 1;
-        camchange(0);
-        asc.clip = music[3];
-        asc.Play();
-        prb.MovePosition(tpmarkers[3].position + new Vector3(0, 1, 0));
-        brb.MovePosition(tpmarkers[3].position + new Vector3(0, 1, 0));
-        //player.transform.position = Vector3.zero;
-        //basketball.transform.position = Vector3.zero;
-    }
-    public void threeonthree()
-    {
-        gamemode = 4;
-        teammates[0].SetActive(true);
-        teammatesrb[0].MovePosition(tpmarkers[1].position);
-        teammates[1].SetActive(true);
-        teammatesrb[1].MovePosition(tpmarkers[5].position);
-        timeron = false;
-        ps.shotscore = 0;
-        exitpause();
-        PlayerChange(trueplayer);
-        asc.clip = music[3];
-        asc.Play();
-        prb.MovePosition(Vector3.zero);
-        brb.MovePosition(Vector3.zero);
-        //player.transform.position = Vector3.zero;
-        //basketball.transform.position = Vector3.zero;
     }
 
 
@@ -291,17 +282,6 @@ public class EventScriptSystem : MonoBehaviour
             {
                 exitpause();
             }
-        }
-    }
-    private void exitpause()
-    {
-        if (paused)
-        {
-            asc.volume = 0.5f;
-            PauseUI.SetActive(false);
-            ShotUI.SetActive(true);
-            Time.timeScale = 1;
-            paused = false;
         }
     }
 
