@@ -56,6 +56,11 @@ public class playermovement : MonoBehaviour
     private bool emoteson;
     private int emotenum;
 
+    private Vector3 DunkLocation = new Vector3(0, 2.3f, 20.3f);
+    private Vector3 StartDunkLocation;
+    private float dunkcount;
+    public int dunk;
+
 
 
     void Awake()
@@ -76,16 +81,25 @@ public class playermovement : MonoBehaviour
     public void moveinp(InputAction.CallbackContext movementValue)
     {
         movementVector = movementValue.ReadValue<Vector2>();
-        Debug.Log(movementVector);
     }
     public void jumpinp(InputAction.CallbackContext value)
     {
         rb.AddForce(0, jscale * mscale, 0, ForceMode.Impulse);
-        Debug.Log("Jump");
     }
     public void shootinp(InputAction.CallbackContext value)
     {
-        if (value.started && (shootboolwii || ess.gamemode != 3))
+        //dunking
+        if(value.started && 6 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
+        {
+            dunkcount = 0f;
+            StartDunkLocation = transform.position;
+            rb.useGravity = false;
+            dunk = 1;
+            characteranimator.SetInteger("DunkNow", 1);
+        }
+
+
+        if (value.started && dunk == 0 && (shootboolwii || ess.gamemode != 3))
         {
             shootbuttonon = true;
             shootbuttonbuffer = true;
@@ -97,13 +111,13 @@ public class playermovement : MonoBehaviour
                 shotmeterscript.shotmetercalc(false);
             }
         }
-        else if(value.started && !shootboolwii && ess.gamemode == 3) 
+        else if(value.started && dunk == 0 && !shootboolwii && ess.gamemode == 3) 
         {
             ess.CameraVer = 0;
             ess.camchange(0);
             shootboolwii = true;
         }
-        if (value.canceled && (shootbuttonbuffer && shootboolwii || ess.gamemode != 3))
+        if (value.canceled && dunk == 0 && (shootbuttonbuffer && shootboolwii || ess.gamemode != 3))
         {
             shootbuttonon = false;
             shootbuttonbuffer = false;
@@ -138,6 +152,24 @@ public class playermovement : MonoBehaviour
 
     private void Update()
     {
+        if(dunk != 0 && dunkcount < 1)
+        {
+            rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocation, dunkcount));
+            dunkcount = Mathf.Clamp01(1 * Time.deltaTime + dunkcount); ;
+        }
+        else if(dunk == 1 && dunkcount <= 1)
+        {
+            rb.isKinematic = true;
+            characteranimator.SetInteger("DunkNow", 2);
+            dunk = 2;
+        }
+        else if(dunk == 3 && bballscript.bbrelease.dunkfallnow)
+        {
+            characteranimator.SetInteger("DunkNow", 0);
+            rb.useGravity = true;
+            rb.isKinematic = false;
+            dunk = 0;
+        }
         if (shootbuttonbuffer && bballscript.playerholding && ess.gamemode != 3) //shootbuttonbuffer buffering/waiting for bball hold
         {
             characteranimator.SetInteger("EmoteNum", 0);
@@ -425,7 +457,7 @@ public class playermovement : MonoBehaviour
         }
         if (ess.gamemode != 3)
         {
-            if (!shootbuttonon && !bballscript.shoot && bballscript.bbrelease.rigoffnow && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
+            if (dunk == 0 && !shootbuttonon && !bballscript.shoot && bballscript.bbrelease.rigoffnow && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
             {
                 if (!characteranimator.GetBool("Moving"))
                 {
@@ -442,7 +474,12 @@ public class playermovement : MonoBehaviour
                     rb.AddForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
                 }
             }
-            else if(characteranimator.GetBool("Moving"))
+            else if (dunk == 2 && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
+            {
+                characteranimator.SetInteger("DunkNow", 3);
+                dunk = 3;
+            }
+            else if (characteranimator.GetBool("Moving"))
             {
                 characteranimator.SetBool("Moving", false);
             }

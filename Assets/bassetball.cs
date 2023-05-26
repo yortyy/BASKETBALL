@@ -132,7 +132,7 @@ public class bassetball : MonoBehaviour
             }
         }
 
-        if (count < (1.0f + jumpshottime) && shoot && bbrelease.shotreleasenow) //jumpshottimeneeded to movebball ref up in animation
+        if (count <= (1.0f + jumpshottime) && shoot && bbrelease.shotreleasenow) //jumpshottimeneeded to movebball ref up in animation
         {
             if (rotat == 0)
             {
@@ -165,6 +165,7 @@ public class bassetball : MonoBehaviour
                 }
                 else
                 {
+                    offset = Vector3.zero;
                     targetpoint = target.position;
                     if(40 < ps.shotdistance)
                     {
@@ -216,18 +217,20 @@ public class bassetball : MonoBehaviour
                 setarch = true;
             }
 
-            if (jumpshottime < count)
+            if (jumpshottime <= count)
             {
                 progressshoot = Mathf.Clamp01((count - jumpshottime));
                 Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
                 Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
                 transform.position = Vector3.Lerp(m1, m2, progressshoot);
+                Debug.Log("YO MAMAMAMAMAM");
             }
             count += Mathf.Clamp01(shotinairtime * Time.deltaTime); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
 
         }
-        else if (count >= (1.0f + jumpshottime) && setarch) //after shot
+        else if (setarch) //after shot
         {
+            Debug.Log(transform.position);
             Debug.Log("setarchturnoff");
             rotat = 0;
             //transform.position = targetpoint;
@@ -283,6 +286,7 @@ public class bassetball : MonoBehaviour
             //bballholdreftemppos = Vector3.zero;
             count = 0.0f;
             setcount = false;
+            Debug.Log(transform.position);
             bbrb.AddForce(0,-3,0, ForceMode.Impulse);
             setarch = false;
         }

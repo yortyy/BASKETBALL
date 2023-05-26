@@ -5362,6 +5362,7 @@ MonoBehaviour:
   characterrigs:
   - {fileID: 0}
   - {fileID: 0}
+  dunk: 0
 --- !u!54 &53121176
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5973,7 +5974,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 163861925}
   m_LocalRotation: {x: -0.5, y: -0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: 3.692, z: 20.97}
+  m_LocalPosition: {x: -0.005, y: 4.104, z: 20.912}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -16539,7 +16540,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 253227929}
   m_LocalRotation: {x: -0.33115453, y: -0.33115453, z: 0.33115453, w: 0.81915206}
-  m_LocalPosition: {x: 0, y: 0.34650385, z: 12.712256}
+  m_LocalPosition: {x: -0.003031452, y: 0.5962106, z: 12.678746}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22763,6 +22764,7 @@ MonoBehaviour:
   characterrigs:
   - {fileID: 0}
   - {fileID: 0}
+  dunk: 0
 --- !u!54 &495574195
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -23667,6 +23669,7 @@ MonoBehaviour:
   shotreleasenow: 0
   rigoffnow: 1
   pauseanimenow: 0
+  dunkfallnow: 0
   dribbledownnow: 0
 --- !u!4 &609539368 stripped
 Transform:
@@ -24058,6 +24061,7 @@ MonoBehaviour:
   shotreleasenow: 0
   rigoffnow: 1
   pauseanimenow: 0
+  dunkfallnow: 0
   dribbledownnow: 0
 --- !u!4 &654956111 stripped
 Transform:
@@ -24162,6 +24166,7 @@ MonoBehaviour:
   characterrigs:
   - {fileID: 0}
   - {fileID: 0}
+  dunk: 0
 --- !u!136 &655643136
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -29388,6 +29393,7 @@ MonoBehaviour:
   shotreleasenow: 0
   rigoffnow: 1
   pauseanimenow: 0
+  dunkfallnow: 0
   dribbledownnow: 0
 --- !u!4 &675561881 stripped
 Transform:
@@ -36961,8 +36967,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101842951}
-  m_LocalRotation: {x: 0.18128009, y: 0.000000011371911, z: -0.0000000020962325, w: 0.9834315}
-  m_LocalPosition: {x: -0.00000012964189, y: 5.6393185, z: -5.6056504}
+  m_LocalRotation: {x: 0.17316453, y: -0.000117742544, z: 0.000020701576, w: 0.98489296}
+  m_LocalPosition: {x: 0.0013485483, y: 5.5465827, z: -5.640168}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -42307,8 +42313,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1245222563}
-  m_LocalRotation: {x: 0.18128009, y: 0.000000011371911, z: -0.0000000020962325, w: 0.9834315}
-  m_LocalPosition: {x: -0.00000012964189, y: 5.6393185, z: -5.6056504}
+  m_LocalRotation: {x: 0.17316453, y: -0.000117742544, z: 0.000020701576, w: 0.98489296}
+  m_LocalPosition: {x: 0.0013485483, y: 5.5465827, z: -5.640168}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43779,15 +43785,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.18
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.976
+      value: 0.345
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 29.16
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_LocalRotation.w
@@ -44068,10 +44074,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_WarningMessage
-      value: 
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'Neck'\n\tTransform 'Right Arm'\n\tTransform
+        'Armature'\n\tTransform 'Left Arm'\n\tTransform 'Left Forearm'\n\tTransform
+        'Head'\n\tTransform 'Hips'\n\tTransform 'Right Hand'\n\tTransform 'Right
+        Forearm'\n\tTransform 'Left Hand'\n\tand more ..."
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7036213049465896255, guid: 81bb9eea30387e442899949a80011e55, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -44856,7 +44871,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569976488}
   m_LocalRotation: {x: -0.2505029, y: -0.2505029, z: 0.2505029, w: 0.90096885}
-  m_LocalPosition: {x: 0, y: 1.9237231, z: 9.98314}
+  m_LocalPosition: {x: -0.002221424, y: 2.1067595, z: 9.957312}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44943,6 +44958,7 @@ MonoBehaviour:
   shotreleasenow: 0
   rigoffnow: 1
   pauseanimenow: 0
+  dunkfallnow: 0
   dribbledownnow: 0
 --- !u!1 &1576406380
 GameObject:
@@ -47242,7 +47258,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1904739765}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.114, y: 0.052, z: 0}
+  m_LocalPosition: {x: -0.50600004, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.6858, z: 0.6858}
   m_ConstrainProportionsScale: 0
   m_Children:
