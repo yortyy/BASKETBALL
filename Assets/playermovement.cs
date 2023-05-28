@@ -61,7 +61,8 @@ public class playermovement : MonoBehaviour
     private float dunkcount;
     public int dunk;
 
-
+    bool resetrot;
+    float hoopdistance;
 
     void Awake()
     {
@@ -89,10 +90,13 @@ public class playermovement : MonoBehaviour
     public void shootinp(InputAction.CallbackContext value)
     {
         //dunking
-        if(value.started && 6 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
+        if (value.started && movementVector.y > 0.1f && 14 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
         {
+            bballscript.bbrelease.shotreleasenow = false;
             dunkcount = 0f;
             StartDunkLocation = transform.position;
+            bballscript.dunkedtheball = true;
+            shooter(0, 0);
             rb.useGravity = false;
             dunk = 1;
             characteranimator.SetInteger("DunkNow", 1);
@@ -152,14 +156,18 @@ public class playermovement : MonoBehaviour
 
     private void Update()
     {
-        if(dunk != 0 && dunkcount < 1)
+        if(dunk == 1 && dunkcount < 1)
         {
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocation, dunkcount));
-            dunkcount = Mathf.Clamp01(1 * Time.deltaTime + dunkcount); ;
+            dunkcount = Mathf.Clamp01(2 * Time.deltaTime + dunkcount);
         }
-        else if(dunk == 1 && dunkcount <= 1)
+        else if(dunk == 1 && dunkcount >= 1 && bballscript.bbrelease.shotreleasenow)
         {
-            rb.isKinematic = true;
+            Debug.Log("dunkinrn");
+            rb.isKinematic = true; //need the shotreleasenow to rigoff
+            shotmeterscript.shottext.color = Color.red;
+            shotmeterscript.shottext.text = "!!DUNK!!";
+            bballscript.ShotHits();
             characteranimator.SetInteger("DunkNow", 2);
             dunk = 2;
         }
@@ -168,8 +176,12 @@ public class playermovement : MonoBehaviour
             characteranimator.SetInteger("DunkNow", 0);
             rb.useGravity = true;
             rb.isKinematic = false;
+            bballscript.dunkedtheball = false;
+
+            dunkcount = 0f;
             dunk = 0;
         }
+
         if (shootbuttonbuffer && bballscript.playerholding && ess.gamemode != 3) //shootbuttonbuffer buffering/waiting for bball hold
         {
             characteranimator.SetInteger("EmoteNum", 0);
@@ -279,11 +291,13 @@ public class playermovement : MonoBehaviour
                 if (Mathf.Abs(passANGLE2 - passANGLE) <= Mathf.Abs(passANGLE3 - passANGLE)) //if the ang between tm1 and p is closer to 0
                 {
                     Debug.Log("TeamMate 1 BRUH");
+                    characteranimator.SetBool("Moving", false);
                     ess.PlayerChange(TeamMates[0]);
                 }
                 else if (Mathf.Abs(passANGLE3 - passANGLE) < Mathf.Abs(passANGLE2 - passANGLE))
                 {
                     Debug.Log("TeamMate 2 BRUH");
+                    characteranimator.SetBool("Moving", false);
                     ess.PlayerChange(TeamMates[1]);
                 }
             }
@@ -321,7 +335,6 @@ public class playermovement : MonoBehaviour
         //in 00.0 ft
         shotdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
         ess.shotdistancetext.text = shotdistance + " ft";
-
 
         bbrb.detectCollisions = false;
         bballscript.playerholding = false;
@@ -404,14 +417,13 @@ public class playermovement : MonoBehaviour
             HoopProtector.SetActive(true);
             shotresult = false;
         }
+
         Debug.Log("Shotresult: " + shotresult + " | Shotresultnum: " + shotresultnum + " | Shotpercentage: " + shotpercent);
         Debug.Log(shotresultnum);
         bballscript.shoot = true;
 
     }
 
-    bool resetrot;
-    float hoopdistance;
 
 
     private void FixedUpdate()

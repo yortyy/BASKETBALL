@@ -16,7 +16,6 @@ public class bassetball : MonoBehaviour
     public bool shoot;
     public bool playerholding;
     private Rigidbody bbrb;
-    float count = 0.0f;
     [SerializeField] private ParticleSystem HoopEff;
     [SerializeField] private AudioSource[] asc;
     private EmissionModule HoopEffEmission;
@@ -36,15 +35,13 @@ public class bassetball : MonoBehaviour
     int rotat;
 
     public bool playerchange;
-    Vector3 pastballpos;
-    float progress;
-    bool playerswitching;
+    private Vector3 pastballpos;
+    private float progress;
+    private bool playerswitching;
 
+    public bool dunkedtheball;
 
-    private float jumpshottime = 0f;
-    //private float progressjs;
     private float progressshoot;
-    //private Vector3 bballholdreftemppos;
     private GameObject bballRend;
 
     private float bballrigtime = 0.5f;
@@ -64,7 +61,7 @@ public class bassetball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("player") && !shoot && !playerswitching)
+        if (other.gameObject.CompareTag("player") && !shoot && !playerswitching && !dunkedtheball)
         {
             player = other.gameObject;
             ps = player.GetComponent<playermovement>();
@@ -100,6 +97,7 @@ public class bassetball : MonoBehaviour
             playerswitching = false;
             progress = 0;
         }
+
         if ((playerholding && !shoot) || (shoot && !bbrelease.shotreleasenow)) //rigon
         {
             transform.position = bballholdref.position;
@@ -127,12 +125,21 @@ public class bassetball : MonoBehaviour
             }
             if (ps.characterrigs[1].weight != 0f)
             {
-                bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / bballrigtime * Time.deltaTime);
+                if(dunkedtheball)
+                {
+                    bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / 0.2f * Time.deltaTime);
+                }
+                else
+                {
+                    bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / bballrigtime * Time.deltaTime);
+                }
                 ps.characterrigs[1].weight = bballrigtimecount;
             }
         }
 
-        if (count <= (1.0f + jumpshottime) && shoot && bbrelease.shotreleasenow) //jumpshottimeneeded to movebball ref up in animation
+
+
+        if (progressshoot <= 1.0f && shoot && bbrelease.shotreleasenow && !dunkedtheball) //jumpshottimeneeded to movebball ref up in animation
         {
             if (rotat == 0)
             {
@@ -217,27 +224,19 @@ public class bassetball : MonoBehaviour
                 setarch = true;
             }
 
-            if (jumpshottime <= count)
-            {
-                progressshoot = Mathf.Clamp01((count - jumpshottime));
-                Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
-                Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
-                transform.position = Vector3.Lerp(m1, m2, progressshoot);
-                Debug.Log("YO MAMAMAMAMAM");
-            }
-            count += Mathf.Clamp01(shotinairtime * Time.deltaTime); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
+            progressshoot += Mathf.Clamp01(shotinairtime * Time.deltaTime); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
 
+            Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
+            Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
+            transform.position = Vector3.Lerp(m1, m2, progressshoot);
+
+            
         }
         else if (setarch) //after shot
         {
-            Debug.Log(transform.position);
             Debug.Log("setarchturnoff");
             rotat = 0;
             //transform.position = targetpoint;
-            bbrb.useGravity = true;
-            bbrb.isKinematic = false;
-            bbrb.detectCollisions = true;
-            ess.shotscoretext.text = ess.shotscore.ToString();
             if (ess.gamemode == 2 && ess.shotscore != 0)
             {
                 ess.threeptcontest(ess.shotscore); //move to bassetball shot
@@ -276,21 +275,28 @@ public class bassetball : MonoBehaviour
                 asc[0].Play(); //swishsound
             }
 
-            Debug.Log("OFF");
+            ShotHits();
+
             ps.shotmeterscript.shotmeterslider.value = 0;
-            bbrelease.shotreleasenow = false;
-            shoot = false;
-            //progressjs = 0f;
             progressshoot = 0f;
-            //bballholdref.position = bballholdreftemppos;
-            //bballholdreftemppos = Vector3.zero;
-            count = 0.0f;
             setcount = false;
-            Debug.Log(transform.position);
-            bbrb.AddForce(0,-3,0, ForceMode.Impulse);
             setarch = false;
         }
     }
 
+    public void ShotHits()
+    {
+
+        shoot = false;
+        bbrelease.shotreleasenow = false;
+
+        bbrb.useGravity = true;
+        bbrb.isKinematic = false;
+        bbrb.detectCollisions = true;
+
+        bbrb.AddForce(0, -3, 0, ForceMode.Impulse);
+
+        ess.shotscoretext.text = ess.shotscore.ToString();
+    }
 
 }

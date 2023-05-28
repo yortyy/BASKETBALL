@@ -5334,7 +5334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotmeterscript: {fileID: 503093542}
   basketballobj: {fileID: 211629149}
-  mscale: 0.726
+  mscale: 0.6
   jscale: 5
   shootingskill: 0
   smeter: 10
@@ -5974,7 +5974,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 163861925}
   m_LocalRotation: {x: -0.5, y: -0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: -0.005, y: 4.104, z: 20.912}
+  m_LocalPosition: {x: -0.005, y: 3.916, z: 20.912}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -6473,6 +6473,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5bb68553943d02b44a950f2c1168e256, type: 2}
   - {fileID: 2100000, guid: 5290732e5fb14904bb7404919144f79d, type: 2}
   playerchange: 0
+  dunkedtheball: 0
   bballholdref: {fileID: 603673289}
   bbrelease: {fileID: 603673290}
 --- !u!54 &211629155
@@ -16540,7 +16541,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 253227929}
   m_LocalRotation: {x: -0.33115453, y: -0.33115453, z: 0.33115453, w: 0.81915206}
-  m_LocalPosition: {x: -0.003031452, y: 0.5962106, z: 12.678746}
+  m_LocalPosition: {x: -0.003031416, y: 0.4822341, z: 12.6785965}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22736,7 +22737,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotmeterscript: {fileID: 503093542}
   basketballobj: {fileID: 211629149}
-  mscale: 0.726
+  mscale: 0.6
   jscale: 5
   shootingskill: 0
   smeter: 10
@@ -23670,6 +23671,7 @@ MonoBehaviour:
   rigoffnow: 1
   pauseanimenow: 0
   dunkfallnow: 0
+  dunkrigoffnow: 0
   dribbledownnow: 0
 --- !u!4 &609539368 stripped
 Transform:
@@ -24062,6 +24064,7 @@ MonoBehaviour:
   rigoffnow: 1
   pauseanimenow: 0
   dunkfallnow: 0
+  dunkrigoffnow: 0
   dribbledownnow: 0
 --- !u!4 &654956111 stripped
 Transform:
@@ -24138,7 +24141,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotmeterscript: {fileID: 503093542}
   basketballobj: {fileID: 211629149}
-  mscale: 0.5
+  mscale: 0.6
   jscale: 5
   shootingskill: 0
   smeter: 10
@@ -29394,6 +29397,7 @@ MonoBehaviour:
   rigoffnow: 1
   pauseanimenow: 0
   dunkfallnow: 0
+  dunkrigoffnow: 0
   dribbledownnow: 0
 --- !u!4 &675561881 stripped
 Transform:
@@ -36183,7 +36187,7 @@ MonoBehaviour:
     m_ConstrainedAxes:
       x: 1
       y: 1
-      z: 0
+      z: 1
 --- !u!4 &1011139888 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8891231820408949915, guid: 81bb9eea30387e442899949a80011e55, type: 3}
@@ -36942,7 +36946,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -36967,8 +36971,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101842951}
-  m_LocalRotation: {x: 0.17316453, y: -0.000117742544, z: 0.000020701576, w: 0.98489296}
-  m_LocalPosition: {x: 0.0013485483, y: 5.5465827, z: -5.640168}
+  m_LocalRotation: {x: 0.17704108, y: -0.000117652366, z: 0.00002116361, w: 0.9842035}
+  m_LocalPosition: {x: 0.0013445645, y: 5.5909333, z: -5.6238775}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -42313,8 +42317,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1245222563}
-  m_LocalRotation: {x: 0.17316453, y: -0.000117742544, z: 0.000020701576, w: 0.98489296}
-  m_LocalPosition: {x: 0.0013485483, y: 5.5465827, z: -5.640168}
+  m_LocalRotation: {x: 0.17704108, y: -0.000117652366, z: 0.00002116361, w: 0.9842035}
+  m_LocalPosition: {x: 0.0013445645, y: 5.5909333, z: -5.6238775}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44074,12 +44078,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'Neck'\n\tTransform 'Right Arm'\n\tTransform
-        'Armature'\n\tTransform 'Left Arm'\n\tTransform 'Left Forearm'\n\tTransform
-        'Head'\n\tTransform 'Hips'\n\tTransform 'Right Hand'\n\tTransform 'Right
-        Forearm'\n\tTransform 'Left Hand'\n\tand more ..."
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_ApplyRootMotion
@@ -44871,7 +44870,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569976488}
   m_LocalRotation: {x: -0.2505029, y: -0.2505029, z: 0.2505029, w: 0.90096885}
-  m_LocalPosition: {x: -0.002221424, y: 2.1067595, z: 9.957312}
+  m_LocalPosition: {x: -0.0022215196, y: 2.0232992, z: 9.95774}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44959,6 +44958,7 @@ MonoBehaviour:
   rigoffnow: 1
   pauseanimenow: 0
   dunkfallnow: 0
+  dunkrigoffnow: 0
   dribbledownnow: 0
 --- !u!1 &1576406380
 GameObject:
@@ -45225,7 +45225,7 @@ MonoBehaviour:
     m_ConstrainedAxes:
       x: 1
       y: 1
-      z: 0
+      z: 1
 --- !u!4 &1581642598 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2396845372362043352, guid: 81bb9eea30387e442899949a80011e55, type: 3}
@@ -46398,7 +46398,7 @@ MonoBehaviour:
     m_MaintainOffset: 0
     m_ConstrainedAxes:
       x: 1
-      y: 0
+      y: 1
       z: 1
 --- !u!1 &1799013754
 GameObject:
@@ -47258,7 +47258,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1904739765}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.50600004, y: 0, z: 0}
+  m_LocalPosition: {x: -0.31799984, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.6858, z: 0.6858}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -47273,7 +47273,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1904739765}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -47951,7 +47951,7 @@ MonoBehaviour:
     m_MaintainOffset: 0
     m_ConstrainedAxes:
       x: 1
-      y: 0
+      y: 1
       z: 1
 --- !u!1 &1985728961
 GameObject:

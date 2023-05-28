@@ -163,7 +163,6 @@ public class EventScriptSystem : MonoBehaviour
         shotscore = 0;
         shotscoretext.text = shotscore.ToString();
         exitpause();
-        PlayerChange(trueplayer);
         if (gamem == 4)
         {
             asc.clip = music[3];
@@ -210,18 +209,20 @@ public class EventScriptSystem : MonoBehaviour
             }
             timeron = true;
         }
-        else if(gamem == 4)
-        {
-            teammatesrb[0].MovePosition(tpmarkers[1].position);
-            teammatesrb[1].MovePosition(tpmarkers[5].position);
-            timeron = false;
-        }
         else
         {
+            if (gamem == 4)
+            {
+                teammatesrb[0].MovePosition(tpmarkers[1].position);
+                teammatesrb[1].MovePosition(tpmarkers[5].position);
+            }
+
             timeron = false;
             prb.MovePosition(Vector3.zero);
             brb.MovePosition(Vector3.zero);
         }
+
+        PlayerChange(trueplayer);
 
     }
     private void exitpause()
