@@ -9,30 +9,37 @@ using static UnityEngine.ParticleSystem;
 
 public class bassetball : MonoBehaviour
 {
-    public Transform target;
+    public GameObject Hoop; //hoop
+    private Transform target; //hooptransform
+
     private GameObject player;
     private playermovement ps;
     [SerializeField] private EventScriptSystem ess;
     public bool shoot;
     public bool playerholding;
     private Rigidbody bbrb;
-    [SerializeField] private ParticleSystem HoopEff;
-    [SerializeField] private AudioSource[] asc;
-    private EmissionModule HoopEffEmission;
-    [SerializeField] private ParticleSystemRenderer HoopEffrnr;
-    [SerializeField] private GameObject firehoop;
-    [SerializeField] private ParticleSystem bballeff;
-    [SerializeField] Material[] ParticleMaterials;
 
-    Vector3 startpoint;
-    Vector3 archpoint;
-    Vector3 targetpoint;
-    float riselength;
-    float shotinairtime;
-    Vector3 offset;
-    bool setarch;
-    bool setcount;
-    int rotat;
+    private GameObject HoopEffObj;
+    private ParticleSystem HoopEff;
+    private ParticleSystemRenderer HoopEffrnr;
+    private GameObject firehoop;
+    private EmissionModule HoopEffEmission;
+
+    [SerializeField] private ParticleSystem bballeff;
+
+    [SerializeField] Material[] ParticleMaterials;
+    [SerializeField] private AudioSource[] asc;
+
+    private Vector3 startpoint;
+    private Vector3 archpoint;
+    private Vector3 targetpoint;
+    private float riselength;
+    private float shotinairtime;
+    private Vector3 offset;
+    private bool setarch;
+    private bool setcount;
+    private bool shotdone;
+    private int rotat;
 
     public bool playerchange;
     private Vector3 pastballpos;
@@ -51,11 +58,21 @@ public class bassetball : MonoBehaviour
     [HideInInspector] public Transform bballholdref;
     [HideInInspector] public bballrelease bbrelease;
 
+    private bool readytoswitchsides;
+
     void Awake()
     {
         bballRend = transform.GetChild(0).gameObject;
         bbrb = GetComponent<Rigidbody>();
+
+        HoopEffObj = Hoop.transform.GetChild(3).gameObject;
+        firehoop = HoopEffObj.transform.GetChild(0).gameObject;
+        HoopEff = HoopEffObj.GetComponent<ParticleSystem>();
+        HoopEffrnr = HoopEffObj.GetComponent<ParticleSystemRenderer>();
+        target = Hoop.transform;
         HoopEffEmission = HoopEff.emission;
+
+
         //player script gets bballholdref and bbrelease
     }
 
@@ -71,6 +88,19 @@ public class bassetball : MonoBehaviour
             bbrb.useGravity = false;
             playerholding = true;
             Debug.Log("KONNECT: " + other.gameObject);
+
+            if(readytoswitchsides)
+            {
+                ess.SwitchSides();
+
+                HoopEffObj = Hoop.transform.GetChild(3).gameObject;
+                firehoop = HoopEffObj.transform.GetChild(0).gameObject;
+                HoopEff = HoopEffObj.GetComponent<ParticleSystem>();
+                HoopEffrnr = HoopEffObj.GetComponent<ParticleSystemRenderer>();
+                target = Hoop.transform;
+                HoopEffEmission = HoopEff.emission;
+                readytoswitchsides = false;
+            }
         }
     }
     public void PlayerChangeBBALL(GameObject newplayer)
@@ -90,6 +120,7 @@ public class bassetball : MonoBehaviour
         {
             progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
             transform.position = Vector3.Lerp(pastballpos, player.transform.position, progress);
+            //Debug.Log("transformin 3");
         }
         if (progress >= 1)
         {
@@ -100,6 +131,7 @@ public class bassetball : MonoBehaviour
 
         if ((playerholding && !shoot) || (shoot && !bbrelease.shotreleasenow)) //rigon
         {
+            //Debug.Log("transformin 2");
             transform.position = bballholdref.position;
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
             if (ps.characterrigs[1].weight != 1) //take existing weight, add by timecount then stop at 1
@@ -139,8 +171,15 @@ public class bassetball : MonoBehaviour
 
 
 
-        if (progressshoot <= 1.0f && shoot && bbrelease.shotreleasenow && !dunkedtheball) //jumpshottimeneeded to movebball ref up in animation
+        if (progressshoot <= 1 && !shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball) //jumpshottimeneeded to movebball ref up in animation
         {
+            //Debug.Log("transformin 1 | pos: " + transform.position + " pshoot: " + progressshoot);
+            if (progressshoot == 1 && transform.position == targetpoint)
+            {
+                Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
+                shotdone = true;
+            }
+
             if (rotat == 0)
             {
                 transform.LookAt(new Vector3(target.position.x, bballRend.transform.position.y, target.position.z + 0.5f));
@@ -159,14 +198,8 @@ public class bassetball : MonoBehaviour
                 startpoint = bballholdref.position;
                 if (!ps.shotresult)
                 {
-                    offset.x = Random.Range(-0.6f, 0.6f);
-                    offset.z = Random.Range(-0.6f, -0.2f);
-                    if (Mathf.Abs(offset.x) < 0.3f && Mathf.Abs(offset.z) < 0.3f)
-                    {
-                        offset.x = Random.Range(-0.6f, 0.6f);
-                        offset.z = Random.Range(-0.6f, -0.2f);
-                    }
-
+                    offset.x = Random.Range(-0.6f, -0.3f);
+                    offset.z = Random.Range(-0.6f, -0.3f);
 
                     targetpoint = (target.position + offset);
                 }
@@ -183,7 +216,6 @@ public class bassetball : MonoBehaviour
 
                 if (ps.shotdistance <= 12 && !setcount)
                 {
-
                     Debug.Log("shottype: 1");
                     //tangent of 45 deg, times adj (length between player and archpoint)
                     riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
@@ -224,17 +256,20 @@ public class bassetball : MonoBehaviour
                 setarch = true;
             }
 
-            progressshoot += Mathf.Clamp01(shotinairtime * Time.deltaTime); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
 
             Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
             Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
             transform.position = Vector3.Lerp(m1, m2, progressshoot);
+            //Debug.Log("transformin 2 | pos: " + transform.position + " pshoot: " + progressshoot);
 
-            
+            progressshoot = Mathf.Clamp01(shotinairtime * Time.deltaTime + progressshoot); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
+
         }
-        else if (setarch) //after shot
+        else if (shotdone) //after shot
         {
             Debug.Log("setarchturnoff");
+            //Debug.Log("setarchoff | pos: " + transform.position + " pshoot: " + progressshoot);
+
             rotat = 0;
             //transform.position = targetpoint;
             if (ess.gamemode == 2 && ess.shotscore != 0)
@@ -259,33 +294,41 @@ public class bassetball : MonoBehaviour
                 if (ps.smeter == 0)
                 {
                     HoopEffrnr.material = ParticleMaterials[0];
-                    HoopEff.Play();
                 }
                 else if (ps.smeter == 1)
                 {
                     HoopEffrnr.material = ParticleMaterials[1];
-                    HoopEff.Play();
                 }
                 else if (40 < ps.shotdistance)
                 {
                     HoopEffEmission.rateOverTime = 0;
-                    HoopEff.Play();
                 }
 
-                asc[0].Play(); //swishsound
+                HoopEff.Play();
             }
 
             ShotHits();
 
             ps.shotmeterscript.shotmeterslider.value = 0;
-            progressshoot = 0f;
             setcount = false;
             setarch = false;
+            progressshoot = 0f;
+            shotdone = false;
         }
     }
 
     public void ShotHits()
     {
+        if (ps.shotresult)
+        {
+            asc[0].Play(); //swishsound
+            //practice = 0, 1on1 = 1, threept = 2, threewii = 3, 3on3 = 4
+            if (ess.gamemode == 1 || ess.gamemode == 4)
+            {
+                readytoswitchsides = true;
+            }
+            
+        }
 
         shoot = false;
         bbrelease.shotreleasenow = false;

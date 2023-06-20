@@ -39,8 +39,9 @@ public class EventScriptSystem : MonoBehaviour
     [SerializeField] private GameObject playerlockcam;
     [SerializeField] private GameObject skycam;
     [SerializeField] private GameObject replaycam;
-    [SerializeField] private CinemachineTargetGroup targetGroup;
-    [SerializeField] private CinemachineVirtualCamera plvcam;
+    [SerializeField] private CinemachineTargetGroup pltargetGroup;
+    [SerializeField] private CinemachineTargetGroup kcamtargetGroup;
+    [SerializeField] private CinemachineVirtualCamera plcam;
 
     private AudioSource asc;
     [SerializeField] AudioClip[] music;
@@ -61,10 +62,14 @@ public class EventScriptSystem : MonoBehaviour
     private bool[] progressreset = new bool[4];
     private Vector3 tempkcampos;
 
-
     public int shotscore;
     public TMP_Text shotscoretext;
     public TMP_Text shotdistancetext;
+
+    [SerializeField] private GameObject[] Hoops = new GameObject[2]; //0 is N, 1 is S
+    private GameObject CurrentHoop;
+    [HideInInspector] public int HoopNum;
+    private float HoopNegChanger = 1f;
 
     void Awake()
     {
@@ -82,7 +87,7 @@ public class EventScriptSystem : MonoBehaviour
         tpzone = transform.GetChild(7).gameObject;
         kcamtracker = transform.GetChild(8);
         asc = GetComponent<AudioSource>();
-        plvcam = playerlockcam.GetComponent<CinemachineVirtualCamera>();
+        plcam = playerlockcam.GetComponent<CinemachineVirtualCamera>();
 
         teammatesrb[0] = teammates[0].GetComponent<Rigidbody>();
         teammatesrb[1] = teammates[1].GetComponent<Rigidbody>();
@@ -92,6 +97,7 @@ public class EventScriptSystem : MonoBehaviour
 
         CameraVer = 1;
         camchange(0);
+        CurrentHoop = Hoops[0];
     }
     public void camchange(int version)
     {
@@ -133,9 +139,9 @@ public class EventScriptSystem : MonoBehaviour
         player.GetComponent<PlayerInput>().actions.Disable();
 
         pccamtempstartvector = kcamtracker.position;
-        plvcam.Follow = newplayer.transform;
-        targetGroup.RemoveMember(player.transform);
-        targetGroup.AddMember(newplayer.transform, 4, 1);
+        plcam.Follow = newplayer.transform;
+        pltargetGroup.RemoveMember(player.transform);
+        pltargetGroup.AddMember(newplayer.transform, 4, 1);
         ps.enabled = false;
 
         player = newplayer;
@@ -151,6 +157,27 @@ public class EventScriptSystem : MonoBehaviour
         ps.characteranimator = ps.charactermodel.GetComponent<Animator>();
         ps.characterrigs[0] = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 2).GetComponent<Rig>();
         ps.characterrigs[1] = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 1).GetComponent<Rig>();
+
+        if(ps.Hoop.gameObject == CurrentHoop)
+        {
+            Debug.Log("changecurrenthoop");
+            if(HoopNum == 0)
+            {
+                ps.HeadTrackers[0].weight = 1;
+                ps.HeadTrackers[1].weight = 0;
+            }
+            else if(HoopNum == 1)
+            {
+                ps.HeadTrackers[1].weight = 1;
+                ps.HeadTrackers[0].weight = 0;
+            }
+            ps.DunkLocation = new Vector3(0, ps.DunkLocation.y, ps.DunkLocation.z * -1);
+            ps.HoopLookAt = Hoops[HoopNum].transform;
+            ps.HoopProtector = Hoops[HoopNum].transform.GetChild(0).gameObject;
+            ps.Hoop = Hoops[HoopNum].transform;
+        }
+
+
 
         bb.PlayerChangeBBALL(player);
 
@@ -248,7 +275,7 @@ public class EventScriptSystem : MonoBehaviour
         if(tpmarkerno == 7)
         {
             timeron = false;
-            ps.ess.gamemode = 0;
+            gamemode = 0;
             tpzone.SetActive(false);
         }
         else
@@ -291,19 +318,8 @@ public class EventScriptSystem : MonoBehaviour
 
         if (CameraVer == 1)
         {
-            if(player.transform.position.z > 7) //if at -21, then should be -3, if at 0 should be -1, if at 4 should be 0
-            {
-                //kcamtracker.position = (new Vector3(0, 0, 7));
-            }
-            else
-            {
-                //kcamtracker.position = (new Vector3(0, 0, player.transform.position.z - (3/((player.transform.position.z + 21.4884f)/ 21.4884f) + 1))); //3/1, 3/2 then 3/3 at full.
-                //kcamtracker.position = (new Vector3(0, 0, player.transform.position.z - (3 - (player.transform.position.z + 21.2884f)/9))); //3/1, 3/2 then 3/3 at full.
-                //Debug.Log((player.transform.position.z + 21.2884f)/9);
-            }
 
-            //kcamtracker.position = (new Vector3(0,0,player.transform.position.z - 8));
-            if(Mathf.Abs(player.transform.position.x) <= 5 && player.transform.position.z >= 14)
+            if(Mathf.Abs(player.transform.position.x) <= 5 && player.transform.position.z * HoopNegChanger >= 14)
             {
 
                 if ((progressreset[0] == false && progress != 0) || pccamsmooth) //reset  so that when changed the zoom can start from true kcampos
@@ -330,10 +346,10 @@ public class EventScriptSystem : MonoBehaviour
                 }
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 12)), progress);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 14 * HoopNegChanger)), progress);
 
             }
-            else if (player.transform.position.z >= 8f) //move kcam to 6
+            else if (player.transform.position.z * HoopNegChanger >= 8f) //move kcam to 6
             {
                 if ((progressreset[1] == false && progress != 0) || pccamsmooth)
                 {
@@ -359,10 +375,10 @@ public class EventScriptSystem : MonoBehaviour
                 }
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 8f)), progress);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 10 * HoopNegChanger)), progress);
 
             }
-            else if(player.transform.position.z >= 0) //move kcam to player
+            else if(player.transform.position.z * HoopNegChanger >= 0) //move kcam to player
             {
 
                 if ((progressreset[2] == false && progress != 0) || pccamsmooth)
@@ -390,11 +406,11 @@ public class EventScriptSystem : MonoBehaviour
 
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z - 1f)), progress);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z - (1f * HoopNegChanger))), progress);
 
 
             }
-            else if(player.transform.position.z <= 0) //move kcam to player -2
+            else if(player.transform.position.z * HoopNegChanger <= 0) //move kcam to player -2
             {
 
                 if ((progressreset[3] == false && progress != 0) || pccamsmooth)
@@ -419,7 +435,7 @@ public class EventScriptSystem : MonoBehaviour
 
 
                 progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
-                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z - 2)), progress);
+                kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, player.transform.position.z - (2 * HoopNegChanger))), progress);
 
             }
 
@@ -454,5 +470,28 @@ public class EventScriptSystem : MonoBehaviour
 
 
         }
+    }
+
+    public void SwitchSides()
+    {
+        CurrentHoop = ps.Hoop.gameObject;
+        ps.HeadTrackers[HoopNum].weight = 0;
+        HoopNum += 1;
+        HoopNegChanger *= -1;
+        if(HoopNum == 2)
+        {
+            HoopNum = 0;
+        }
+        ps.HeadTrackers[HoopNum].weight = 1;
+        ps.DunkLocation = new Vector3(0, ps.DunkLocation.y, ps.DunkLocation.z * -1);
+        ps.HoopLookAt = Hoops[HoopNum].transform;
+        ps.Hoop = Hoops[HoopNum].transform;
+        ps.HoopProtector = Hoops[HoopNum].transform.GetChild(0).gameObject;
+
+        bb.Hoop = Hoops[HoopNum];
+        kcamtargetGroup.RemoveMember(CurrentHoop.transform.GetChild(1));
+        kcamtargetGroup.AddMember(Hoops[HoopNum].transform.GetChild(1), 1.4f, 1);
+        pltargetGroup.RemoveMember(CurrentHoop.transform.GetChild(2));
+        pltargetGroup.AddMember(Hoops[HoopNum].transform.GetChild(2), 3, 1);
     }
 }

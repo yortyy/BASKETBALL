@@ -27,9 +27,12 @@ public class playermovement : MonoBehaviour
     public bool shootbuttonon;
     public bool shootbuttonbuffer;
     public bool smcalcstarted;
-    [SerializeField] private Transform HoopLookAt;
-    [SerializeField] private Transform Hoop;
-    [SerializeField] private GameObject HoopProtector;
+
+
+    public Transform HoopLookAt;
+    public Transform Hoop;
+    public GameObject HoopProtector;
+    public MultiAimConstraint[] HeadTrackers = new MultiAimConstraint[2]; // 0 is N, 1 is S
 
 
     public int shotpercent;
@@ -56,20 +59,23 @@ public class playermovement : MonoBehaviour
     private bool emoteson;
     private int emotenum;
 
-    private Vector3 DunkLocation = new Vector3(0, 2.3f, 20.3f);
+    [HideInInspector] public Vector3 DunkLocation = new Vector3(0, 2.3f, 20.3f);
     private Vector3 StartDunkLocation;
     private float dunkcount;
-    public int dunk;
+    [HideInInspector] public int dunk;
 
-    bool resetrot;
-    float hoopdistance;
+    private bool resetrot;
+    private float hoopdistance;
 
     void Awake()
     {
+
         charactermodel = transform.GetChild(0).gameObject;
         characteranimator = charactermodel.GetComponent<Animator>();
         characterrigs[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 2).GetComponent<Rig>();
         characterrigs[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetComponent<Rig>();
+        HeadTrackers[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(2).gameObject.GetComponent<MultiAimConstraint>();
+        HeadTrackers[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(3).gameObject.GetComponent<MultiAimConstraint>();
         rb = GetComponent<Rigidbody>();
         ps = GetComponent<ParticleSystem>();
         psr = GetComponent<ParticleSystemRenderer>();
@@ -480,6 +486,10 @@ public class playermovement : MonoBehaviour
                 if (ess.CameraVer == 0)
                 {
                     rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
+                }
+                else if(ess.HoopNum == 1)
+                {
+                    rb.AddForce(movementVector.x * -mscale, 0, movementVector.y * -mscale, ForceMode.Impulse);
                 }
                 else
                 {
