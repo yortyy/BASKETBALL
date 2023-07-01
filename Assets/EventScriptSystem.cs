@@ -66,6 +66,8 @@ public class EventScriptSystem : MonoBehaviour
     public TMP_Text shotscoretext;
     public TMP_Text shotdistancetext;
 
+    private Vector3 formerplayerdunklocation;
+
     [SerializeField] private GameObject[] Hoops = new GameObject[2]; //0 is N, 1 is S
     private GameObject CurrentHoop;
     [HideInInspector] public int HoopNum;
@@ -137,7 +139,7 @@ public class EventScriptSystem : MonoBehaviour
     public void PlayerChange(GameObject newplayer)
     {
         player.GetComponent<PlayerInput>().actions.Disable();
-
+        formerplayerdunklocation = ps.DunkLocation;
         pccamtempstartvector = kcamtracker.position;
         plcam.Follow = newplayer.transform;
         pltargetGroup.RemoveMember(player.transform);
@@ -171,7 +173,7 @@ public class EventScriptSystem : MonoBehaviour
                 ps.HeadTrackers[1].weight = 1;
                 ps.HeadTrackers[0].weight = 0;
             }
-            ps.DunkLocation = new Vector3(0, ps.DunkLocation.y, ps.DunkLocation.z * -1);
+            ps.DunkLocation = formerplayerdunklocation;
             ps.HoopLookAt = Hoops[HoopNum].transform;
             ps.HoopProtector = Hoops[HoopNum].transform.GetChild(0).gameObject;
             ps.Hoop = Hoops[HoopNum].transform;

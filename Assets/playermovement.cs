@@ -67,6 +67,8 @@ public class playermovement : MonoBehaviour
     private bool resetrot;
     private float hoopdistance;
 
+    private Vector2 passcheckangle;
+
     void Awake()
     {
 
@@ -164,6 +166,7 @@ public class playermovement : MonoBehaviour
     {
         if(dunk == 1 && dunkcount < 1)
         {
+            Debug.Log(DunkLocation);
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocation, dunkcount));
             dunkcount = Mathf.Clamp01(2 * Time.deltaTime + dunkcount);
         }
@@ -268,32 +271,22 @@ public class playermovement : MonoBehaviour
 
     public void passinp(InputAction.CallbackContext value)
     {
+        float negchange = 1;
         if (ess.gamemode == 3 || ess.gamemode == 4)
         {
             if (bballscript.playerholding && value.started && !shootboolwii)
             {
-                passANGLE = Vector2.SignedAngle(Vector2.down, new Vector2(movementVector.x, movementVector.y));
-                if (passANGLE < 0)
+                if(ess.HoopNum == 1 && negchange != -1)
                 {
-                    passANGLE += 360;
+                    negchange = -1;
                 }
-                else if (movementVector.x == 0 && movementVector.y == 0)
+                else if(ess.HoopNum == 0 && negchange != 1)
                 {
-                    passANGLE = -1;
+                    negchange = 1;
                 }
-
-                passANGLE2 = Vector2.SignedAngle(Vector2.down, new Vector2(TeamMates[0].transform.position.x - transform.position.x, TeamMates[0].transform.position.z - transform.position.z));
-                if (passANGLE2 < 0)
-                {
-                    passANGLE2 += 360;
-                }
-
-                passANGLE3 = Vector2.SignedAngle(Vector2.down, new Vector2(TeamMates[1].transform.position.x - transform.position.x, TeamMates[1].transform.position.z - transform.position.z));
-                if (passANGLE3 < 0)
-                {
-                    passANGLE3 += 360;
-                }
-
+                passANGLE2 = Vector2.SignedAngle(new Vector2(negchange * movementVector.x / 10, negchange * movementVector.y / 10), new Vector2(TeamMates[0].transform.position.x - transform.position.x, TeamMates[0].transform.position.z - transform.position.z));
+                passANGLE3 = Vector2.SignedAngle(new Vector2(negchange * movementVector.x / 10, negchange * movementVector.y / 10), new Vector2(TeamMates[1].transform.position.x - transform.position.x, TeamMates[1].transform.position.z - transform.position.z));
+                passANGLE = 0;
                 if (Mathf.Abs(passANGLE2 - passANGLE) <= Mathf.Abs(passANGLE3 - passANGLE)) //if the ang between tm1 and p is closer to 0
                 {
                     Debug.Log("TeamMate 1 BRUH");
@@ -306,6 +299,8 @@ public class playermovement : MonoBehaviour
                     characteranimator.SetBool("Moving", false);
                     ess.PlayerChange(TeamMates[1]);
                 }
+                Debug.Log("TeamMates | PassAngle1: " + passANGLE + " | PassAngle2: " + passANGLE2 + " | PassAngle3: " + passANGLE3);
+                Debug.Log("TeamMates | Player: " + gameObject + "Teammate1: " + TeamMates[0] + " | Teammate2: " + TeamMates[1]);
             }
         }
     }
