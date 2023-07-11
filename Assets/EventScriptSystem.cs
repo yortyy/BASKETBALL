@@ -214,7 +214,7 @@ public class EventScriptSystem : MonoBehaviour
 
         }
 
-        if(gamem == 2 || gamem == 3)
+        if(gamem == 2 || gamem == 3) //3player
         {
             if (gamem == 2)
             {
@@ -252,7 +252,11 @@ public class EventScriptSystem : MonoBehaviour
         }
 
         PlayerChange(trueplayer);
-
+        if(HoopNum == 1)
+        {
+            SwitchSides();
+            bb.ballSwitchSides();
+        }
     }
     private void exitpause()
     {
@@ -315,6 +319,9 @@ public class EventScriptSystem : MonoBehaviour
         }
     }
 
+
+
+
     private void Update()
     {
 
@@ -351,7 +358,7 @@ public class EventScriptSystem : MonoBehaviour
                 kcamtracker.position = Vector3.Lerp(tempkcampos, (new Vector3(0, 0.5f, 14 * HoopNegChanger)), progress);
 
             }
-            else if (player.transform.position.z * HoopNegChanger >= 8f) //move kcam to 6
+            else if (player.transform.position.z * HoopNegChanger >= 10f) //move kcam to 6
             {
                 if ((progressreset[1] == false && progress != 0) || pccamsmooth)
                 {
@@ -473,6 +480,11 @@ public class EventScriptSystem : MonoBehaviour
 
         }
     }
+
+
+
+
+
 
     public void SwitchSides()
     {

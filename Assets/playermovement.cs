@@ -84,7 +84,7 @@ public class playermovement : MonoBehaviour
         bballscript = basketballobj.GetComponent<bassetball>();
         bbrb = basketballobj.GetComponent<Rigidbody>();
         bballscript.bballholdref = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3);
-        bballscript.bbrelease = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3).GetComponent<bballrelease>();
+        bballscript.bbrelease = bballscript.bballholdref.GetComponent<bballrelease>();
     }
 
     public void moveinp(InputAction.CallbackContext movementValue)

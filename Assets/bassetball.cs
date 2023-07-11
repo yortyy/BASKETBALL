@@ -92,16 +92,19 @@ public class bassetball : MonoBehaviour
             if(readytoswitchsides)
             {
                 ess.SwitchSides();
-
-                HoopEffObj = Hoop.transform.GetChild(3).gameObject;
-                firehoop = HoopEffObj.transform.GetChild(0).gameObject;
-                HoopEff = HoopEffObj.GetComponent<ParticleSystem>();
-                HoopEffrnr = HoopEffObj.GetComponent<ParticleSystemRenderer>();
-                target = Hoop.transform;
-                HoopEffEmission = HoopEff.emission;
+                ballSwitchSides();
                 readytoswitchsides = false;
             }
         }
+    }
+    public void ballSwitchSides()
+    {
+        HoopEffObj = Hoop.transform.GetChild(3).gameObject;
+        firehoop = HoopEffObj.transform.GetChild(0).gameObject;
+        HoopEff = HoopEffObj.GetComponent<ParticleSystem>();
+        HoopEffrnr = HoopEffObj.GetComponent<ParticleSystemRenderer>();
+        target = Hoop.transform;
+        HoopEffEmission = HoopEff.emission;
     }
     public void PlayerChangeBBALL(GameObject newplayer)
     {
@@ -151,7 +154,7 @@ public class bassetball : MonoBehaviour
         }
         else if((playerswitching || bbrelease.rigoffnow) && bballrigset) //rigoff
         {
-            if (bbrelease.rigoffnow)
+            if (bbrelease.rigoffnow && ps.characteranimator.GetBool("ShootNow"))
             {
                 ps.characteranimator.SetBool("ShootNow", false);
             }
@@ -319,6 +322,16 @@ public class bassetball : MonoBehaviour
 
     public void ShotHits()
     {
+
+        shoot = false;
+        bbrelease.shotreleasenow = false;
+
+        bbrb.useGravity = true;
+        bbrb.isKinematic = false;
+        bbrb.detectCollisions = true;
+
+        bbrb.AddForce(0, -3, 0, ForceMode.Impulse);
+
         if (ps.shotresult)
         {
             asc[0].Play(); //swishsound
@@ -329,15 +342,6 @@ public class bassetball : MonoBehaviour
             }
             
         }
-
-        shoot = false;
-        bbrelease.shotreleasenow = false;
-
-        bbrb.useGravity = true;
-        bbrb.isKinematic = false;
-        bbrb.detectCollisions = true;
-
-        bbrb.AddForce(0, -3, 0, ForceMode.Impulse);
 
         ess.shotscoretext.text = ess.shotscore.ToString();
     }
