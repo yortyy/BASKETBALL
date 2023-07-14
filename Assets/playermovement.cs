@@ -164,7 +164,7 @@ public class playermovement : MonoBehaviour
 
     private void Update()
     {
-        if(dunk == 1 && dunkcount < 1)
+        if(dunk == 1 && dunkcount < 1 && bballscript.bbrelease.jumpdunknow)
         {
             Debug.Log(DunkLocation);
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocation, dunkcount));
@@ -176,7 +176,7 @@ public class playermovement : MonoBehaviour
             rb.isKinematic = true; //need the shotreleasenow to rigoff
             shotmeterscript.shottext.color = Color.red;
             shotmeterscript.shottext.text = "!!DUNK!!";
-            bballscript.ShotHits();
+            bballscript.ShotHits(true);
             characteranimator.SetInteger("DunkNow", 2);
             dunk = 2;
         }

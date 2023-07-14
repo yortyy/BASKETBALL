@@ -8,6 +8,7 @@ public class bballrelease : MonoBehaviour
     public bool rigoffnow = true;
     public bool pauseanimenow;
 
+    public bool jumpdunknow;
     public bool dunkfallnow;
     public bool dunkrigoffnow;
 

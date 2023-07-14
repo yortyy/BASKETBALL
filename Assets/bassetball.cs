@@ -39,7 +39,6 @@ public class bassetball : MonoBehaviour
     private bool setarch;
     private bool setcount;
     private bool shotdone;
-    private int rotat;
 
     public bool playerchange;
     private Vector3 pastballpos;
@@ -89,7 +88,7 @@ public class bassetball : MonoBehaviour
             playerholding = true;
             Debug.Log("KONNECT: " + other.gameObject);
 
-            if(readytoswitchsides)
+            if(readytoswitchsides && ess.fullcourt)
             {
                 ess.SwitchSides();
                 ballSwitchSides();
@@ -134,10 +133,12 @@ public class bassetball : MonoBehaviour
 
         if ((playerholding && !shoot) || (shoot && !bbrelease.shotreleasenow)) //rigon
         {
-            //Debug.Log("transformin 2");
+            //moveballtoballrefpoint, and look at hoop
             transform.position = bballholdref.position;
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
-            if (ps.characterrigs[1].weight != 1) //take existing weight, add by timecount then stop at 1
+
+            //take existing weight, add by timecount then stop at 1
+            if (ps.characterrigs[1].weight != 1)
             {
                 if(!bballrigset)
                 {
@@ -152,47 +153,33 @@ public class bassetball : MonoBehaviour
                 ps.characterrigs[1].weight = bballrigtimecount;
             }
         }
-        else if((playerswitching || bbrelease.rigoffnow) && bballrigset) //rigoff
+        else if((playerswitching || bbrelease.rigoffnow) && bballrigset && ps.characterrigs[1].weight != 0f) //rigoff
         {
+            //turn off jumpshot anim when rigoffnow from animation
             if (bbrelease.rigoffnow && ps.characteranimator.GetBool("ShootNow"))
             {
                 ps.characteranimator.SetBool("ShootNow", false);
             }
-            if (ps.characterrigs[1].weight != 0f)
-            {
-                if(dunkedtheball)
-                {
-                    bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / 0.2f * Time.deltaTime);
-                }
-                else
-                {
-                    bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / bballrigtime * Time.deltaTime);
-                }
-                ps.characterrigs[1].weight = bballrigtimecount;
-            }
-        }
 
+            //take existing weight, minus by timecount then stop at 0
+            if (dunkedtheball)
+            {
+                bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / 0.2f * Time.deltaTime);
+            }
+            else
+            {
+                bballrigtimecount = Mathf.Clamp01(bballrigtimecount - 1f / bballrigtime * Time.deltaTime);
+            }
+            ps.characterrigs[1].weight = bballrigtimecount;
+        }
 
 
         if (progressshoot <= 1 && !shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball) //jumpshottimeneeded to movebball ref up in animation
         {
-            //Debug.Log("transformin 1 | pos: " + transform.position + " pshoot: " + progressshoot);
             if (progressshoot == 1 && transform.position == targetpoint)
             {
                 Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
                 shotdone = true;
-            }
-
-            if (rotat == 0)
-            {
-                transform.LookAt(new Vector3(target.position.x, bballRend.transform.position.y, target.position.z + 0.5f));
-                rotat = 5;
-            }
-            else
-            {
-                rotat += 5;
-                Quaternion rotation = Quaternion.Euler(rotat, bballRend.transform.rotation.y, bballRend.transform.rotation.z);
-                bballRend.transform.rotation = rotation;
             }
 
             if (!setarch)
@@ -271,46 +258,8 @@ public class bassetball : MonoBehaviour
         else if (shotdone) //after shot
         {
             Debug.Log("setarchturnoff");
-            //Debug.Log("setarchoff | pos: " + transform.position + " pshoot: " + progressshoot);
 
-            rotat = 0;
-            //transform.position = targetpoint;
-            if (ess.gamemode == 2 && ess.shotscore != 0)
-            {
-                ess.threeptcontest(ess.shotscore); //move to bassetball shot
-            }
-            if(ps.shotresult)
-            {
-
-                if (40 < ps.shotdistance)
-                {
-                    firehoop.SetActive(true);
-                    bballeff.Stop();
-                    HoopEffEmission.rateOverTime = 6;
-                }
-                else
-                {
-                    firehoop.SetActive(false);
-                    HoopEffEmission.rateOverTime = 12;
-                }
-
-                if (ps.smeter == 0)
-                {
-                    HoopEffrnr.material = ParticleMaterials[0];
-                }
-                else if (ps.smeter == 1)
-                {
-                    HoopEffrnr.material = ParticleMaterials[1];
-                }
-                else if (40 < ps.shotdistance)
-                {
-                    HoopEffEmission.rateOverTime = 0;
-                }
-
-                HoopEff.Play();
-            }
-
-            ShotHits();
+            ShotHits(false);
 
             ps.shotmeterscript.shotmeterslider.value = 0;
             setcount = false;
@@ -320,17 +269,50 @@ public class bassetball : MonoBehaviour
         }
     }
 
-    public void ShotHits()
+    public void ShotHits(bool Dunk)
     {
-
-        shoot = false;
-        bbrelease.shotreleasenow = false;
-
         bbrb.useGravity = true;
         bbrb.isKinematic = false;
         bbrb.detectCollisions = true;
 
         bbrb.AddForce(0, -3, 0, ForceMode.Impulse);
+
+        if (ess.gamemode == 2 && ess.shotscore != 0)
+        {
+            ess.threeptcontest(ess.shotscore); //move to bassetball shot
+        }
+
+        //ball flames and green/blue hoop effects
+        if (ps.shotresult)
+        {
+            if (40 < ps.shotdistance || Dunk)
+            {
+                firehoop.SetActive(true);
+                bballeff.Stop();
+                HoopEffEmission.rateOverTime = 6;
+            }
+            else
+            {
+                firehoop.SetActive(false);
+                HoopEffEmission.rateOverTime = 12;
+            }
+            if (ps.smeter == 0)
+            {
+                HoopEffrnr.material = ParticleMaterials[0];
+            }
+            else if (ps.smeter == 1)
+            {
+                HoopEffrnr.material = ParticleMaterials[1];
+            }
+            else if (40 < ps.shotdistance || Dunk)
+            {
+                HoopEffEmission.rateOverTime = 0;
+            }
+            HoopEff.Play();
+        }
+
+        shoot = false;
+        bbrelease.shotreleasenow = false;
 
         if (ps.shotresult)
         {
@@ -345,5 +327,4 @@ public class bassetball : MonoBehaviour
 
         ess.shotscoretext.text = ess.shotscore.ToString();
     }
-
 }

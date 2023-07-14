@@ -36,6 +36,7 @@ public class EventScriptSystem : MonoBehaviour
     private Transform kcamtracker;
 
     [SerializeField] private TMP_Text CamChangeText;
+    [SerializeField] private TMP_Text FullcourtToggleText;
     [SerializeField] private GameObject playerlockcam;
     [SerializeField] private GameObject skycam;
     [SerializeField] private GameObject replaycam;
@@ -72,6 +73,7 @@ public class EventScriptSystem : MonoBehaviour
     private GameObject CurrentHoop;
     [HideInInspector] public int HoopNum;
     private float HoopNegChanger = 1f;
+    public bool fullcourt;
 
     void Awake()
     {
@@ -144,6 +146,8 @@ public class EventScriptSystem : MonoBehaviour
         plcam.Follow = newplayer.transform;
         pltargetGroup.RemoveMember(player.transform);
         pltargetGroup.AddMember(newplayer.transform, 4, 1);
+        kcamtargetGroup.RemoveMember(player.transform);
+        kcamtargetGroup.AddMember(newplayer.transform, 0.3f, 1);
         ps.enabled = false;
 
         player = newplayer;
@@ -252,7 +256,7 @@ public class EventScriptSystem : MonoBehaviour
         }
 
         PlayerChange(trueplayer);
-        if(HoopNum == 1)
+        if(HoopNum == 1 && fullcourt)
         {
             SwitchSides();
             bb.ballSwitchSides();
@@ -292,6 +296,23 @@ public class EventScriptSystem : MonoBehaviour
 
     }
 
+    public void fullcourttoggle()
+    {
+        if(fullcourt)
+        {
+            if(HoopNum != 0)
+            {
+                SwitchSides();
+            }
+            FullcourtToggleText.text = "Half<br>court";
+            fullcourt = false;
+        }
+        else
+        {
+            FullcourtToggleText.text = "Full<br>court";
+            fullcourt = true;
+        }
+    }
 
     public void quitgame()
     {
