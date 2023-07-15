@@ -67,7 +67,7 @@ public class playermovement : MonoBehaviour
     private bool resetrot;
     private float hoopdistance;
 
-    private Vector2 passcheckangle;
+    private bool defenceon;
 
     void Awake()
     {
@@ -77,7 +77,7 @@ public class playermovement : MonoBehaviour
         characterrigs[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 2).GetComponent<Rig>();
         characterrigs[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetComponent<Rig>();
         HeadTrackers[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(2).gameObject.GetComponent<MultiAimConstraint>();
-        HeadTrackers[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(3).gameObject.GetComponent<MultiAimConstraint>();
+        //HeadTrackers[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(3).gameObject.GetComponent<MultiAimConstraint>();
         rb = GetComponent<Rigidbody>();
         ps = GetComponent<ParticleSystem>();
         psr = GetComponent<ParticleSystemRenderer>();
@@ -94,6 +94,19 @@ public class playermovement : MonoBehaviour
     public void jumpinp(InputAction.CallbackContext value)
     {
         rb.AddForce(0, jscale * mscale, 0, ForceMode.Impulse);
+    }
+    public void defenceinp(InputAction.CallbackContext value)
+    {
+        if(value.started)
+        {
+            characteranimator.SetBool("dstance", true);
+            defenceon = true;
+        }
+        else if(value.canceled)
+        {
+            characteranimator.SetBool("dstance", false);
+            defenceon = false;
+        }
     }
     public void shootinp(InputAction.CallbackContext value)
     {
@@ -305,7 +318,6 @@ public class playermovement : MonoBehaviour
         }
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("3ptline"))
@@ -365,11 +377,11 @@ public class playermovement : MonoBehaviour
 
             if (in3ptline)
             {
-                shotpercent = 100 - (shootingskill) - (smeter * 4); //60 late
+                shotpercent = 100 - (shootingskill) - (smeter * 5); //50% late, slate is 80%
             }
             else
             {
-                shotpercent = 100 - ((shootingskill) * 2) - (smeter * 6); //40 late
+                shotpercent = 100 - ((shootingskill) * 2) - (smeter * 7); //30% late, slightly late is 4 * 7 = 79%
 
                 if (shotdistance >= 45)
                 {
@@ -426,7 +438,6 @@ public class playermovement : MonoBehaviour
     }
 
 
-
     private void FixedUpdate()
     {
         hoopdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
@@ -453,6 +464,16 @@ public class playermovement : MonoBehaviour
                 rb.MoveRotation(qTo);
             }
         }
+        else if (ess.CameraVer != 0 && defenceon)
+        {
+            qTo = Quaternion.LookRotation(transform.position - new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+            qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
+            rb.MoveRotation(qTo);
+            if (resetrot == true)
+            {
+                resetrot = false;
+            }
+        }
         else if (ess.CameraVer != 0)
         {
             qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
@@ -476,15 +497,19 @@ public class playermovement : MonoBehaviour
                 {
                     characteranimator.SetBool("Moving", true);
                 }
-                characteranimator.SetFloat("ForwardAngleX", movementVector.x, 0.1f, Time.deltaTime);
-                characteranimator.SetFloat("ForwardAngleY", movementVector.y, 0.1f, Time.deltaTime);
+                characteranimator.SetFloat("ForwardAngleX", Mathf.Clamp(movementVector.x, -1f, 1f), 0.1f, Time.deltaTime);
+                characteranimator.SetFloat("ForwardAngleY", Mathf.Clamp(movementVector.y, -1f, 1f), 0.1f, Time.deltaTime);
                 if (ess.CameraVer == 0)
                 {
                     rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
                 }
-                else if(ess.HoopNum == 1)
+                else if (ess.HoopNum == 1)
                 {
                     rb.AddForce(movementVector.x * -mscale, 0, movementVector.y * -mscale, ForceMode.Impulse);
+                }
+                else if (defenceon)
+                {
+                    rb.AddForce(movementVector.x * mscale * 0.75f, 0, movementVector.y * mscale * 0.75f, ForceMode.Impulse);
                 }
                 else
                 {

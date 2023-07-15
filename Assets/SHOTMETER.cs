@@ -22,13 +22,11 @@ public class SHOTMETER : MonoBehaviour
     {
         playermov = player.GetComponent<playermovement>();
     }
-    void LateUpdate()
+    private void Update()
     {
-        targ = (Camera.main.WorldToScreenPoint(player.transform.position) + new Vector3(50, 0, 0));
-        ShotMeterUI.transform.position = targ;
         if (shoottimeron)
         {
-            if(1 < (Time.time - shotmetertimer) * smSpeed)
+            if (1 < (Time.time - shotmetertimer) * smSpeed)
             {
                 shotmeterslider.value = 1 - (((Time.time - shotmetertimer) * smSpeed) - 1);
                 Debug.Log("suck: " + shotmeterslider.value);
@@ -39,6 +37,13 @@ public class SHOTMETER : MonoBehaviour
             }
         }
     }
+    void LateUpdate()
+    {
+        targ = (Camera.main.WorldToScreenPoint(player.transform.position) + new Vector3(50, 0, 0));
+        ShotMeterUI.transform.position = targ;
+
+    }
+
     public void shotmetercalc(bool shoot)
     {
         if(!shoot)

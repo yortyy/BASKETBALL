@@ -75,6 +75,8 @@ public class EventScriptSystem : MonoBehaviour
     private float HoopNegChanger = 1f;
     public bool fullcourt;
 
+    [SerializeField] private hooplerpobjMover hooplerpobjmover;
+
     void Awake()
     {
         ps = player.GetComponent<playermovement>();
@@ -169,13 +171,13 @@ public class EventScriptSystem : MonoBehaviour
             Debug.Log("changecurrenthoop");
             if(HoopNum == 0)
             {
-                ps.HeadTrackers[0].weight = 1;
-                ps.HeadTrackers[1].weight = 0;
+                //ps.HeadTrackers[0].weight = 1;
+                //ps.HeadTrackers[1].weight = 0;
             }
             else if(HoopNum == 1)
             {
-                ps.HeadTrackers[1].weight = 1;
-                ps.HeadTrackers[0].weight = 0;
+                //ps.HeadTrackers[1].weight = 1;
+                //ps.HeadTrackers[0].weight = 0;
             }
             ps.DunkLocation = formerplayerdunklocation;
             ps.HoopLookAt = Hoops[HoopNum].transform;
@@ -510,23 +512,24 @@ public class EventScriptSystem : MonoBehaviour
     public void SwitchSides()
     {
         CurrentHoop = ps.Hoop.gameObject;
-        ps.HeadTrackers[HoopNum].weight = 0;
+        //ps.HeadTrackers[HoopNum].weight = 0;
         HoopNum += 1;
         HoopNegChanger *= -1;
         if(HoopNum == 2)
         {
             HoopNum = 0;
         }
-        ps.HeadTrackers[HoopNum].weight = 1;
+        hooplerpobjmover.trackObjs(Hoops[HoopNum].transform, Hoops[HoopNum].transform.GetChild(2), Hoops[HoopNum].transform.GetChild(1));
+        //ps.HeadTrackers[HoopNum].weight = 1;
         ps.DunkLocation = new Vector3(0, ps.DunkLocation.y, ps.DunkLocation.z * -1);
         ps.HoopLookAt = Hoops[HoopNum].transform;
         ps.Hoop = Hoops[HoopNum].transform;
         ps.HoopProtector = Hoops[HoopNum].transform.GetChild(0).gameObject;
 
         bb.Hoop = Hoops[HoopNum];
-        kcamtargetGroup.RemoveMember(CurrentHoop.transform.GetChild(1));
-        kcamtargetGroup.AddMember(Hoops[HoopNum].transform.GetChild(1), 1.4f, 1);
-        pltargetGroup.RemoveMember(CurrentHoop.transform.GetChild(2));
-        pltargetGroup.AddMember(Hoops[HoopNum].transform.GetChild(2), 3, 1);
+        //kcamtargetGroup.RemoveMember(CurrentHoop.transform.GetChild(1));
+        //kcamtargetGroup.AddMember(Hoops[HoopNum].transform.GetChild(1), 1.4f, 1);
+        //pltargetGroup.RemoveMember(CurrentHoop.transform.GetChild(2));
+        //pltargetGroup.AddMember(Hoops[HoopNum].transform.GetChild(2), 3, 1);
     }
 }

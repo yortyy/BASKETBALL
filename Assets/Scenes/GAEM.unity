@@ -16746,7 +16746,7 @@ MonoBehaviour:
   m_RotationMode: 1
   m_UpdateMethod: 1
   m_Targets:
-  - target: {fileID: 1357495715}
+  - target: {fileID: 2025210537}
     weight: 1.4
     radius: 1
   - target: {fileID: 525212477}
@@ -23995,7 +23995,7 @@ GameObject:
   - component: {fileID: 540939908}
   - component: {fileID: 540939909}
   m_Layer: 0
-  m_Name: HeadTrackingN
+  m_Name: HeadTracking
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24034,7 +24034,7 @@ MonoBehaviour:
     m_SourceObjects:
       m_Length: 1
       m_Item0:
-        transform: {fileID: 163861929}
+        transform: {fileID: 884577580}
         weight: 1
       m_Item1:
         transform: {fileID: 0}
@@ -24115,6 +24115,37 @@ Transform:
   m_GameObject: {fileID: 574597706}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.25, z: 9.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1576406382}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &575185681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 575185682}
+  m_Layer: 0
+  m_Name: HoopBehindLerpObj
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &575185682
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 575185681}
+  m_LocalRotation: {x: -0.5, y: -0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: -0.004999995, y: 3.916, z: 22.412}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24944,8 +24975,8 @@ Transform:
   m_LocalScale: {x: 0.7, y: 1.4097, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 872689139}
   - {fileID: 2098347257}
+  - {fileID: 872689139}
   - {fileID: 500265081}
   m_Father: {fileID: 0}
   m_RootOrder: 12
@@ -25087,6 +25118,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 6e5f66d8-48b6-49de-abff-4790ff1792b3
     m_ActionName: Player/EmoteButton[/Keyboard/tab]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 655643135}
+        m_TargetAssemblyTypeName: playermovement, Assembly-CSharp
+        m_MethodName: defenceinp
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0db9a553-caef-42cb-b0ce-f5789eb22750
+    m_ActionName: Player/New action
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -36277,6 +36324,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -4021639023445879678, guid: 8bbf8b7b8b5f1144ba263c0e541f0452, type: 3}
   m_PrefabInstance: {fileID: 1451766401}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &884577579
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 884577580}
+  m_Layer: 0
+  m_Name: HoopLerpObj
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &884577580
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 884577579}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.7, z: 20.912}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1576406382}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &888198596 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5751464830754263491, guid: 81bb9eea30387e442899949a80011e55, type: 3}
@@ -36314,7 +36392,6 @@ Transform:
   - {fileID: 1614695716}
   - {fileID: 1799013755}
   - {fileID: 540939908}
-  - {fileID: 1580071441}
   m_Father: {fileID: 2098347257}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -38350,8 +38427,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101842951}
-  m_LocalRotation: {x: 0.17263941, y: -0.00011777241, z: 0.0000206421, w: 0.9849851}
-  m_LocalPosition: {x: 0.0013492851, y: 5.290567, z: -5.6423473}
+  m_LocalRotation: {x: 0.17263937, y: -0.00011772705, z: 0.000020634143, w: 0.9849851}
+  m_LocalPosition: {x: 0.0013487657, y: 5.290567, z: -5.642348}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -44240,8 +44317,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1245222563}
-  m_LocalRotation: {x: 0.17263941, y: -0.00011777241, z: 0.0000206421, w: 0.9849851}
-  m_LocalPosition: {x: 0.0013492852, y: 5.290567, z: -5.6423473}
+  m_LocalRotation: {x: 0.17263937, y: -0.00011772705, z: 0.000020634143, w: 0.9849851}
+  m_LocalPosition: {x: 0.0013487656, y: 5.290567, z: -5.6423473}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46209,7 +46286,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1630794972795428178, guid: 81bb9eea30387e442899949a80011e55, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -47054,7 +47131,7 @@ MonoBehaviour:
   m_RotationMode: 1
   m_UpdateMethod: 1
   m_Targets:
-  - target: {fileID: 1985728962}
+  - target: {fileID: 575185682}
     weight: 3
     radius: 1
   - target: {fileID: 655643139}
@@ -47169,6 +47246,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1576406382}
   - component: {fileID: 1576406381}
+  - component: {fileID: 1576406384}
   - component: {fileID: 1576406383}
   m_Layer: 0
   m_Name: EventScript
@@ -47226,6 +47304,7 @@ MonoBehaviour:
   - {fileID: 1106404056}
   HoopNum: 0
   fullcourt: 0
+  hooplerpobjmover: {fileID: 1576406384}
 --- !u!4 &1576406382
 Transform:
   m_ObjectHideFlags: 0
@@ -47247,6 +47326,9 @@ Transform:
   - {fileID: 275850389}
   - {fileID: 1189305548}
   - {fileID: 525212477}
+  - {fileID: 884577580}
+  - {fileID: 2025210537}
+  - {fileID: 575185682}
   m_Father: {fileID: 0}
   m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -47346,92 +47428,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &1580071440
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1580071441}
-  - component: {fileID: 1580071442}
-  m_Layer: 0
-  m_Name: HeadTrackingS
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1580071441
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580071440}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 890942493}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1580071442
+--- !u!114 &1576406384
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580071440}
+  m_GameObject: {fileID: 1576406380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
+  m_Script: {fileID: 11500000, guid: 1cfce9d04712167418f7d039402b4d61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 0
-  m_Data:
-    m_ConstrainedObject: {fileID: 374876041}
-    m_SourceObjects:
-      m_Length: 1
-      m_Item0:
-        transform: {fileID: 1106404060}
-        weight: 1
-      m_Item1:
-        transform: {fileID: 0}
-        weight: 0
-      m_Item2:
-        transform: {fileID: 0}
-        weight: 0
-      m_Item3:
-        transform: {fileID: 0}
-        weight: 0
-      m_Item4:
-        transform: {fileID: 0}
-        weight: 0
-      m_Item5:
-        transform: {fileID: 0}
-        weight: 0
-      m_Item6:
-        transform: {fileID: 0}
-        weight: 0
-      m_Item7:
-        transform: {fileID: 0}
-        weight: 0
-    m_Offset: {x: 0, y: 0, z: 0}
-    m_MinLimit: -90
-    m_MaxLimit: 90
-    m_AimAxis: 4
-    m_UpAxis: 2
-    m_WorldUpType: 1
-    m_WorldUpObject: {fileID: 0}
-    m_WorldUpAxis: 2
-    m_MaintainOffset: 0
-    m_ConstrainedAxes:
-      x: 1
-      y: 1
-      z: 1
 --- !u!4 &1581642598 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2396845372362043352, guid: 81bb9eea30387e442899949a80011e55, type: 3}
@@ -60603,7 +60611,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100080, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400080, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       propertyPath: m_RootOrder
@@ -60675,14 +60683,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'Terror:Terror:Terrorist_FreeChar_RightForeArm'\n\tTransform
-        'Terror:Terror:Terrorist_FreeChar_Neck'\n\tTransform 'Terror:Terror:Terrorist_FreeChar_Head'\n\tTransform
-        'Terror:Terror:Terrorist_FreeChar_LeftArm'\n\tTransform 'Terror:Terror:Terrorist_FreeChar_RightHand'\n\tTransform
-        'Terror:Terror:Terrorist_FreeChar_Hips'\n\tTransform 'Terrorist_FreeChar_ArtStore3d'\n\tTransform
-        'Terror:Terror:Terrorist_FreeChar_LeftHand'\n\tTransform 'Terror:Terror:Terrorist_FreeChar_RightArm'\n\tTransform
-        'Terror:Terror:Terrorist_FreeChar_LeftForeArm'\n\tand more ..."
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       propertyPath: m_ApplyRootMotion
@@ -60719,6 +60720,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -7134897859409405753, guid: 81bb9eea30387e442899949a80011e55, type: 3}
   m_PrefabInstance: {fileID: 1424261701}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2025210536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2025210537}
+  m_Layer: 0
+  m_Name: HoopBelowLerpObj
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2025210537
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025210536}
+  m_LocalRotation: {x: -0.5, y: -0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: -0.005, y: 0.14599991, z: 20.912}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1576406382}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2036986455 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6121207915368900166, guid: 8f7380da49034cd488ddff94b1ac35d1, type: 3}

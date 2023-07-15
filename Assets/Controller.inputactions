@@ -42,6 +42,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Defence",
+                    "type": "Button",
+                    "id": "0db9a553-caef-42cb-b0ce-f5789eb22750",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Pause",
                     "type": "Button",
                     "id": "b58aa5b9-048f-477d-9928-7ab8961d8214",
@@ -375,6 +384,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "EmoteButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "de75fd26-9768-451b-8fe0-725f352ea319",
+                    "path": "<Keyboard>/leftBracket",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Defence",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

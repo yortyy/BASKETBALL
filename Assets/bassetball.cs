@@ -173,7 +173,6 @@ public class bassetball : MonoBehaviour
             ps.characterrigs[1].weight = bballrigtimecount;
         }
 
-
         if (progressshoot <= 1 && !shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball) //jumpshottimeneeded to movebball ref up in animation
         {
             if (progressshoot == 1 && transform.position == targetpoint)
