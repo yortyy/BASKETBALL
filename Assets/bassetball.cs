@@ -58,6 +58,7 @@ public class bassetball : MonoBehaviour
     [HideInInspector] public bballrelease bbrelease;
 
     private bool readytoswitchsides;
+    private bool trueplayerisonoffence = true;
 
     void Awake()
     {
@@ -77,10 +78,20 @@ public class bassetball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("player") && !shoot && !playerswitching && !dunkedtheball)
+        //Debug.Log(trueplayerisonoffence);
+        if ((bbrelease.blockjumpnow && (((other.gameObject.CompareTag("player") && !trueplayerisonoffence) || (other.gameObject.CompareTag("enemy") && trueplayerisonoffence)))) || (((other.gameObject.CompareTag("player") && trueplayerisonoffence) || (other.gameObject.CompareTag("enemy") && !trueplayerisonoffence))) && !shoot && !playerswitching && !dunkedtheball)
         {
+            if(player != other.gameObject)
+            {
+                ess.PlayerChange(other.gameObject, true);
+            }
+
             player = other.gameObject;
             ps = player.GetComponent<playermovement>();
+            ps.hasball = true;
+            bballholdref = player.transform.GetChild(0).GetChild(player.transform.GetChild(0).childCount - 3);
+            bbrelease = bballholdref.GetComponent<bballrelease>();
+
             //need to stop playback or go back to idle animation
             bbrb.isKinematic = true;
             bbrb.detectCollisions = false;
@@ -131,9 +142,13 @@ public class bassetball : MonoBehaviour
             progress = 0;
         }
 
+
+
+
         if ((playerholding && !shoot) || (shoot && !bbrelease.shotreleasenow)) //rigon
         {
             //moveballtoballrefpoint, and look at hoop
+            //Debug.Log("movingbballrefcuhcuh");
             transform.position = bballholdref.position;
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
 
@@ -173,97 +188,84 @@ public class bassetball : MonoBehaviour
             ps.characterrigs[1].weight = bballrigtimecount;
         }
 
-        if (progressshoot <= 1 && !shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball) //jumpshottimeneeded to movebball ref up in animation
+
+
+
+        if (!shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball && !setarch)
         {
-            if (progressshoot == 1 && transform.position == targetpoint)
+
+            startpoint = bballholdref.position;
+            if (!ps.shotresult)
             {
-                Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
-                shotdone = true;
+                offset.x = Random.Range(-0.6f, -0.3f);
+                offset.z = Random.Range(-0.6f, -0.3f);
+
+                targetpoint = (target.position + offset);
+            }
+            else
+            {
+                offset = Vector3.zero;
+                targetpoint = target.position;
+                if (40 < ps.shotdistance)
+                {
+                    asc[1].Play();
+                    bballeff.Play();
+                }
             }
 
-            if (!setarch)
+            if (ps.shotdistance <= 12 && !setcount)
             {
-
-                startpoint = bballholdref.position;
-                if (!ps.shotresult)
-                {
-                    offset.x = Random.Range(-0.6f, -0.3f);
-                    offset.z = Random.Range(-0.6f, -0.3f);
-
-                    targetpoint = (target.position + offset);
-                }
-                else
-                {
-                    offset = Vector3.zero;
-                    targetpoint = target.position;
-                    if(40 < ps.shotdistance)
-                    {
-                        asc[1].Play();
-                        bballeff.Play();
-                    }
-                }
-
-                if (ps.shotdistance <= 12 && !setcount)
-                {
-                    Debug.Log("shottype: 1");
-                    //tangent of 45 deg, times adj (length between player and archpoint)
-                    riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
-                    shotinairtime = 27f / 12f;
-                    setcount = true;
-                }
-                else if (ps.shotdistance <= 30 && !setcount)
-                {
-                    Debug.Log("shottype: 2");
-                    //tangent of 45 deg, times adj (length between player and archpoint)
-                    riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
-                    shotinairtime = 30 / ps.shotdistance;
-                    setcount = true;
-                }
-                else if (ps.shotdistance <= 50 && !setcount)
-                {
-                    Debug.Log("shottype: 3");
-                    riselength = Mathf.Tan(2 * Mathf.PI / 9) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
-                    shotinairtime = 30f/30f;
-                    setcount = true;
-                }
-                else if (ps.shotdistance <= 70 && !setcount)
-                {
-                    Debug.Log("shottype: 3");
-                    riselength = Mathf.Tan(7* Mathf.PI / 36) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
-                    shotinairtime = 30f / 30f;
-                    setcount = true;
-                }
-                else if (ps.shotdistance > 70 && !setcount)
-                {
-                    Debug.Log("shottype: 3");
-                    riselength = Mathf.Tan(Mathf.PI / 6) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
-                    shotinairtime = 30f / 30f;
-                    setcount = true;
-                }
-
-                archpoint = startpoint + (targetpoint - startpoint) / 2 + Vector3.up * riselength;
-                setarch = true;
+                Debug.Log("shottype: 1");
+                //tangent of 45 deg, times adj (length between player and archpoint)
+                riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
+                shotinairtime = 27f / 12f;
+                setcount = true;
+            }
+            else if (ps.shotdistance <= 30 && !setcount)
+            {
+                Debug.Log("shottype: 2");
+                //tangent of 45 deg, times adj (length between player and archpoint)
+                riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
+                shotinairtime = 30 / ps.shotdistance;
+                setcount = true;
+            }
+            else if (ps.shotdistance <= 50 && !setcount)
+            {
+                Debug.Log("shottype: 3");
+                riselength = Mathf.Tan(2 * Mathf.PI / 9) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
+                shotinairtime = 30f / 30f;
+                setcount = true;
+            }
+            else if (ps.shotdistance <= 70 && !setcount)
+            {
+                Debug.Log("shottype: 3");
+                riselength = Mathf.Tan(7 * Mathf.PI / 36) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
+                shotinairtime = 30f / 30f;
+                setcount = true;
+            }
+            else if (ps.shotdistance > 70 && !setcount)
+            {
+                Debug.Log("shottype: 3");
+                riselength = Mathf.Tan(Mathf.PI / 6) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
+                shotinairtime = 30f / 30f;
+                setcount = true;
             }
 
-
-            Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
-            Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
-            transform.position = Vector3.Lerp(m1, m2, progressshoot);
-            //Debug.Log("transformin 2 | pos: " + transform.position + " pshoot: " + progressshoot);
-
-            progressshoot = Mathf.Clamp01(shotinairtime * Time.deltaTime + progressshoot); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
-
+            archpoint = startpoint + (targetpoint - startpoint) / 2 + Vector3.up * riselength;
+            setarch = true;
         }
         else if (shotdone) //after shot
         {
+            Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
             Debug.Log("setarchturnoff");
 
             ShotHits(false);
 
             ps.shotmeterscript.shotmeterslider.value = 0;
             setcount = false;
-            setarch = false;
+            
             progressshoot = 0f;
+            setarch = false;
             shotdone = false;
         }
     }
@@ -275,6 +277,9 @@ public class bassetball : MonoBehaviour
         bbrb.detectCollisions = true;
 
         bbrb.AddForce(0, -3, 0, ForceMode.Impulse);
+
+
+        ps.hasball = false;
 
         if (ess.gamemode == 2 && ess.shotscore != 0)
         {
@@ -310,8 +315,8 @@ public class bassetball : MonoBehaviour
             HoopEff.Play();
         }
 
-        shoot = false;
         bbrelease.shotreleasenow = false;
+        shoot = false;
 
         if (ps.shotresult)
         {
@@ -319,11 +324,33 @@ public class bassetball : MonoBehaviour
             //practice = 0, 1on1 = 1, threept = 2, threewii = 3, 3on3 = 4
             if (ess.gamemode == 1 || ess.gamemode == 4)
             {
+                trueplayerisonoffence = !trueplayerisonoffence;
                 readytoswitchsides = true;
             }
             
         }
 
         ess.shotscoretext.text = ess.shotscore.ToString();
+    }
+
+    private void FixedUpdate()
+    {
+        if (!shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball && setarch) //jumpshottimeneeded to movebball ref up in animation
+        {
+            Debug.Log(progressshoot);
+
+            Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
+            Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
+            bbrb.MovePosition(Vector3.Lerp(m1, m2, progressshoot));
+            Debug.Log("transformin 2 | pos: " + transform.position + " pshoot: " + progressshoot);
+
+            progressshoot = Mathf.Clamp01(shotinairtime * Time.fixedDeltaTime + progressshoot); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
+
+            if (progressshoot == 1f && transform.position == targetpoint)
+            {
+                Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
+                shotdone = true;
+            }
+        }
     }
 }

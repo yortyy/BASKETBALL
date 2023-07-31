@@ -140,9 +140,9 @@ public class EventScriptSystem : MonoBehaviour
 
     }
 
-    public void PlayerChange(GameObject newplayer)
+    public void PlayerChange(GameObject newplayer, bool keepcontrol)
     {
-        player.GetComponent<PlayerInput>().actions.Disable();
+
         formerplayerdunklocation = ps.DunkLocation;
         pccamtempstartvector = kcamtracker.position;
         plcam.Follow = newplayer.transform;
@@ -150,12 +150,22 @@ public class EventScriptSystem : MonoBehaviour
         pltargetGroup.AddMember(newplayer.transform, 4, 1);
         kcamtargetGroup.RemoveMember(player.transform);
         kcamtargetGroup.AddMember(newplayer.transform, 0.3f, 1);
-        ps.enabled = false;
+        ps.hasball = false;
+        if (!keepcontrol)
+        {
+            player.GetComponent<PlayerInput>().actions.Disable();
+            ps.enabled = false;
+        }
 
         player = newplayer;
         ps = player.GetComponent<playermovement>();
-        ps.enabled = true;
-        player.GetComponent<PlayerInput>().actions.Enable();
+        if (!keepcontrol)
+        {
+            ps.enabled = true;
+            player.GetComponent<PlayerInput>().actions.Enable();
+        }
+        ps.hasball = true;
+
         pccamsmooth = true;
 
         sm.player = player;
@@ -257,7 +267,7 @@ public class EventScriptSystem : MonoBehaviour
             brb.MovePosition(Vector3.zero);
         }
 
-        PlayerChange(trueplayer);
+        PlayerChange(trueplayer, false);
         if(HoopNum == 1 && fullcourt)
         {
             SwitchSides();
@@ -318,7 +328,7 @@ public class EventScriptSystem : MonoBehaviour
 
     public void quitgame()
     {
-        PlayerChange(trueplayer);
+        PlayerChange(trueplayer, false);
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }

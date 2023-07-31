@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
+using System.Runtime.ConstrainedExecution;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEngine.Animations.Rigging;
 
-public class playermovement : MonoBehaviour
+public class enemymovement : MonoBehaviour
 {
 
     private Rigidbody rb;
@@ -19,6 +19,7 @@ public class playermovement : MonoBehaviour
     private Rigidbody bbrb;
     private Vector2 movementVector;
     private Quaternion qTo;
+    private bool jumpon;
     public float mscale = 5f;
     public float jscale = 5f;
     public int shootingskill;
@@ -66,11 +67,8 @@ public class playermovement : MonoBehaviour
     private bool resetrot;
     private float hoopdistance;
 
-    public bool hasball;
     private bool isondefence;
     private bool defenceon;
-
-    public bool blockjumpon;
 
     void Awake()
     {
@@ -80,12 +78,14 @@ public class playermovement : MonoBehaviour
         characterrigs[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 2).GetComponent<Rig>();
         characterrigs[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetComponent<Rig>();
         HeadTrackers[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(2).gameObject.GetComponent<MultiAimConstraint>();
+        //HeadTrackers[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(3).gameObject.GetComponent<MultiAimConstraint>();
         rb = GetComponent<Rigidbody>();
         ps = GetComponent<ParticleSystem>();
         psr = GetComponent<ParticleSystemRenderer>();
         bballscript = basketballobj.GetComponent<bassetball>();
         bbrb = basketballobj.GetComponent<Rigidbody>();
-
+        bballscript.bballholdref = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3);
+        bballscript.bbrelease = bballscript.bballholdref.GetComponent<bballrelease>();
     }
 
     public void moveinp(InputAction.CallbackContext movementValue)
@@ -98,12 +98,12 @@ public class playermovement : MonoBehaviour
     }
     public void defenceinp(InputAction.CallbackContext value)
     {
-        if(value.started && !hasball)
+        if (value.started && isondefence)
         {
             characteranimator.SetBool("dstance", true);
             defenceon = true;
         }
-        else if(value.canceled && !hasball)
+        else if (value.canceled && isondefence)
         {
             characteranimator.SetBool("dstance", false);
             defenceon = false;
@@ -111,87 +111,80 @@ public class playermovement : MonoBehaviour
     }
     public void shootinp(InputAction.CallbackContext value)
     {
-        if(hasball)
+        //dunking
+        if (value.started && movementVector.y > 0.1f && 14 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
         {
-            //dunking
-            if (value.started && movementVector.y > 0.1f && 14 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
-            {
-                bballscript.bbrelease.shotreleasenow = false;
-                dunkcount = 0f;
-                StartDunkLocation = transform.position;
-                bballscript.dunkedtheball = true;
-                shooter(0, 0);
-                rb.useGravity = false;
-                dunk = 1;
-                characteranimator.SetInteger("DunkNow", 1);
-            }
-
-
-            if (value.started && dunk == 0 && (shootboolwii || ess.gamemode != 3))
-            {
-                shootbuttonon = true;
-                shootbuttonbuffer = true;
-                Debug.Log("shootbuttonbuffer on");
-                if (bballscript.playerholding)
-                {
-                    characteranimator.SetInteger("EmoteNum", 0);
-                    characteranimator.SetBool("ShootNow", true);
-                    shotmeterscript.shotmetercalc(false);
-                }
-            }
-            else if (value.started && dunk == 0 && !shootboolwii && ess.gamemode == 3)
-            {
-                ess.CameraVer = 0;
-                ess.camchange(0);
-                shootboolwii = true;
-            }
-            if (value.canceled && dunk == 0 && (shootbuttonbuffer && shootboolwii || ess.gamemode != 3))
-            {
-                shootbuttonon = false;
-                shootbuttonbuffer = false;
-
-                if (bballscript.playerholding)
-                {
-                    characteranimator.speed = 1f;
-                    //check for skill and shotmeter then put into shooter()
-                    //for this example, shootingskill is 1 (excellent), smeter is green (1)
-                    // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
-                    // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
-                    shotmeterscript.shotmetercalc(true);
-                    if (smeter == 0)
-                    {
-                        psr.material = ParticleMaterials[0];
-                        ps.Play();
-                    }
-                    else if (smeter == 1)
-                    {
-                        psr.material = ParticleMaterials[1];
-                        ps.Play();
-                    }
-                    shooter(shootingskill, smeter);
-                    if (ess.gamemode == 3)
-                    {
-                        shootboolwii = false;
-                    }
-                }
-            }
+            bballscript.bbrelease.shotreleasenow = false;
+            dunkcount = 0f;
+            StartDunkLocation = transform.position;
+            bballscript.dunkedtheball = true;
+            shooter(0, 0);
+            rb.useGravity = false;
+            dunk = 1;
+            characteranimator.SetInteger("DunkNow", 1);
         }
 
+
+        if (value.started && dunk == 0 && (shootboolwii || ess.gamemode != 3))
+        {
+            shootbuttonon = true;
+            shootbuttonbuffer = true;
+            Debug.Log("shootbuttonbuffer on");
+            if (bballscript.playerholding)
+            {
+                characteranimator.SetInteger("EmoteNum", 0);
+                characteranimator.SetBool("ShootNow", true);
+                shotmeterscript.shotmetercalc(false);
+            }
+        }
+        else if (value.started && dunk == 0 && !shootboolwii && ess.gamemode == 3)
+        {
+            ess.CameraVer = 0;
+            ess.camchange(0);
+            shootboolwii = true;
+        }
+        if (value.canceled && dunk == 0 && (shootbuttonbuffer && shootboolwii || ess.gamemode != 3))
+        {
+            shootbuttonon = false;
+            shootbuttonbuffer = false;
+
+            if (bballscript.playerholding)
+            {
+                characteranimator.speed = 1f;
+                //check for skill and shotmeter then put into shooter()
+                //for this example, shootingskill is 1 (excellent), smeter is green (1)
+                // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
+                // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
+                shotmeterscript.shotmetercalc(true);
+                if (smeter == 0)
+                {
+                    psr.material = ParticleMaterials[0];
+                    ps.Play();
+                }
+                else if (smeter == 1)
+                {
+                    psr.material = ParticleMaterials[1];
+                    ps.Play();
+                }
+                shooter(shootingskill, smeter);
+                if (ess.gamemode == 3)
+                {
+                    shootboolwii = false;
+                }
+            }
+
+        }
     }
 
     private void Update()
     {
-        if(blockjumpon && bballscript.bbrelease.blockjumpnow)
-        {
-            blockjump();
-        }
-        if(dunk == 1 && dunkcount < 1 && bballscript.bbrelease.jumpdunknow)
+        if (dunk == 1 && dunkcount < 1 && bballscript.bbrelease.jumpdunknow)
         {
             Debug.Log(DunkLocation);
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocation, dunkcount));
             dunkcount = Mathf.Clamp01(2 * Time.deltaTime + dunkcount);
         }
-        else if(dunk == 1 && dunkcount >= 1 && bballscript.bbrelease.shotreleasenow)
+        else if (dunk == 1 && dunkcount >= 1 && bballscript.bbrelease.shotreleasenow)
         {
             Debug.Log("dunkinrn");
             rb.isKinematic = true; //need the shotreleasenow to rigoff
@@ -201,7 +194,7 @@ public class playermovement : MonoBehaviour
             characteranimator.SetInteger("DunkNow", 2);
             dunk = 2;
         }
-        else if(dunk == 3 && bballscript.bbrelease.dunkfallnow)
+        else if (dunk == 3 && bballscript.bbrelease.dunkfallnow)
         {
             characteranimator.SetInteger("DunkNow", 0);
             rb.useGravity = true;
@@ -229,11 +222,11 @@ public class playermovement : MonoBehaviour
 
     public void emoteinp(InputAction.CallbackContext value)
     {
-        if(value.started)
+        if (value.started)
         {
             emoteson = true;
         }
-        else if(value.canceled)
+        else if (value.canceled)
         {
             emoteson = false;
             characteranimator.SetInteger("EmoteNum", 0);
@@ -243,7 +236,7 @@ public class playermovement : MonoBehaviour
     {
         int tempangle;
         rightstick = value.ReadValue<Vector2>();
-        if(emoteson)
+        if (emoteson)
         {
             tempangle = Mathf.RoundToInt(Vector2.SignedAngle(Vector2.right, rightstick));
             Debug.Log(tempangle);
@@ -254,7 +247,7 @@ public class playermovement : MonoBehaviour
             }
             else
             {
-            characteranimator.SetInteger("EmoteNum", emotenum);
+                characteranimator.SetInteger("EmoteNum", emotenum);
             }
             if (0 <= tempangle && tempangle < 60)
             {
@@ -292,27 +285,16 @@ public class playermovement : MonoBehaviour
 
     public void passinp(InputAction.CallbackContext value)
     {
-        if(!hasball && value.started)
-        {
-            blockjumpon = true;
-            characteranimator.SetBool("BlockJump", true);
-        }
-        else if(!hasball && value.canceled)
-        {
-            characteranimator.SetBool("BlockJump", false);
-        }
-
         float negchange = 1;
-
         if (ess.gamemode == 3 || ess.gamemode == 4)
         {
-            if (hasball && bballscript.playerholding && value.started && !shootboolwii)
+            if (bballscript.playerholding && value.started && !shootboolwii)
             {
-                if(ess.HoopNum == 1 && negchange != -1)
+                if (ess.HoopNum == 1 && negchange != -1)
                 {
                     negchange = -1;
                 }
-                else if(ess.HoopNum == 0 && negchange != 1)
+                else if (ess.HoopNum == 0 && negchange != 1)
                 {
                     negchange = 1;
                 }
@@ -360,11 +342,7 @@ public class playermovement : MonoBehaviour
         }
     }
 
-    public void blockjump()
-    {
-        rb.AddForce(0, jscale, 0, ForceMode.Impulse);
-        blockjumpon = false;
-    }
+
 
     public void shooter(int shootingskill, int smeter)
     {
@@ -374,7 +352,6 @@ public class playermovement : MonoBehaviour
 
         bbrb.detectCollisions = false;
         bballscript.playerholding = false;
-
         if (smeter == 0)
         {
             shotpercent = 100 - (shootingskill); //green
@@ -418,7 +395,9 @@ public class playermovement : MonoBehaviour
             }
         }
 
+
         //out of 100, green - 99, slight early - 80, slight late - 70, early - 50, late - 40, very early/late - 10, nah - 0
+
 
         shotresultnum = (shotpercent - Random.Range(0, 100));
         if (shotresultnum >= 0)
@@ -486,7 +465,7 @@ public class playermovement : MonoBehaviour
                 rb.MoveRotation(qTo);
             }
         }
-        else if (ess.CameraVer != 0 && !hasball)
+        else if (ess.CameraVer != 0 && isondefence)
         {
             qTo = Quaternion.LookRotation(transform.position - new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
             qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
@@ -496,7 +475,7 @@ public class playermovement : MonoBehaviour
                 resetrot = false;
             }
         }
-        else if (ess.CameraVer != 0 && hasball)
+        else if (ess.CameraVer != 0)
         {
             qTo = Quaternion.LookRotation(new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f) - transform.position);
             qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);

@@ -14,4 +14,6 @@ public class bballrelease : MonoBehaviour
 
     public bool dribbledownnow;
 
+    public bool blockjumpnow;
+
 }
