@@ -16,7 +16,9 @@ public class playermovement : MonoBehaviour
     public SHOTMETER shotmeterscript;
     public GameObject basketballobj;
     private bassetball bballscript;
+    public bballrelease bbrel;
     private Rigidbody bbrb;
+    private Transform bbt;
     private Vector2 movementVector;
     private Quaternion qTo;
     public float mscale = 5f;
@@ -67,14 +69,14 @@ public class playermovement : MonoBehaviour
     private float hoopdistance;
 
     public bool hasball;
-    private bool isondefence;
+    public bool otherhasball;
     private bool defenceon;
 
     public bool blockjumpon;
+    public bool blockjumprbnow;
 
     void Awake()
     {
-        isondefence = gameObject.CompareTag("enemy");
         charactermodel = transform.GetChild(0).gameObject;
         characteranimator = charactermodel.GetComponent<Animator>();
         characterrigs[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 2).GetComponent<Rig>();
@@ -84,7 +86,9 @@ public class playermovement : MonoBehaviour
         ps = GetComponent<ParticleSystem>();
         psr = GetComponent<ParticleSystemRenderer>();
         bballscript = basketballobj.GetComponent<bassetball>();
+        bbrel = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3).GetComponent<bballrelease>();
         bbrb = basketballobj.GetComponent<Rigidbody>();
+        bbt = basketballobj.transform;
 
     }
 
@@ -116,7 +120,7 @@ public class playermovement : MonoBehaviour
             //dunking
             if (value.started && movementVector.y > 0.1f && 14 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
             {
-                bballscript.bbrelease.shotreleasenow = false;
+                bbrel.shotreleasenow = false;
                 dunkcount = 0f;
                 StartDunkLocation = transform.position;
                 bballscript.dunkedtheball = true;
@@ -152,6 +156,7 @@ public class playermovement : MonoBehaviour
 
                 if (bballscript.playerholding)
                 {
+                    //changewhohasball(2);
                     characteranimator.speed = 1f;
                     //check for skill and shotmeter then put into shooter()
                     //for this example, shootingskill is 1 (excellent), smeter is green (1)
@@ -181,17 +186,25 @@ public class playermovement : MonoBehaviour
 
     private void Update()
     {
-        if(blockjumpon && bballscript.bbrelease.blockjumpnow)
+        if(blockjumpon && bbrel.blockjumpnow)
         {
-            blockjump();
+            rb.AddForce(0, jscale, 0, ForceMode.Impulse);
+            blockjumprbnow = true;
+            blockjumpon = false;
         }
-        if(dunk == 1 && dunkcount < 1 && bballscript.bbrelease.jumpdunknow)
+        else if(!bbrel.blockjumpnow && blockjumprbnow)
+        {
+            blockjumprbnow = false; //turns off blockjumprbnow when anim is done
+            characteranimator.SetBool("BlockJump", false);
+        }
+
+        if(dunk == 1 && dunkcount < 1 && bbrel.jumpdunknow)
         {
             Debug.Log(DunkLocation);
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocation, dunkcount));
             dunkcount = Mathf.Clamp01(2 * Time.deltaTime + dunkcount);
         }
-        else if(dunk == 1 && dunkcount >= 1 && bballscript.bbrelease.shotreleasenow)
+        else if(dunk == 1 && dunkcount >= 1 && bbrel.shotreleasenow)
         {
             Debug.Log("dunkinrn");
             rb.isKinematic = true; //need the shotreleasenow to rigoff
@@ -201,7 +214,7 @@ public class playermovement : MonoBehaviour
             characteranimator.SetInteger("DunkNow", 2);
             dunk = 2;
         }
-        else if(dunk == 3 && bballscript.bbrelease.dunkfallnow)
+        else if(dunk == 3 && bbrel.dunkfallnow)
         {
             characteranimator.SetInteger("DunkNow", 0);
             rb.useGravity = true;
@@ -219,7 +232,7 @@ public class playermovement : MonoBehaviour
             shotmeterscript.shotmetercalc(false);
             shootbuttonbuffer = false;
         }
-        if (shootbuttonon && bballscript.playerholding && bballscript.bbrelease.pauseanimenow && characteranimator.speed == 1)
+        if (shootbuttonon && bballscript.playerholding && bbrel.pauseanimenow && characteranimator.speed == 1)
         {
             Debug.Log("FREEZE");
             characteranimator.speed = 0.0f;
@@ -292,14 +305,10 @@ public class playermovement : MonoBehaviour
 
     public void passinp(InputAction.CallbackContext value)
     {
-        if(!hasball && value.started)
+        if(!hasball && !blockjumpon && !blockjumprbnow && value.started)
         {
-            blockjumpon = true;
             characteranimator.SetBool("BlockJump", true);
-        }
-        else if(!hasball && value.canceled)
-        {
-            characteranimator.SetBool("BlockJump", false);
+            blockjumpon = true;
         }
 
         float negchange = 1;
@@ -360,11 +369,6 @@ public class playermovement : MonoBehaviour
         }
     }
 
-    public void blockjump()
-    {
-        rb.AddForce(0, jscale, 0, ForceMode.Impulse);
-        blockjumpon = false;
-    }
 
     public void shooter(int shootingskill, int smeter)
     {
@@ -372,8 +376,11 @@ public class playermovement : MonoBehaviour
         shotdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
         ess.shotdistancetext.text = shotdistance + " ft";
 
-        bbrb.detectCollisions = false;
+        bbrb.detectCollisions = true;
+        bballscript.physicalballcollider.enabled = false;
         bballscript.playerholding = false;
+        ess.currentballhaver = null;
+
 
         if (smeter == 0)
         {
@@ -459,7 +466,6 @@ public class playermovement : MonoBehaviour
 
     }
 
-
     private void FixedUpdate()
     {
         hoopdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
@@ -486,9 +492,13 @@ public class playermovement : MonoBehaviour
                 rb.MoveRotation(qTo);
             }
         }
-        else if (ess.CameraVer != 0 && !hasball)
+        else if (ess.CameraVer != 0 && !hasball && otherhasball)
         {
-            qTo = Quaternion.LookRotation(transform.position - new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+            //look oposite from hoop
+            //qTo = Quaternion.LookRotation(transform.position - new Vector3(HoopLookAt.position.x, transform.position.y, HoopLookAt.position.z + 0.5f));
+
+            //look at ball
+            qTo = Quaternion.LookRotation(new Vector3(bbt.position.x, transform.position.y, bbt.position.z + 0.5f) - transform.position);
             qTo = Quaternion.Slerp(transform.rotation, qTo, 10 * Time.deltaTime);
             rb.MoveRotation(qTo);
             if (resetrot == true)
@@ -513,7 +523,7 @@ public class playermovement : MonoBehaviour
         }
         if (ess.gamemode != 3)
         {
-            if (dunk == 0 && !shootbuttonon && !bballscript.shoot && bballscript.bbrelease.rigoffnow && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
+            if (dunk == 0 && !shootbuttonon && !bballscript.shoot && bbrel.rigoffnow && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
             {
                 if (!characteranimator.GetBool("Moving"))
                 {
@@ -528,6 +538,10 @@ public class playermovement : MonoBehaviour
                 else if (ess.HoopNum == 1)
                 {
                     rb.AddForce(movementVector.x * -mscale, 0, movementVector.y * -mscale, ForceMode.Impulse);
+                }
+                else if (blockjumpon || bbrel.blockjumpnow)
+                {
+                    rb.AddForce(movementVector.x * mscale * 0.2f, 0, movementVector.y * mscale * 0.75f, ForceMode.Impulse);
                 }
                 else if (defenceon)
                 {

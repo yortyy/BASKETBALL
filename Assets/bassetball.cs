@@ -18,6 +18,7 @@ public class bassetball : MonoBehaviour
     public bool shoot;
     public bool playerholding;
     private Rigidbody bbrb;
+    [SerializeField] public SphereCollider physicalballcollider;
 
     private GameObject HoopEffObj;
     private ParticleSystem HoopEff;
@@ -78,32 +79,54 @@ public class bassetball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //Debug.Log(trueplayerisonoffence);
-        if ((bbrelease.blockjumpnow && (((other.gameObject.CompareTag("player") && !trueplayerisonoffence) || (other.gameObject.CompareTag("enemy") && trueplayerisonoffence)))) || (((other.gameObject.CompareTag("player") && trueplayerisonoffence) || (other.gameObject.CompareTag("enemy") && !trueplayerisonoffence))) && !shoot && !playerswitching && !dunkedtheball)
+        //Debug.Log(other.gameObject);
+        if ((other.gameObject.CompareTag("player")) || (other.gameObject.CompareTag("enemy")))
         {
-            if(player != other.gameObject)
+            GameObject temptrigger = other.gameObject;
+            playermovement tempps = temptrigger.GetComponent<playermovement>();
+            bballrelease tempbbrel = tempps.bbrel;
+            //Debug.Log(tempbbrel);
+
+            if (tempbbrel.blockjumpnow || (((temptrigger.CompareTag("player") && trueplayerisonoffence) || (temptrigger.CompareTag("enemy") && !trueplayerisonoffence))) && !shoot && !playerswitching && !dunkedtheball)
             {
-                ess.PlayerChange(other.gameObject, true);
-            }
+                if (tempbbrel.blockjumpnow)
+                {
+                    Debug.Log("HitBlockedbruh----------------------------------------------------------------------");
+                    ShotExits();
+                }
+                //ps.changewhohasball(1);
+                
+                if (player != temptrigger)
+                {
+                    ess.PlayerChange(temptrigger, true);
+                    //ps.hasball = false;
+                    //ps.otherhasball = true;
+                }
 
-            player = other.gameObject;
-            ps = player.GetComponent<playermovement>();
-            ps.hasball = true;
-            bballholdref = player.transform.GetChild(0).GetChild(player.transform.GetChild(0).childCount - 3);
-            bbrelease = bballholdref.GetComponent<bballrelease>();
+                player = temptrigger;
+                ps = tempps;
+                //ps.changewhohasball(2);
+                //ps.hasball = true;
+                //ps.otherhasball = false;
 
-            //need to stop playback or go back to idle animation
-            bbrb.isKinematic = true;
-            bbrb.detectCollisions = false;
-            bbrb.useGravity = false;
-            playerholding = true;
-            Debug.Log("KONNECT: " + other.gameObject);
 
-            if(readytoswitchsides && ess.fullcourt)
-            {
-                ess.SwitchSides();
-                ballSwitchSides();
-                readytoswitchsides = false;
+                bballholdref = tempbbrel.transform;
+                bbrelease = tempbbrel;
+
+                //ess.currentballhaver = player;
+
+                bbrb.isKinematic = true;
+                bbrb.detectCollisions = false;
+                bbrb.useGravity = false;
+                playerholding = true;
+                Debug.Log("KONNECT: " + temptrigger);
+
+                if (readytoswitchsides && ess.fullcourt)
+                {
+                    ess.SwitchSides();
+                    ballSwitchSides();
+                    readytoswitchsides = false;
+                }
             }
         }
     }
@@ -135,15 +158,12 @@ public class bassetball : MonoBehaviour
             transform.position = Vector3.Lerp(pastballpos, player.transform.position, progress);
             //Debug.Log("transformin 3");
         }
-        if (progress >= 1)
+        if (progress >= 1f)
         {
             playerholding = true;
             playerswitching = false;
             progress = 0;
         }
-
-
-
 
         if ((playerholding && !shoot) || (shoot && !bbrelease.shotreleasenow)) //rigon
         {
@@ -193,7 +213,6 @@ public class bassetball : MonoBehaviour
 
         if (!shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball && !setarch)
         {
-
             startpoint = bballholdref.position;
             if (!ps.shotresult)
             {
@@ -256,7 +275,7 @@ public class bassetball : MonoBehaviour
         }
         else if (shotdone) //after shot
         {
-            Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
+            //Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
             Debug.Log("setarchturnoff");
 
             ShotHits(false);
@@ -270,16 +289,42 @@ public class bassetball : MonoBehaviour
         }
     }
 
-    public void ShotHits(bool Dunk)
+    public void ShotExits()
     {
         bbrb.useGravity = true;
         bbrb.isKinematic = false;
-        bbrb.detectCollisions = true;
+        physicalballcollider.enabled = true;
+        //bbrb.detectCollisions = true;
+
+        //ps.hasball = false;
+        ess.currentballhaver = null;
+        ess.ballhaver();
+        ps.characteranimator.SetBool("ShootNow", false);
+
+        ps.shotmeterscript.shotmeterslider.value = 0;
+        setcount = false;
+        progressshoot = 0f;
+        setarch = false;
+        shotdone = false;
+
+        bbrelease.shotreleasenow = false;
+        shoot = false;
+    }
+
+    public void ShotHits(bool Dunk)
+    {
 
         bbrb.AddForce(0, -3, 0, ForceMode.Impulse);
 
 
+        bbrb.useGravity = true;
+        bbrb.isKinematic = false;
+        physicalballcollider.enabled = true;
+        //bbrb.detectCollisions = true;
+
+        ess.currentballhaver = null;
         ps.hasball = false;
+        ess.ballhaver();
 
         if (ess.gamemode == 2 && ess.shotscore != 0)
         {
@@ -327,7 +372,6 @@ public class bassetball : MonoBehaviour
                 trueplayerisonoffence = !trueplayerisonoffence;
                 readytoswitchsides = true;
             }
-            
         }
 
         ess.shotscoretext.text = ess.shotscore.ToString();
@@ -337,18 +381,18 @@ public class bassetball : MonoBehaviour
     {
         if (!shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball && setarch) //jumpshottimeneeded to movebball ref up in animation
         {
-            Debug.Log(progressshoot);
+            //Debug.Log(progressshoot);
 
             Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
             Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
             bbrb.MovePosition(Vector3.Lerp(m1, m2, progressshoot));
-            Debug.Log("transformin 2 | pos: " + transform.position + " pshoot: " + progressshoot);
+            //Debug.Log("transformin 2 | pos: " + transform.position + " pshoot: " + progressshoot);
 
             progressshoot = Mathf.Clamp01(shotinairtime * Time.fixedDeltaTime + progressshoot); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
 
             if (progressshoot == 1f && transform.position == targetpoint)
             {
-                Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
+                //Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
                 shotdone = true;
             }
         }

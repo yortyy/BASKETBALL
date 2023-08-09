@@ -10,6 +10,7 @@ using Cinemachine;
 using System.Linq;
 using UnityEngine.Animations.Rigging;
 using Unity.VisualScripting;
+using System;
 
 public class EventScriptSystem : MonoBehaviour
 {
@@ -77,29 +78,42 @@ public class EventScriptSystem : MonoBehaviour
 
     [SerializeField] private hooplerpobjMover hooplerpobjmover;
 
+    public GameObject currentballhaver = null; //null means loose ball
+
+    public List<playermovement> allplayerscripts;
+
+
     void Awake()
     {
         ps = player.GetComponent<playermovement>();
         bb = basketball.GetComponent<bassetball>();
         prb = player.GetComponent<Rigidbody>();
         brb = basketball.GetComponent<Rigidbody>();
-        tpmarkers[0] = transform.GetChild(0);
-        tpmarkers[1] = transform.GetChild(1);
-        tpmarkers[2] = transform.GetChild(2);
-        tpmarkers[3] = transform.GetChild(3);
-        tpmarkers[4] = transform.GetChild(4);
-        tpmarkers[5] = transform.GetChild(5);
-        tpmarkers[6] = transform.GetChild(6);
+
+        for (int i = 0; i <= 6; i++)
+        {
+            tpmarkers[i] = transform.GetChild(i);
+        }
+
         tpzone = transform.GetChild(7).gameObject;
         kcamtracker = transform.GetChild(8);
         asc = GetComponent<AudioSource>();
         plcam = playerlockcam.GetComponent<CinemachineVirtualCamera>();
 
-        teammatesrb[0] = teammates[0].GetComponent<Rigidbody>();
-        teammatesrb[1] = teammates[1].GetComponent<Rigidbody>();
-        enemiesrb[0] = enemies[0].GetComponent<Rigidbody>();
-        enemiesrb[1] = enemies[1].GetComponent<Rigidbody>();
-        enemiesrb[2] = enemies[2].GetComponent<Rigidbody>();
+        allplayerscripts.Add(ps);
+        for (int i = 0; i < teammates.Length; i++)
+        {
+            teammatesrb[i] = teammates[i].GetComponent<Rigidbody>();
+            allplayerscripts.Add(teammates[i].GetComponent<playermovement>());
+        }
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            enemiesrb[i] = enemies[i].GetComponent<Rigidbody>();
+            allplayerscripts.Add(enemies[i].GetComponent<playermovement>());
+        }
+        //ballhaver();
+        //Debug.Log(allplayerscripts.Count);
+
 
         CameraVer = 1;
         camchange(0);
@@ -150,21 +164,26 @@ public class EventScriptSystem : MonoBehaviour
         pltargetGroup.AddMember(newplayer.transform, 4, 1);
         kcamtargetGroup.RemoveMember(player.transform);
         kcamtargetGroup.AddMember(newplayer.transform, 0.3f, 1);
-        ps.hasball = false;
+        //ps.changewhohasball(1);
+        //ps.hasball = false;
+        //ps.otherhasball = true;
         if (!keepcontrol)
         {
             player.GetComponent<PlayerInput>().actions.Disable();
             ps.enabled = false;
         }
-
         player = newplayer;
         ps = player.GetComponent<playermovement>();
+        currentballhaver = player;
+        ballhaver();
         if (!keepcontrol)
         {
             ps.enabled = true;
             player.GetComponent<PlayerInput>().actions.Enable();
         }
-        ps.hasball = true;
+        //ps.changewhohasball(2);
+        //ps.hasball = true;
+        //ps.otherhasball = false;
 
         pccamsmooth = true;
 
@@ -195,10 +214,7 @@ public class EventScriptSystem : MonoBehaviour
             ps.Hoop = Hoops[HoopNum].transform;
         }
 
-
-
         bb.PlayerChangeBBALL(player);
-
     }
 
     public void changemode(int gamem)
@@ -266,8 +282,8 @@ public class EventScriptSystem : MonoBehaviour
             prb.MovePosition(Vector3.zero);
             brb.MovePosition(Vector3.zero);
         }
+        PlayerChange(trueplayer, true);
 
-        PlayerChange(trueplayer, false);
         if(HoopNum == 1 && fullcourt)
         {
             SwitchSides();
@@ -304,9 +320,8 @@ public class EventScriptSystem : MonoBehaviour
         {
             tpzone.transform.position = tpmarkers[tpmarkerno].position;
         }
-
-
     }
+
 
     public void fullcourttoggle()
     {
@@ -328,7 +343,7 @@ public class EventScriptSystem : MonoBehaviour
 
     public void quitgame()
     {
-        PlayerChange(trueplayer, false);
+        PlayerChange(trueplayer, true);
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
@@ -352,7 +367,27 @@ public class EventScriptSystem : MonoBehaviour
         }
     }
 
-
+    public void ballhaver()
+    {
+        for(int i = 0; i < allplayerscripts.Count; i++)
+        {
+            if (currentballhaver == null)
+            {
+                allplayerscripts[i].hasball = false;
+                allplayerscripts[i].otherhasball = false;
+            }
+            else if (allplayerscripts[i].gameObject == currentballhaver)
+            {
+                allplayerscripts[i].hasball = true;
+                allplayerscripts[i].otherhasball = false;
+            }
+            else if(allplayerscripts[i].gameObject != currentballhaver)
+            {
+                allplayerscripts[i].hasball = false;
+                allplayerscripts[i].otherhasball = true;
+            }
+        }
+    }
 
 
     private void Update()
