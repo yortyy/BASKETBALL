@@ -49,7 +49,6 @@ public class bassetball : MonoBehaviour
     public bool dunkedtheball;
 
     private float progressshoot;
-    private GameObject bballRend;
 
     private float bballrigtime = 0.5f;
     private float bballrigtimecount;
@@ -59,11 +58,10 @@ public class bassetball : MonoBehaviour
     [HideInInspector] public bballrelease bbrelease;
 
     private bool readytoswitchsides;
-    private bool trueplayerisonoffence = true;
+    public bool trueplayerisonoffence = true;
 
     void Awake()
     {
-        bballRend = transform.GetChild(0).gameObject;
         bbrb = GetComponent<Rigidbody>();
 
         HoopEffObj = Hoop.transform.GetChild(3).gameObject;
@@ -87,33 +85,30 @@ public class bassetball : MonoBehaviour
             bballrelease tempbbrel = tempps.bbrel;
             //Debug.Log(tempbbrel);
 
-            if (tempbbrel.blockjumpnow || (((temptrigger.CompareTag("player") && trueplayerisonoffence) || (temptrigger.CompareTag("enemy") && !trueplayerisonoffence))) && !shoot && !playerswitching && !dunkedtheball)
+            //get ball if its a block, player+playerpossesion or loose ball, enemy is the same
+            if (tempbbrel.blockjumpnow || ((temptrigger.CompareTag("player") && (ess.sballpossesion || ess.looseball)) || (temptrigger.CompareTag("enemy") && (!ess.sballpossesion || ess.looseball))) && !shoot && !playerswitching && !dunkedtheball)
             {
                 if (tempbbrel.blockjumpnow)
                 {
                     Debug.Log("HitBlockedbruh----------------------------------------------------------------------");
                     ShotExits();
                 }
-                //ps.changewhohasball(1);
                 
                 if (player != temptrigger)
                 {
                     ess.PlayerChange(temptrigger, true);
-                    //ps.hasball = false;
-                    //ps.otherhasball = true;
                 }
 
                 player = temptrigger;
                 ps = tempps;
-                //ps.changewhohasball(2);
-                //ps.hasball = true;
-                //ps.otherhasball = false;
 
 
                 bballholdref = tempbbrel.transform;
                 bbrelease = tempbbrel;
 
-                //ess.currentballhaver = player;
+                ess.looseball = false;
+                ess.currentballhaver = player;
+                ess.ballhaver();
 
                 bbrb.isKinematic = true;
                 bbrb.detectCollisions = false;
@@ -308,6 +303,7 @@ public class bassetball : MonoBehaviour
         shotdone = false;
 
         bbrelease.shotreleasenow = false;
+        ps.shootingcurrently = false;
         shoot = false;
     }
 
@@ -326,9 +322,9 @@ public class bassetball : MonoBehaviour
         ps.hasball = false;
         ess.ballhaver();
 
-        if (ess.gamemode == 2 && ess.shotscore != 0)
+        if (ess.gamemode == 2 && ess.shotscore[0] != 0)
         {
-            ess.threeptcontest(ess.shotscore); //move to bassetball shot
+            ess.threeptcontest(ess.shotscore[0]); //move to bassetball shot
         }
 
         //ball flames and green/blue hoop effects
@@ -361,6 +357,7 @@ public class bassetball : MonoBehaviour
         }
 
         bbrelease.shotreleasenow = false;
+        ps.shootingcurrently = false;
         shoot = false;
 
         if (ps.shotresult)
@@ -369,12 +366,38 @@ public class bassetball : MonoBehaviour
             //practice = 0, 1on1 = 1, threept = 2, threewii = 3, 3on3 = 4
             if (ess.gamemode == 1 || ess.gamemode == 4)
             {
+                //switches possesion
+                ess.looseball = false;
+                ess.checkball = true;
+                ess.sballpossesion = !ess.sballpossesion;
                 trueplayerisonoffence = !trueplayerisonoffence;
                 readytoswitchsides = true;
             }
+            else if(ess.gamemode == 2)
+            {
+                ess.looseball = false;
+            }
+            else
+            {
+                ess.looseball = true;
+            }
         }
+        else if(!ps.shotresult)
+        {
+            if(ess.gamemode == 2)
+            {
+                ess.looseball = false;
+            }
+            else
+            {
+                ess.looseball = true;
+            }
+            
+        }
+        ess.shotscoretext[0].text = ess.shotscore[0].ToString();
+        ess.shotscoretext[1].text = ess.shotscore[0].ToString();
+        ess.shotscoretext[2].text = ess.shotscore[1].ToString();
 
-        ess.shotscoretext.text = ess.shotscore.ToString();
     }
 
     private void FixedUpdate()

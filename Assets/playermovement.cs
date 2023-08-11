@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine.Animations.Rigging;
+using Unity.VisualScripting;
 
 public class playermovement : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class playermovement : MonoBehaviour
     public int smeter;
     public bool shootbuttonon;
     public bool shootbuttonbuffer;
+    public bool shootingcurrently;
     public bool smcalcstarted;
 
 
@@ -71,6 +73,7 @@ public class playermovement : MonoBehaviour
     public bool hasball;
     public bool otherhasball;
     private bool defenceon;
+    public bool needcheckballoutofthreept; //true cant shoot, need to check ball
 
     public bool blockjumpon;
     public bool blockjumprbnow;
@@ -115,7 +118,7 @@ public class playermovement : MonoBehaviour
     }
     public void shootinp(InputAction.CallbackContext value)
     {
-        if(hasball)
+        if(hasball && !ess.checkball)
         {
             //dunking
             if (value.started && movementVector.y > 0.1f && 14 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
@@ -361,6 +364,7 @@ public class playermovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("3ptline"))
         {
+            ess.checkball = false;
             in3ptline = false;
         }
         if (other.gameObject.CompareTag("3ptzoneforcontest"))
@@ -434,18 +438,32 @@ public class playermovement : MonoBehaviour
             {
                 if (inthreeptzone)
                 {
-                    ess.shotscore += 1;
+                    ess.shotscore[0] += 1;
                 }
             }
             else //normal shooting
             {
                 if (in3ptline)
                 {
-                    ess.shotscore += 2;
+                    if(ess.sballpossesion)
+                    {
+                        ess.shotscore[0] += 2;
+                    }
+                    else if(!ess.sballpossesion)
+                    {
+                        ess.shotscore[1] += 2;
+                    }
                 }
                 else
                 {
-                    ess.shotscore += 3;
+                    if (ess.sballpossesion)
+                    {
+                        ess.shotscore[0] += 3;
+                    }
+                    else if (!ess.sballpossesion)
+                    {
+                        ess.shotscore[1] += 3;
+                    }
                 }
             }
 
@@ -462,6 +480,7 @@ public class playermovement : MonoBehaviour
 
         Debug.Log("Shotresult: " + shotresult + " | Shotresultnum: " + shotresultnum + " | Shotpercentage: " + shotpercent);
         Debug.Log(shotresultnum);
+        shootingcurrently = true; //shootcurrently is same as shoot but needs to be seperate when disabling moving input
         bballscript.shoot = true;
 
     }
@@ -523,7 +542,7 @@ public class playermovement : MonoBehaviour
         }
         if (ess.gamemode != 3)
         {
-            if (dunk == 0 && !shootbuttonon && !bballscript.shoot && bbrel.rigoffnow && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
+            if (dunk == 0 && !shootbuttonon && !shootingcurrently && bbrel.rigoffnow && ((Mathf.Abs(movementVector.x) >= 0.1f || Mathf.Abs(movementVector.y) >= 0.1f)))
             {
                 if (!characteranimator.GetBool("Moving"))
                 {

@@ -64,8 +64,9 @@ public class EventScriptSystem : MonoBehaviour
     private bool[] progressreset = new bool[4];
     private Vector3 tempkcampos;
 
-    public int shotscore;
-    public TMP_Text shotscoretext;
+    public int[] shotscore = new int[4];
+    [SerializeField] private GameObject[] shotscoreboards;
+    public TMP_Text[] shotscoretext;
     public TMP_Text shotdistancetext;
 
     private Vector3 formerplayerdunklocation;
@@ -79,8 +80,13 @@ public class EventScriptSystem : MonoBehaviour
     [SerializeField] private hooplerpobjMover hooplerpobjmover;
 
     public GameObject currentballhaver = null; //null means loose ball
+    public bool sballpossesion; //true is players, false is enemys
+    public bool looseball = true;
+    public bool checkball;
+
 
     public List<playermovement> allplayerscripts;
+
 
 
     void Awake()
@@ -156,6 +162,16 @@ public class EventScriptSystem : MonoBehaviour
 
     public void PlayerChange(GameObject newplayer, bool keepcontrol)
     {
+        looseball = false;
+        //change ball possesion when player changes to side. Also needs to change after scoring if on 1on1 or missed
+        if (newplayer.CompareTag("player"))
+        {
+            sballpossesion = true;
+        }
+        else if(newplayer.CompareTag("enemy"))
+        {
+            sballpossesion = false;
+        }    
 
         formerplayerdunklocation = ps.DunkLocation;
         pccamtempstartvector = kcamtracker.position;
@@ -174,6 +190,12 @@ public class EventScriptSystem : MonoBehaviour
         }
         player = newplayer;
         ps = player.GetComponent<playermovement>();
+
+        if (!ps.in3ptline)
+        {
+            checkball = false; //hopefully if exiting or chanign mode, the player exits 3pt making checkball true
+        }
+
         currentballhaver = player;
         ballhaver();
         if (!keepcontrol)
@@ -221,8 +243,11 @@ public class EventScriptSystem : MonoBehaviour
     {
         //practice = 0, 1on1 = 1, threept = 2, threewii = 3, 3on3 = 4
         gamemode = gamem;
-        shotscore = 0;
-        shotscoretext.text = shotscore.ToString();
+        shotscore[0] = 0;
+        shotscore[1] = 0;
+        shotscoretext[0].text = shotscore[0].ToString();
+        shotscoretext[1].text = shotscore[0].ToString();
+        shotscoretext[2].text = shotscore[0].ToString();
         exitpause();
         if (gamem == 4)
         {
@@ -234,6 +259,19 @@ public class EventScriptSystem : MonoBehaviour
         }
         asc.Play();
 
+        //turning on/off scoreboards depending if only one player
+        if(gamem == 2)
+        {
+            shotscoreboards[0].SetActive(true);
+            shotscoreboards[1].SetActive(false);
+        }
+        else if (shotscoreboards[0].activeSelf)
+        {
+            shotscoreboards[0].SetActive(false);
+            shotscoreboards[1].SetActive(true);
+        }
+
+
         if (gamem == 0 || gamem == 1 || gamem == 2)
         {
             teammates[0].SetActive(false);
@@ -243,10 +281,13 @@ public class EventScriptSystem : MonoBehaviour
         {
             teammates[0].SetActive(true);
             teammates[1].SetActive(true);
+            enemies[0].SetActive(true);
+            enemies[1].SetActive(true);
+            enemies[2].SetActive(true);
 
         }
 
-        if(gamem == 2 || gamem == 3) //3player
+        if(gamem == 2 || gamem == 3) //3player timeron
         {
             if (gamem == 2)
             {
@@ -276,6 +317,9 @@ public class EventScriptSystem : MonoBehaviour
             {
                 teammatesrb[0].MovePosition(tpmarkers[1].position);
                 teammatesrb[1].MovePosition(tpmarkers[5].position);
+                enemiesrb[0].MovePosition(tpmarkers[0].position + new Vector3(-3, 1, 0));
+                enemiesrb[1].MovePosition(tpmarkers[6].position + new Vector3(3, 1, 0));
+                enemiesrb[2].MovePosition(tpmarkers[3].position + new Vector3(0, 1, 3));
             }
 
             timeron = false;
@@ -369,7 +413,8 @@ public class EventScriptSystem : MonoBehaviour
 
     public void ballhaver()
     {
-        for(int i = 0; i < allplayerscripts.Count; i++)
+
+        for (int i = 0; i < allplayerscripts.Count; i++)
         {
             if (currentballhaver == null)
             {
