@@ -173,7 +173,7 @@ public class EventScriptSystem : MonoBehaviour
             sballpossesion = false;
         }    
 
-        formerplayerdunklocation = ps.DunkLocation;
+        formerplayerdunklocation = ps.DunkLocationOffset;
         pccamtempstartvector = kcamtracker.position;
         plcam.Follow = newplayer.transform;
         pltargetGroup.RemoveMember(player.transform);
@@ -230,7 +230,7 @@ public class EventScriptSystem : MonoBehaviour
                 //ps.HeadTrackers[1].weight = 1;
                 //ps.HeadTrackers[0].weight = 0;
             }
-            ps.DunkLocation = formerplayerdunklocation;
+            ps.DunkLocationOffset = formerplayerdunklocation;
             ps.HoopLookAt = Hoops[HoopNum].transform;
             ps.HoopProtector = Hoops[HoopNum].transform.GetChild(0).gameObject;
             ps.Hoop = Hoops[HoopNum].transform;
@@ -611,7 +611,7 @@ public class EventScriptSystem : MonoBehaviour
         }
         hooplerpobjmover.trackObjs(Hoops[HoopNum].transform, Hoops[HoopNum].transform.GetChild(2), Hoops[HoopNum].transform.GetChild(1));
         //ps.HeadTrackers[HoopNum].weight = 1;
-        ps.DunkLocation = new Vector3(0, ps.DunkLocation.y, ps.DunkLocation.z * -1);
+        ps.DunkLocationOffset = new Vector3(0, ps.DunkLocationOffset.y, ps.DunkLocationOffset.z * -1);
         ps.HoopLookAt = Hoops[HoopNum].transform;
         ps.Hoop = Hoops[HoopNum].transform;
         ps.HoopProtector = Hoops[HoopNum].transform.GetChild(0).gameObject;

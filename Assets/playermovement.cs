@@ -62,7 +62,7 @@ public class playermovement : MonoBehaviour
     private bool emoteson;
     private int emotenum;
 
-    [HideInInspector] public Vector3 DunkLocation = new Vector3(0, 2.3f, 20.3f);
+    [HideInInspector] public Vector3 DunkLocationOffset;
     private Vector3 StartDunkLocation;
     private float dunkcount;
     [HideInInspector] public int dunk;
@@ -92,6 +92,7 @@ public class playermovement : MonoBehaviour
         bbrel = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3).GetComponent<bballrelease>();
         bbrb = basketballobj.GetComponent<Rigidbody>();
         bbt = basketballobj.transform;
+        DunkLocationOffset = new Vector3(0f, -1.8f, -0.52f);
 
     }
 
@@ -203,8 +204,8 @@ public class playermovement : MonoBehaviour
 
         if(dunk == 1 && dunkcount < 1 && bbrel.jumpdunknow)
         {
-            Debug.Log(DunkLocation);
-            rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocation, dunkcount));
+            Debug.Log(DunkLocationOffset);
+            rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocationOffset + Hoop.transform.position, dunkcount));
             dunkcount = Mathf.Clamp01(2 * Time.deltaTime + dunkcount);
         }
         else if(dunk == 1 && dunkcount >= 1 && bbrel.shotreleasenow)
