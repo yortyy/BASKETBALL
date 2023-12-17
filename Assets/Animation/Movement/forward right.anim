@@ -29,7 +29,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -63,7 +63,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -123,7 +123,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -139,7 +139,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -182,7 +182,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
   m_ScaleCurves: []
   m_FloatCurves:
   - serializedVersion: 2
@@ -18250,7 +18250,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: dribbledownnow
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
     classID: 114
     script: {fileID: 11500000, guid: 7f09003e975a5694f9702267e646afaf, type: 3}
     flags: 0
@@ -18272,7 +18272,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1169414952
+      path: 2988212892
       attribute: 2893208883
       script: {fileID: 11500000, guid: 7f09003e975a5694f9702267e646afaf, type: 3}
       typeID: 114
@@ -18281,7 +18281,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1169414952
+      path: 2988212892
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -18290,7 +18290,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 319941905
+      path: 4167341140
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -18299,7 +18299,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 319941905
+      path: 4167341140
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -19271,7 +19271,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1239314239
+      path: 848369146
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -19280,7 +19280,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1239314239
+      path: 848369146
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -37591,7 +37591,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37639,7 +37639,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37687,7 +37687,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37726,7 +37726,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: dribbledownnow
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
     classID: 114
     script: {fileID: 11500000, guid: 7f09003e975a5694f9702267e646afaf, type: 3}
     flags: 0
@@ -37747,7 +37747,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37768,7 +37768,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37789,7 +37789,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37810,7 +37810,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -37831,7 +37831,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -37852,7 +37852,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -37900,7 +37900,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37948,7 +37948,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -37996,7 +37996,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -38035,7 +38035,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -38074,7 +38074,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -38113,7 +38113,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -38188,8 +38188,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: ref_bballhold/ref_lefthandanim
+    attribute: m_LocalEulerAngles.z
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -38201,19 +38201,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: ref_bballhold/ref_lefthandanim
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: ref_bballhold/ref_lefthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -38225,19 +38213,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: ref_bballhold/ref_righthandanim
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_lefthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -38249,7 +38225,31 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: ref_bballhold/ref_righthandanim
+    path: ballOffset/ref_bballhold/ref_righthandanim
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: ballOffset/ref_bballhold/ref_righthandanim
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: ballOffset/ref_bballhold/ref_righthandanim
     classID: 4
     script: {fileID: 0}
     flags: 0

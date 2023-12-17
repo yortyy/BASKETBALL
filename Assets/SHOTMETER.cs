@@ -9,11 +9,12 @@ public class SHOTMETER : MonoBehaviour
 {
     public GameObject player;
     public GameObject ShotMeterUI;
-    public playermovement playermov;
+    [HideInInspector] public playermovement playermov;
     public float shotmetertimer;
     public Slider shotmeterslider;
     private bool shoottimeron;
-    public TMP_Text shottext;
+    public TMP_Text shotRelease;
+    public TMP_Text shotDifficulty;
     Vector3 targ;
     [SerializeField] float smSpeed = 1.5f;
     [SerializeField] int greencenterval = 100;
@@ -41,11 +42,11 @@ public class SHOTMETER : MonoBehaviour
     {
         targ = (Camera.main.WorldToScreenPoint(player.transform.position) + new Vector3(50, 0, 0));
         ShotMeterUI.transform.position = targ;
-
     }
 
-    public void shotmetercalc(bool shoot)
+    public float shotmetercalc(bool shoot)
     {
+        int smeter = 0;
         if(!shoot)
         {
             shotmetertimer = Time.time;
@@ -55,62 +56,94 @@ public class SHOTMETER : MonoBehaviour
         else if(shoot)
         {
             shoottimeron = false;
-            shotmetertimer = (Mathf.RoundToInt((Time.time - shotmetertimer) * smSpeed * 100) - greencenterval);
-            if(shotmetertimer == 0)
-            {
-                playermov.smeter = 0;
-                shottext.color = Color.blue;
-                shottext.text = "WET LIKE WATER";
-            }
-            else if (shotmetertimer <= -33 || 33 <= shotmetertimer) //bigger than 32
-            {
-                playermov.smeter = 20;
-                shottext.color = Color.black;
-                shottext.text = "Nah";
-            }
-            else if (-5 <= shotmetertimer && shotmetertimer <= 5) //not 0, between -2 and 2
-            {
-                playermov.smeter = 1;
-                shottext.color = Color.green;
-                shottext.text = "IRISH SPRING GREEN GREEN";
-            } //0-3 is ex, 4 - 8 is sl/se, 9-
-            else if(0 <= shotmetertimer && shotmetertimer <= 10) //not -2 to 2, 3 to 7
-            {
-                playermov.smeter = 4;
-                shottext.color = Color.yellow;
-                shottext.text = "Slightly Late";
-            }
-            else if (0 <= shotmetertimer && shotmetertimer <= 20) //not -2 to 7, 8 to 18
-            {
-                playermov.smeter = 10;
-                shottext.color = Color.yellow;
-                shottext.text = "Late";
-            }
-            else if (0 <= shotmetertimer && shotmetertimer <= 32) //not -2 to 18, 19 to 32
-            {
-                playermov.smeter = 18;
-                shottext.color = Color.red;
-                shottext.text = "Very Late";
-            }
-            else if(-10 <= shotmetertimer) //not -2 to 32, -7 to -2
-            {
-                playermov.smeter = 4;
-                shottext.color = Color.yellow;
-                shottext.text = "Slightly Early";
-            }
-            else if (-20 <= shotmetertimer) //not -2 to 7, 8 to 18
-            {
-                playermov.smeter = 10;
-                shottext.color = Color.yellow;
-                shottext.text = "Early";
-            }
-            else if (-32 <= shotmetertimer) //not -2 to 18, 19 to 32
-            {
-                playermov.smeter = 18;
-                shottext.color = Color.red;
-                shottext.text = "Very Early";
-            }
-            Debug.Log("slider: " + shotmeterslider.value + " | smeter: " + Mathf.RoundToInt(shotmeterslider.value * 100) + " | smeter: " + playermov.smeter);
+            shotmetertimer = ((Time.time - shotmetertimer) * smSpeed) - 1;
+
+            Debug.Log("slider: " + shotmeterslider.value + " | smeter: " + Mathf.RoundToInt(shotmeterslider.value * 100) + " | smeter: " + smeter);
         }
+        return shotmetertimer;
+    }
+
+    public void SetShotDescription(float shotReleasePercent, float coveredPercent, bool shotEarly)
+    {
+        int intShotReleasePercent = Mathf.CeilToInt(shotReleasePercent * 100);
+        int intCoveredPercent = Mathf.RoundToInt(coveredPercent * 100);
+        string releaseColor= "";
+        string releaseText = "";
+        string releaseTiming = "";
+        string coveredColor = "";
+        string coveredText = "";
+
+        if(shotEarly) {
+            releaseTiming = "Early";
+        }
+        else {
+            releaseTiming = "Late";
+        }
+
+        if (shotReleasePercent > 0.99f)
+        {
+            releaseColor= "blue";
+            releaseText = "Perfect";
+        }
+        else if (shotReleasePercent >= 0.98f)
+        {
+            releaseColor= "green";
+            releaseText = "Excellent";
+        }
+        else if (shotReleasePercent >= 0.80)
+        {
+            releaseColor= "yellow";
+            releaseText = "Slightly " + releaseTiming;
+        }
+        else if (shotReleasePercent >= 0.70)
+        {
+            releaseColor= "yellow";
+            releaseText = releaseTiming;
+        }
+        else if (shotReleasePercent >= 0.50)
+        {
+            releaseColor= "red";
+            releaseText = "Very " + releaseTiming;
+        }
+        else
+        {
+            releaseColor= "black";
+            releaseText = "Horrible";
+        }
+
+        if (coveredPercent == 0)
+        {
+            coveredColor = "blue";
+            coveredText = "Wide Open";
+        }
+        else if (coveredPercent < 0.2)
+        {
+            coveredColor = "green";
+            coveredText = "Open";
+        }
+        else if (coveredPercent < 0.4)
+        {
+            coveredColor = "yellow";
+            coveredText = "Slightly Covered";
+        }
+        else if (coveredPercent < 0.7)
+        {
+            coveredColor = "yellow";
+            coveredText = "Covered";
+        }
+        else if (coveredPercent < 0.9)
+        {
+            coveredColor = "red";
+            coveredText = "Very Covered";
+        }
+        else
+        {
+            coveredColor = "black";
+            coveredText = "Smothered";
+        }
+
+        shotRelease.text = "Shot Release: " + "<color=" + releaseColor+ ">" + releaseText + " " + intShotReleasePercent + "%</color>";
+        shotDifficulty.text = "Shot Coverage: " + "<color=" + coveredColor + ">" + coveredText + " " + intCoveredPercent + "%</color>";
+
     }
 }

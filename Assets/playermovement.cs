@@ -12,6 +12,7 @@ public class playermovement : MonoBehaviour
 {
 
     private Rigidbody rb;
+    private Transform ts;
     private ParticleSystem ps;
     private ParticleSystemRenderer psr;
     public SHOTMETER shotmeterscript;
@@ -24,12 +25,20 @@ public class playermovement : MonoBehaviour
     private Quaternion qTo;
     public float mscale = 5f;
     public float jscale = 5f;
-    public int shootingskill;
+
+    private int shootingSkill = 10;
+    private int heatLevel = 0;
+    private int shotsInARow = 0;
+    public float shotDistance;
+
     public int smeter;
+    public float defenceRadius = 2.5f;
     public bool shootbuttonon;
     public bool shootbuttonbuffer;
     public bool shootingcurrently;
     public bool smcalcstarted;
+
+    [SerializeField] private float leagueAverageUncovered3ptPercent = 0.45f;
 
 
     public Transform HoopLookAt;
@@ -37,11 +46,10 @@ public class playermovement : MonoBehaviour
     public GameObject HoopProtector;
     public MultiAimConstraint[] HeadTrackers = new MultiAimConstraint[2]; // 0 is N, 1 is S
 
+    [SerializeField] private bool rootMotionMovement;
 
     public int shotpercent;
-    private int shotresultnum;
-    public bool shotresult;
-    public float shotdistance;
+    public bool shotResult;
     public bool in3ptline;
     [SerializeField] public EventScriptSystem ess;
 
@@ -86,14 +94,19 @@ public class playermovement : MonoBehaviour
         characterrigs[1] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetComponent<Rig>();
         HeadTrackers[0] = charactermodel.transform.GetChild(charactermodel.transform.childCount - 1).GetChild(2).gameObject.GetComponent<MultiAimConstraint>();
         rb = GetComponent<Rigidbody>();
+        ts = GetComponent<Transform>();
         ps = GetComponent<ParticleSystem>();
         psr = GetComponent<ParticleSystemRenderer>();
         bballscript = basketballobj.GetComponent<bassetball>();
-        bbrel = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3).GetComponent<bballrelease>();
+        bbrel = charactermodel.transform.GetChild(charactermodel.transform.childCount - 3).GetChild(0).GetComponent<bballrelease>();
         bbrb = basketballobj.GetComponent<Rigidbody>();
         bbt = basketballobj.transform;
-        DunkLocationOffset = new Vector3(0f, -1.8f, -0.52f);
+        DunkLocationOffset = new Vector3(0f, -1.63f, -0.52f);
 
+    }
+    void OnAnimatorMove()
+    {
+        ts.position += characteranimator.deltaPosition;
     }
 
     public void moveinp(InputAction.CallbackContext movementValue)
@@ -119,7 +132,11 @@ public class playermovement : MonoBehaviour
     }
     public void shootinp(InputAction.CallbackContext value)
     {
-        if(hasball && !ess.checkball)
+        float shotMeterTimer;
+        float shotReleasePercent;
+        float coveredPercent;
+
+        if (hasball && !ess.checkball)
         {
             //dunking
             if (value.started && movementVector.y > 0.1f && 14 >= Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10)
@@ -128,7 +145,7 @@ public class playermovement : MonoBehaviour
                 dunkcount = 0f;
                 StartDunkLocation = transform.position;
                 bballscript.dunkedtheball = true;
-                shooter(0, 0);
+                shooter(0, -1, -1);
                 rb.useGravity = false;
                 dunk = 1;
                 characteranimator.SetInteger("DunkNow", 1);
@@ -160,24 +177,19 @@ public class playermovement : MonoBehaviour
 
                 if (bballscript.playerholding)
                 {
-                    //changewhohasball(2);
                     characteranimator.speed = 1f;
-                    //check for skill and shotmeter then put into shooter()
-                    //for this example, shootingskill is 1 (excellent), smeter is green (1)
-                    // 1 - green, 4 - searly, 6 - slate, 10 - early, 12 - late, 18 - very late/early, 20 - nah
-                    // 0 - excellent skill -> 10 (worst), minus from 80 -> 60
-                    shotmeterscript.shotmetercalc(true);
-                    if (smeter == 0)
-                    {
-                        psr.material = ParticleMaterials[0];
-                        ps.Play();
-                    }
-                    else if (smeter == 1)
-                    {
-                        psr.material = ParticleMaterials[1];
-                        ps.Play();
-                    }
-                    shooter(shootingskill, smeter);
+
+                    shotMeterTimer = shotmeterscript.shotmetercalc(true);
+
+                    bool shotEarly = (shotMeterTimer < 0);
+                    shotReleasePercent = 1 - Mathf.Abs(shotMeterTimer);
+                    coveredPercent = GuardPercent(transform);
+
+                    Debug.Log("CoveredPercent: " + coveredPercent);
+                    Debug.Log("shotReleasePercent: " + shotReleasePercent);
+
+                    shotmeterscript.SetShotDescription(shotReleasePercent, coveredPercent, shotEarly);
+                    shooter(shootingSkill, shotReleasePercent, coveredPercent);
                     if (ess.gamemode == 3)
                     {
                         shootboolwii = false;
@@ -205,21 +217,26 @@ public class playermovement : MonoBehaviour
         if(dunk == 1 && dunkcount < 1 && bbrel.jumpdunknow)
         {
             Debug.Log(DunkLocationOffset);
+            Debug.Log(dunkcount);
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocationOffset + Hoop.transform.position, dunkcount));
-            dunkcount = Mathf.Clamp01(2 * Time.deltaTime + dunkcount);
+            dunkcount = Mathf.Clamp01(3.5f * Time.deltaTime + dunkcount);
         }
         else if(dunk == 1 && dunkcount >= 1 && bbrel.shotreleasenow)
         {
             Debug.Log("dunkinrn");
+            Debug.Log(dunkcount);
+            //fencepost, lerp at one
+            rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocationOffset + Hoop.transform.position, dunkcount));
+
             rb.isKinematic = true; //need the shotreleasenow to rigoff
-            shotmeterscript.shottext.color = Color.red;
-            shotmeterscript.shottext.text = "!!DUNK!!";
+            shotmeterscript.shotRelease.text = "Shot Release: " + "<color=red>Dunk</color>";
             bballscript.ShotHits(true);
             characteranimator.SetInteger("DunkNow", 2);
             dunk = 2;
         }
         else if(dunk == 3 && bbrel.dunkfallnow)
         {
+            bbrel.shotreleasenow = false;
             characteranimator.SetInteger("DunkNow", 0);
             rb.useGravity = true;
             rb.isKinematic = false;
@@ -302,7 +319,6 @@ public class playermovement : MonoBehaviour
 
     }
 
-
     float passANGLE;
     float passANGLE2;
     float passANGLE3;
@@ -374,75 +390,117 @@ public class playermovement : MonoBehaviour
         }
     }
 
-
-    public void shooter(int shootingskill, int smeter)
+    public float GuardPercent(Transform currentPlayer)
     {
-        //in 00.0 ft
-        shotdistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 2.1872266f * 10) / 10;
-        ess.shotdistancetext.text = shotdistance + " ft";
+        GameObject nearestEnemy = ess.NearestEnemy(currentPlayer);
+        Transform nEnemyTF = nearestEnemy.transform;
+        float GuardPercent = (1 - Mathf.Clamp01((Vector3.Distance(new Vector3(nEnemyTF.position.x, 0, nEnemyTF.position.z), new Vector3(currentPlayer.position.x, 0, currentPlayer.position.z)) - 0.8f) / (defenceRadius)));
+        float GuardPercentSquared = GuardPercent * GuardPercent;
+        float GuardPercentSquaredRounded = Mathf.Round(GuardPercent * 100) / 100;
+        float GuardDistance = Vector3.Distance(new Vector3(nEnemyTF.position.x, 0, nEnemyTF.position.z), new Vector3(currentPlayer.position.x, 0, currentPlayer.position.z));
+        float GuardDistanceFT = Mathf.Round(Vector3.Distance(new Vector3(nEnemyTF.position.x, 0, nEnemyTF.position.z), new Vector3(currentPlayer.position.x, 0, currentPlayer.position.z)) * 240 / 13) / 10;
+        return GuardPercentSquaredRounded;
+    }
 
+    public void shooter(int shootingSkill, float shotReleasePercent, float coveredPercent)
+    {
+        float weightedShotReleasePercent;
+        float shotDistancePercent = 0.0f;
+        float shotProbability = 0.0f;
+        float weightedCoveredPercent = (1 - coveredPercent) * -1;
+
+        shotDistance = Mathf.Round(Vector3.Distance(new Vector3(Hoop.position.x, 0, Hoop.position.z), new Vector3(transform.position.x, 0, transform.position.z)) * 240 / 13) / 10;
+        ess.shotDistanceText.text = shotDistance + " ft";
+
+        //in 00.0 ft
         bbrb.detectCollisions = true;
         bballscript.physicalballcollider.enabled = false;
         bballscript.playerholding = false;
         ess.currentballhaver = null;
-
-
-        if (smeter == 0)
+        if (shotReleasePercent == -1 && coveredPercent == -1)
         {
-            shotpercent = 100 - (shootingskill); //green
+            psr.material = ParticleMaterials[2];
+            ps.Play();
+            shotProbability = 1;
         }
-        else if (smeter == 1)
+        else if (shotReleasePercent == 0)
         {
-            shotpercent = 100 - (shootingskill); //green
-
-            if (shotdistance >= 45)
-            {
-                shotpercent -= Mathf.RoundToInt(((shotdistance - 45) * 0.78f)) + 40;
-            } //90 feet should be 20% 45 should be 60%
-            else if (shotdistance >= 30)
-            {
-                shotpercent -= Mathf.RoundToInt((shotdistance - 30) * 2.667f);
-            }
+            psr.material = ParticleMaterials[0];
+            ps.Play();
+            shotProbability = 1;
         }
-        else if (smeter == 20)
+        else if (shotReleasePercent >= 0.98f)
         {
-            shotpercent = 0;
+            psr.material = ParticleMaterials[1];
+            ps.Play();
+            shotProbability = 0.99f;
+        }
+        else if (shotReleasePercent < 0.5f)
+        {
+            shotProbability = 0.1f;
         }
         else
         {
-
+            //irl: FG% AVG = 45%, 3PT% AVG = 35%, 3PT% Unguarded = 45%, Steph AVG  = 45%
             if (in3ptline)
             {
-                shotpercent = 100 - (shootingskill) - (smeter * 5); //50% late, slate is 80%
+                shotDistancePercent = 45 / 35;
             }
             else
             {
-                shotpercent = 100 - ((shootingskill) * 2) - (smeter * 7); //30% late, slightly late is 4 * 7 = 79%
+                shotDistancePercent = 1;
 
-                if (shotdistance >= 45)
+                if (shotDistance > 30)
                 {
-                    shotpercent -= Mathf.RoundToInt(((shotdistance - 45) * 0.78f)) + 40;
-                } //90 feet should be 20% 45 should be 60%
-                else if (shotdistance >= 30)
-                {
-                    shotpercent -= Mathf.RoundToInt(((shotdistance - 30) * 2.667f));
+                    shotDistancePercent = (30 - shotDistance + 25) / 35;
                 }
             }
+
+            if (coveredPercent == 0)
+            {
+                weightedCoveredPercent = 1;
+            }
+            else if (coveredPercent == 1)
+            {
+                weightedCoveredPercent = 0;
+            }
+            else
+            {
+                weightedCoveredPercent = 1 - coveredPercent;
+            }
+
+            weightedShotReleasePercent = shotReleasePercent / 0.97f;
+
+            //Example: (leagueAVGuncovered 45% + skill 10% + heat 10%) * (slate release 95% / weighted 95%) * 3 point distance 100% * covered 0% = 65%
+            shotProbability = (leagueAverageUncovered3ptPercent + (0.01f * shootingSkill) + (0.05f * heatLevel)) * weightedShotReleasePercent * shotDistancePercent * weightedCoveredPercent;
+            Debug.Log("LeagueAVGU: " + leagueAverageUncovered3ptPercent + " | Skill: " + shootingSkill + " | Heat: " + heatLevel + " | Release %: " + weightedShotReleasePercent + " | Distance: " + shotDistance + " | DistancePercent: " + shotDistancePercent + " | Coverage: " + weightedCoveredPercent);
         }
-
-        //out of 100, green - 99, slight early - 80, slight late - 70, early - 50, late - 40, very early/late - 10, nah - 0
-
-        shotresultnum = (shotpercent - Random.Range(0, 100));
-        if (shotresultnum >= 0)
+        float shotRandomRange = Random.Range(0.0f, 1.0f);
+        shotResult = (shotRandomRange <= shotProbability);
+        if (shotResult)
         {
-            if (ess.gamemode == 2) //3ptcontest
+            shotsInARow += 1;
+            if(shotsInARow == 3)
+            {
+                heatLevel = 1;
+            }
+            else if (shotsInARow == 5)
+            {
+                heatLevel = 2;
+            }
+            else if (shotsInARow >= 8)
+            {
+                heatLevel = Mathf.FloorToInt((shotsInARow - (5.0f + (heatLevel - 2 * 3))) / 3);
+            }
+
+            if (ess.gamemode == 2)
             {
                 if (inthreeptzone)
                 {
                     ess.shotscore[0] += 1;
                 }
             }
-            else //normal shooting
+            else
             {
                 if (in3ptline)
                 {
@@ -470,17 +528,16 @@ public class playermovement : MonoBehaviour
 
             //shots good or special 0 wet like water
             HoopProtector.SetActive(false);
-            shotresult = true;
+            shotResult = true;
         }
-        else if (shotresultnum < 0)
+        else
         {
             //shots bad
+            shotsInARow = 0;
+            heatLevel = 0;
             HoopProtector.SetActive(true);
-            shotresult = false;
         }
-
-        Debug.Log("Shotresult: " + shotresult + " | Shotresultnum: " + shotresultnum + " | Shotpercentage: " + shotpercent);
-        Debug.Log(shotresultnum);
+        Debug.Log("shotResult: " + shotResult + " | shotResultRange: " + shotRandomRange + " | ShotProbability: " + shotProbability);
         shootingcurrently = true; //shootcurrently is same as shoot but needs to be seperate when disabling moving input
         bballscript.shoot = true;
 
@@ -549,9 +606,12 @@ public class playermovement : MonoBehaviour
                 {
                     characteranimator.SetBool("Moving", true);
                 }
-                characteranimator.SetFloat("ForwardAngleX", Mathf.Clamp(movementVector.x, -1f, 1f), 0.1f, Time.deltaTime);
-                characteranimator.SetFloat("ForwardAngleY", Mathf.Clamp(movementVector.y, -1f, 1f), 0.1f, Time.deltaTime);
-                if (ess.CameraVer == 0)
+                characteranimator.SetFloat("ForwardAngleX", Mathf.Clamp(movementVector.x, -1f, 1f), 0.05f, Time.deltaTime);
+                characteranimator.SetFloat("ForwardAngleY", Mathf.Clamp(movementVector.y, -1f, 1f), 0.05f, Time.deltaTime);
+                if(rootMotionMovement) {
+
+                }
+                else if (ess.CameraVer == 0)
                 {
                     rb.AddRelativeForce(movementVector.x * mscale, 0, movementVector.y * mscale, ForceMode.Impulse);
                 }

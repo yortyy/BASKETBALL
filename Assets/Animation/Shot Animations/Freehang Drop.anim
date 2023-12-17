@@ -22112,7 +22112,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: dunkfallnow
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
     classID: 114
     script: {fileID: 11500000, guid: 7f09003e975a5694f9702267e646afaf, type: 3}
     flags: 0
@@ -22206,7 +22206,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1169414952
+      path: 2988212892
       attribute: 3933994587
       script: {fileID: 11500000, guid: 7f09003e975a5694f9702267e646afaf, type: 3}
       typeID: 114
@@ -45395,7 +45395,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: dunkfallnow
-    path: ref_bballhold
+    path: ballOffset/ref_bballhold
     classID: 114
     script: {fileID: 11500000, guid: 7f09003e975a5694f9702267e646afaf, type: 3}
     flags: 0

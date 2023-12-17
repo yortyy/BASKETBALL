@@ -36,8 +36,8 @@ public class EventScriptSystem : MonoBehaviour
     private int timersecsmall;
     private Transform kcamtracker;
 
-    [SerializeField] private TMP_Text CamChangeText;
-    [SerializeField] private TMP_Text FullcourtToggleText;
+    [SerializeField] private TMP_Text CamChangetext;
+    [SerializeField] private TMP_Text FullcourtToggletext;
     [SerializeField] private GameObject playerlockcam;
     [SerializeField] private GameObject skycam;
     [SerializeField] private GameObject replaycam;
@@ -67,7 +67,7 @@ public class EventScriptSystem : MonoBehaviour
     public int[] shotscore = new int[4];
     [SerializeField] private GameObject[] shotscoreboards;
     public TMP_Text[] shotscoretext;
-    public TMP_Text shotdistancetext;
+    public TMP_Text shotDistanceText;
 
     private Vector3 formerplayerdunklocation;
 
@@ -138,7 +138,7 @@ public class EventScriptSystem : MonoBehaviour
             playerlockcam.SetActive(true);
             skycam.SetActive(false);
             replaycam.SetActive(false);
-            CamChangeText.text = "Player<br>Lock";
+            CamChangetext.text = "Player<br>Lock";
             Debug.Log("CameraVersion: " + CameraVer);
         }
         else if(CameraVer == 1)
@@ -146,7 +146,7 @@ public class EventScriptSystem : MonoBehaviour
             playerlockcam.SetActive(false);
             skycam.SetActive(true);
             replaycam.SetActive(false);
-            CamChangeText.text = "2kCam";
+            CamChangetext.text = "2kCam";
             Debug.Log("CameraVersion: " + CameraVer);
         }
         else if(CameraVer == 2) 
@@ -154,7 +154,7 @@ public class EventScriptSystem : MonoBehaviour
             playerlockcam.SetActive(false);
             skycam.SetActive(false);
             replaycam.SetActive(true);
-            CamChangeText.text = "Replay<br>Cam";
+            CamChangetext.text = "Replay<br>Cam";
             Debug.Log("CameraVersion: " + CameraVer);
         }
 
@@ -375,12 +375,12 @@ public class EventScriptSystem : MonoBehaviour
             {
                 SwitchSides();
             }
-            FullcourtToggleText.text = "Half<br>court";
+            FullcourtToggletext.text = "Half<br>court";
             fullcourt = false;
         }
         else
         {
-            FullcourtToggleText.text = "Full<br>court";
+            FullcourtToggletext.text = "Full<br>court";
             fullcourt = true;
         }
     }
@@ -434,6 +434,27 @@ public class EventScriptSystem : MonoBehaviour
         }
     }
 
+    //Gets nearest enemy compared with currentplayer transform
+    public GameObject NearestEnemy(Transform currentPlayer)
+    {
+        float enemyDistance;
+        float minEnemyDistance = 100;
+        GameObject nearestEnemy = enemies[0];
+        for(int i = 0; i < enemies.Length;  i++)
+        {
+            if (enemies[i].activeSelf)
+            {
+                enemyDistance = Vector3.Distance(new Vector3(enemies[i].transform.position.x, 0, enemies[i].transform.position.z), new Vector3(currentPlayer.position.x, 0, currentPlayer.position.z));
+                //Debug.Log("CoveredBRUH: " +  enemyDistance + " | " + enemies[i]);
+                if (enemyDistance < minEnemyDistance)
+                {
+                    nearestEnemy = enemies[i];
+                    minEnemyDistance = enemyDistance;
+                }
+            }
+        }
+        return nearestEnemy;
+    }
 
     private void Update()
     {

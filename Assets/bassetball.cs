@@ -140,7 +140,7 @@ public class bassetball : MonoBehaviour
         player = newplayer;
         ps = newplayer.GetComponent<playermovement>();
         bballholdref = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 3);
-        bbrelease = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 3).GetComponent<bballrelease>();
+        bbrelease = ps.charactermodel.transform.GetChild(ps.charactermodel.transform.childCount - 3).GetChild(0).GetComponent<bballrelease>();
         playerholding = false;
         playerswitching = true;
     }
@@ -185,9 +185,11 @@ public class bassetball : MonoBehaviour
         }
         else if((playerswitching || bbrelease.rigoffnow) && bballrigset && ps.characterrigs[1].weight != 0f) //rigoff
         {
+            //Debug.Log("bruh " + bbrelease.rigoffnow);
             //turn off jumpshot anim when rigoffnow from animation
             if (bbrelease.rigoffnow && ps.characteranimator.GetBool("ShootNow"))
             {
+                Debug.Log("bruh");
                 ps.characteranimator.SetBool("ShootNow", false);
             }
 
@@ -209,7 +211,7 @@ public class bassetball : MonoBehaviour
         if (!shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball && !setarch)
         {
             startpoint = bballholdref.position;
-            if (!ps.shotresult)
+            if (!ps.shotResult)
             {
                 offset.x = Random.Range(-0.6f, -0.3f);
                 offset.z = Random.Range(-0.6f, -0.3f);
@@ -220,14 +222,14 @@ public class bassetball : MonoBehaviour
             {
                 offset = Vector3.zero;
                 targetpoint = target.position;
-                if (40 < ps.shotdistance)
+                if (40 < ps.shotDistance)
                 {
                     asc[1].Play();
                     bballeff.Play();
                 }
             }
 
-            if (ps.shotdistance <= 12 && !setcount)
+            if (ps.shotDistance <= 12 && !setcount)
             {
                 Debug.Log("shottype: 1");
                 //tangent of 45 deg, times adj (length between player and archpoint)
@@ -235,29 +237,29 @@ public class bassetball : MonoBehaviour
                 shotinairtime = 27f / 12f;
                 setcount = true;
             }
-            else if (ps.shotdistance <= 30 && !setcount)
+            else if (ps.shotDistance <= 30 && !setcount)
             {
                 Debug.Log("shottype: 2");
                 //tangent of 45 deg, times adj (length between player and archpoint)
                 riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
-                shotinairtime = 30 / ps.shotdistance;
+                shotinairtime = 30 / ps.shotDistance;
                 setcount = true;
             }
-            else if (ps.shotdistance <= 50 && !setcount)
+            else if (ps.shotDistance <= 50 && !setcount)
             {
                 Debug.Log("shottype: 3");
                 riselength = Mathf.Tan(2 * Mathf.PI / 9) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                 shotinairtime = 30f / 30f;
                 setcount = true;
             }
-            else if (ps.shotdistance <= 70 && !setcount)
+            else if (ps.shotDistance <= 70 && !setcount)
             {
                 Debug.Log("shottype: 3");
                 riselength = Mathf.Tan(7 * Mathf.PI / 36) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                 shotinairtime = 30f / 30f;
                 setcount = true;
             }
-            else if (ps.shotdistance > 70 && !setcount)
+            else if (ps.shotDistance > 70 && !setcount)
             {
                 Debug.Log("shottype: 3");
                 riselength = Mathf.Tan(Mathf.PI / 6) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
@@ -286,6 +288,7 @@ public class bassetball : MonoBehaviour
 
     public void ShotExits()
     {
+        Debug.Log("ShotExit");
         bbrb.useGravity = true;
         bbrb.isKinematic = false;
         physicalballcollider.enabled = true;
@@ -328,9 +331,9 @@ public class bassetball : MonoBehaviour
         }
 
         //ball flames and green/blue hoop effects
-        if (ps.shotresult)
+        if (ps.shotResult)
         {
-            if (40 < ps.shotdistance || Dunk)
+            if (40 < ps.shotDistance || Dunk)
             {
                 firehoop.SetActive(true);
                 bballeff.Stop();
@@ -344,23 +347,25 @@ public class bassetball : MonoBehaviour
             if (ps.smeter == 0)
             {
                 HoopEffrnr.material = ParticleMaterials[0];
+                HoopEff.Play();
             }
             else if (ps.smeter == 1)
             {
                 HoopEffrnr.material = ParticleMaterials[1];
+                HoopEff.Play();
             }
-            else if (40 < ps.shotdistance || Dunk)
+            else if (40 < ps.shotDistance || Dunk)
             {
                 HoopEffEmission.rateOverTime = 0;
+                HoopEff.Play();
             }
-            HoopEff.Play();
         }
 
         bbrelease.shotreleasenow = false;
         ps.shootingcurrently = false;
         shoot = false;
 
-        if (ps.shotresult)
+        if (ps.shotResult)
         {
             asc[0].Play(); //swishsound
             //practice = 0, 1on1 = 1, threept = 2, threewii = 3, 3on3 = 4
@@ -382,7 +387,7 @@ public class bassetball : MonoBehaviour
                 ess.looseball = true;
             }
         }
-        else if(!ps.shotresult)
+        else if(!ps.shotResult)
         {
             if(ess.gamemode == 2)
             {
