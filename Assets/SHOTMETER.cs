@@ -30,7 +30,7 @@ public class SHOTMETER : MonoBehaviour
             if (1 < (Time.time - shotmetertimer) * smSpeed)
             {
                 shotmeterslider.value = 1 - (((Time.time - shotmetertimer) * smSpeed) - 1);
-                Debug.Log("suck: " + shotmeterslider.value);
+                //Debug.Log("suck: " + shotmeterslider.value);
             }
             else
             {
@@ -51,14 +51,14 @@ public class SHOTMETER : MonoBehaviour
         {
             shotmetertimer = Time.time;
             shoottimeron = true;
-            Debug.Log("shotmetertimer: " + shotmetertimer);
+            //Debug.Log("shotmetertimer: " + shotmetertimer);
         }
         else if(shoot)
         {
             shoottimeron = false;
             shotmetertimer = ((Time.time - shotmetertimer) * smSpeed) - 1;
 
-            Debug.Log("slider: " + shotmeterslider.value + " | smeter: " + Mathf.RoundToInt(shotmeterslider.value * 100) + " | smeter: " + smeter);
+            //Debug.Log("slider: " + shotmeterslider.value + " | smeter: " + Mathf.RoundToInt(shotmeterslider.value * 100) + " | smeter: " + smeter);
         }
         return shotmetertimer;
     }

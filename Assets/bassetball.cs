@@ -77,20 +77,20 @@ public class bassetball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //Debug.Log(other.gameObject);
+        ////Debug.Log(other.gameObject);
         if ((other.gameObject.CompareTag("player")) || (other.gameObject.CompareTag("enemy")))
         {
             GameObject temptrigger = other.gameObject;
             playermovement tempps = temptrigger.GetComponent<playermovement>();
             bballrelease tempbbrel = tempps.bbrel;
-            //Debug.Log(tempbbrel);
+            ////Debug.Log(tempbbrel);
 
             //get ball if its a block, player+playerpossesion or loose ball, enemy is the same
             if (tempbbrel.blockjumpnow || ((temptrigger.CompareTag("player") && (ess.sballpossesion || ess.looseball)) || (temptrigger.CompareTag("enemy") && (!ess.sballpossesion || ess.looseball))) && !shoot && !playerswitching && !dunkedtheball)
             {
                 if (tempbbrel.blockjumpnow)
                 {
-                    Debug.Log("HitBlockedbruh----------------------------------------------------------------------");
+                    //Debug.Log("HitBlockedbruh----------------------------------------------------------------------");
                     ShotExits();
                 }
                 
@@ -114,7 +114,7 @@ public class bassetball : MonoBehaviour
                 bbrb.detectCollisions = false;
                 bbrb.useGravity = false;
                 playerholding = true;
-                Debug.Log("KONNECT: " + temptrigger);
+                //Debug.Log("KONNECT: " + temptrigger);
 
                 if (readytoswitchsides && ess.fullcourt)
                 {
@@ -151,7 +151,7 @@ public class bassetball : MonoBehaviour
         {
             progress = Mathf.Clamp01(progress + 2f * Time.deltaTime);
             transform.position = Vector3.Lerp(pastballpos, player.transform.position, progress);
-            //Debug.Log("transformin 3");
+            ////Debug.Log("transformin 3");
         }
         if (progress >= 1f)
         {
@@ -163,7 +163,7 @@ public class bassetball : MonoBehaviour
         if ((playerholding && !shoot) || (shoot && !bbrelease.shotreleasenow)) //rigon
         {
             //moveballtoballrefpoint, and look at hoop
-            //Debug.Log("movingbballrefcuhcuh");
+            ////Debug.Log("movingbballrefcuhcuh");
             transform.position = bballholdref.position;
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z + 0.5f));
 
@@ -185,11 +185,11 @@ public class bassetball : MonoBehaviour
         }
         else if((playerswitching || bbrelease.rigoffnow) && bballrigset && ps.characterrigs[1].weight != 0f) //rigoff
         {
-            //Debug.Log("bruh " + bbrelease.rigoffnow);
+            ////Debug.Log("bruh " + bbrelease.rigoffnow);
             //turn off jumpshot anim when rigoffnow from animation
             if (bbrelease.rigoffnow && ps.characteranimator.GetBool("ShootNow"))
             {
-                Debug.Log("bruh");
+                //Debug.Log("bruh");
                 ps.characteranimator.SetBool("ShootNow", false);
             }
 
@@ -231,7 +231,7 @@ public class bassetball : MonoBehaviour
 
             if (ps.shotDistance <= 12 && !setcount)
             {
-                Debug.Log("shottype: 1");
+                //Debug.Log("shottype: 1");
                 //tangent of 45 deg, times adj (length between player and archpoint)
                 riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                 shotinairtime = 27f / 12f;
@@ -239,7 +239,7 @@ public class bassetball : MonoBehaviour
             }
             else if (ps.shotDistance <= 30 && !setcount)
             {
-                Debug.Log("shottype: 2");
+                //Debug.Log("shottype: 2");
                 //tangent of 45 deg, times adj (length between player and archpoint)
                 riselength = Mathf.Tan(Mathf.PI / 4) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                 shotinairtime = 30 / ps.shotDistance;
@@ -247,21 +247,21 @@ public class bassetball : MonoBehaviour
             }
             else if (ps.shotDistance <= 50 && !setcount)
             {
-                Debug.Log("shottype: 3");
+                //Debug.Log("shottype: 3");
                 riselength = Mathf.Tan(2 * Mathf.PI / 9) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                 shotinairtime = 30f / 30f;
                 setcount = true;
             }
             else if (ps.shotDistance <= 70 && !setcount)
             {
-                Debug.Log("shottype: 3");
+                //Debug.Log("shottype: 3");
                 riselength = Mathf.Tan(7 * Mathf.PI / 36) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                 shotinairtime = 30f / 30f;
                 setcount = true;
             }
             else if (ps.shotDistance > 70 && !setcount)
             {
-                Debug.Log("shottype: 3");
+                //Debug.Log("shottype: 3");
                 riselength = Mathf.Tan(Mathf.PI / 6) * Vector3.Distance((startpoint + (targetpoint - startpoint) / 2), startpoint);
                 shotinairtime = 30f / 30f;
                 setcount = true;
@@ -272,8 +272,8 @@ public class bassetball : MonoBehaviour
         }
         else if (shotdone) //after shot
         {
-            //Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
-            Debug.Log("setarchturnoff");
+            ////Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
+            //Debug.Log("setarchturnoff");
 
             ShotHits(false);
 
@@ -288,7 +288,7 @@ public class bassetball : MonoBehaviour
 
     public void ShotExits()
     {
-        Debug.Log("ShotExit");
+        //Debug.Log("ShotExit");
         bbrb.useGravity = true;
         bbrb.isKinematic = false;
         physicalballcollider.enabled = true;
@@ -409,18 +409,18 @@ public class bassetball : MonoBehaviour
     {
         if (!shotdone && shoot && bbrelease.shotreleasenow && !dunkedtheball && setarch) //jumpshottimeneeded to movebball ref up in animation
         {
-            //Debug.Log(progressshoot);
+            ////Debug.Log(progressshoot);
 
             Vector3 m1 = Vector3.Lerp(startpoint, archpoint, progressshoot);
             Vector3 m2 = Vector3.Lerp(archpoint, targetpoint, progressshoot);
             bbrb.MovePosition(Vector3.Lerp(m1, m2, progressshoot));
-            //Debug.Log("transformin 2 | pos: " + transform.position + " pshoot: " + progressshoot);
+            ////Debug.Log("transformin 2 | pos: " + transform.position + " pshoot: " + progressshoot);
 
             progressshoot = Mathf.Clamp01(shotinairtime * Time.fixedDeltaTime + progressshoot); //shotinairtime should = 1 at around 3pt line | shotinairtime changes how fast the count adds (how fast timer times)
 
             if (progressshoot == 1f && transform.position == targetpoint)
             {
-                //Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
+                ////Debug.Log("pos: " + transform.position + " | target: " + targetpoint);
                 shotdone = true;
             }
         }

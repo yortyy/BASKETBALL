@@ -118,7 +118,7 @@ public class EventScriptSystem : MonoBehaviour
             allplayerscripts.Add(enemies[i].GetComponent<playermovement>());
         }
         //ballhaver();
-        //Debug.Log(allplayerscripts.Count);
+        ////Debug.Log(allplayerscripts.Count);
 
 
         CameraVer = 1;
@@ -139,7 +139,7 @@ public class EventScriptSystem : MonoBehaviour
             skycam.SetActive(false);
             replaycam.SetActive(false);
             CamChangetext.text = "Player<br>Lock";
-            Debug.Log("CameraVersion: " + CameraVer);
+            //Debug.Log("CameraVersion: " + CameraVer);
         }
         else if(CameraVer == 1)
         {
@@ -147,7 +147,7 @@ public class EventScriptSystem : MonoBehaviour
             skycam.SetActive(true);
             replaycam.SetActive(false);
             CamChangetext.text = "2kCam";
-            Debug.Log("CameraVersion: " + CameraVer);
+            //Debug.Log("CameraVersion: " + CameraVer);
         }
         else if(CameraVer == 2) 
         {
@@ -155,7 +155,7 @@ public class EventScriptSystem : MonoBehaviour
             skycam.SetActive(false);
             replaycam.SetActive(true);
             CamChangetext.text = "Replay<br>Cam";
-            Debug.Log("CameraVersion: " + CameraVer);
+            //Debug.Log("CameraVersion: " + CameraVer);
         }
 
     }
@@ -219,7 +219,7 @@ public class EventScriptSystem : MonoBehaviour
 
         if(ps.Hoop.gameObject == CurrentHoop)
         {
-            Debug.Log("changecurrenthoop");
+            //Debug.Log("changecurrenthoop");
             if(HoopNum == 0)
             {
                 //ps.HeadTrackers[0].weight = 1;
@@ -445,7 +445,7 @@ public class EventScriptSystem : MonoBehaviour
             if (enemies[i].activeSelf)
             {
                 enemyDistance = Vector3.Distance(new Vector3(enemies[i].transform.position.x, 0, enemies[i].transform.position.z), new Vector3(currentPlayer.position.x, 0, currentPlayer.position.z));
-                //Debug.Log("CoveredBRUH: " +  enemyDistance + " | " + enemies[i]);
+                ////Debug.Log("CoveredBRUH: " +  enemyDistance + " | " + enemies[i]);
                 if (enemyDistance < minEnemyDistance)
                 {
                     nearestEnemy = enemies[i];
@@ -571,7 +571,7 @@ public class EventScriptSystem : MonoBehaviour
                     {
                         progressreset[i] = false;
                     }
-                    Debug.Log("Should be just one");
+                    //Debug.Log("Should be just one");
                     pccamsmooth = false;
                     progressreset[3] = true;
                 }

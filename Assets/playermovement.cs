@@ -156,7 +156,7 @@ public class playermovement : MonoBehaviour
             {
                 shootbuttonon = true;
                 shootbuttonbuffer = true;
-                Debug.Log("shootbuttonbuffer on");
+                //Debug.Log("shootbuttonbuffer on");
                 if (bballscript.playerholding)
                 {
                     characteranimator.SetInteger("EmoteNum", 0);
@@ -185,8 +185,8 @@ public class playermovement : MonoBehaviour
                     shotReleasePercent = 1 - Mathf.Abs(shotMeterTimer);
                     coveredPercent = GuardPercent(transform);
 
-                    Debug.Log("CoveredPercent: " + coveredPercent);
-                    Debug.Log("shotReleasePercent: " + shotReleasePercent);
+                    //Debug.Log("CoveredPercent: " + coveredPercent);
+                    //Debug.Log("shotReleasePercent: " + shotReleasePercent);
 
                     shotmeterscript.SetShotDescription(shotReleasePercent, coveredPercent, shotEarly);
                     shooter(shootingSkill, shotReleasePercent, coveredPercent);
@@ -216,15 +216,15 @@ public class playermovement : MonoBehaviour
 
         if(dunk == 1 && dunkcount < 1 && bbrel.jumpdunknow)
         {
-            Debug.Log(DunkLocationOffset);
-            Debug.Log(dunkcount);
+            //Debug.Log(DunkLocationOffset);
+            //Debug.Log(dunkcount);
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocationOffset + Hoop.transform.position, dunkcount));
             dunkcount = Mathf.Clamp01(3.5f * Time.deltaTime + dunkcount);
         }
         else if(dunk == 1 && dunkcount >= 1 && bbrel.shotreleasenow)
         {
-            Debug.Log("dunkinrn");
-            Debug.Log(dunkcount);
+            //Debug.Log("dunkinrn");
+            //Debug.Log(dunkcount);
             //fencepost, lerp at one
             rb.MovePosition(Vector3.Lerp(StartDunkLocation, DunkLocationOffset + Hoop.transform.position, dunkcount));
 
@@ -255,7 +255,7 @@ public class playermovement : MonoBehaviour
         }
         if (shootbuttonon && bballscript.playerholding && bbrel.pauseanimenow && characteranimator.speed == 1)
         {
-            Debug.Log("FREEZE");
+            //Debug.Log("FREEZE");
             characteranimator.speed = 0.0f;
         }
     }
@@ -280,7 +280,7 @@ public class playermovement : MonoBehaviour
         if(emoteson)
         {
             tempangle = Mathf.RoundToInt(Vector2.SignedAngle(Vector2.right, rightstick));
-            Debug.Log(tempangle);
+            //Debug.Log(tempangle);
             if (rightstick == Vector2.zero)
             {
                 tempangle = -1;
@@ -350,18 +350,18 @@ public class playermovement : MonoBehaviour
                 passANGLE = 0;
                 if (Mathf.Abs(passANGLE2 - passANGLE) <= Mathf.Abs(passANGLE3 - passANGLE)) //if the ang between tm1 and p is closer to 0
                 {
-                    Debug.Log("TeamMate 1 BRUH");
+                    //Debug.Log("TeamMate 1 BRUH");
                     characteranimator.SetBool("Moving", false);
                     ess.PlayerChange(TeamMates[0], false);
                 }
                 else if (Mathf.Abs(passANGLE3 - passANGLE) < Mathf.Abs(passANGLE2 - passANGLE))
                 {
-                    Debug.Log("TeamMate 2 BRUH");
+                    //Debug.Log("TeamMate 2 BRUH");
                     characteranimator.SetBool("Moving", false);
                     ess.PlayerChange(TeamMates[1], false);
                 }
-                Debug.Log("TeamMates | PassAngle1: " + passANGLE + " | PassAngle2: " + passANGLE2 + " | PassAngle3: " + passANGLE3);
-                Debug.Log("TeamMates | Player: " + gameObject + "Teammate1: " + TeamMates[0] + " | Teammate2: " + TeamMates[1]);
+                //Debug.Log("TeamMates | PassAngle1: " + passANGLE + " | PassAngle2: " + passANGLE2 + " | PassAngle3: " + passANGLE3);
+                //Debug.Log("TeamMates | Player: " + gameObject + "Teammate1: " + TeamMates[0] + " | Teammate2: " + TeamMates[1]);
             }
         }
     }
@@ -473,7 +473,7 @@ public class playermovement : MonoBehaviour
 
             //Example: (leagueAVGuncovered 45% + skill 10% + heat 10%) * (slate release 95% / weighted 95%) * 3 point distance 100% * covered 0% = 65%
             shotProbability = (leagueAverageUncovered3ptPercent + (0.01f * shootingSkill) + (0.05f * heatLevel)) * weightedShotReleasePercent * shotDistancePercent * weightedCoveredPercent;
-            Debug.Log("LeagueAVGU: " + leagueAverageUncovered3ptPercent + " | Skill: " + shootingSkill + " | Heat: " + heatLevel + " | Release %: " + weightedShotReleasePercent + " | Distance: " + shotDistance + " | DistancePercent: " + shotDistancePercent + " | Coverage: " + weightedCoveredPercent);
+            //Debug.Log("LeagueAVGU: " + leagueAverageUncovered3ptPercent + " | Skill: " + shootingSkill + " | Heat: " + heatLevel + " | Release %: " + weightedShotReleasePercent + " | Distance: " + shotDistance + " | DistancePercent: " + shotDistancePercent + " | Coverage: " + weightedCoveredPercent);
         }
         float shotRandomRange = Random.Range(0.0f, 1.0f);
         shotResult = (shotRandomRange <= shotProbability);
@@ -537,7 +537,7 @@ public class playermovement : MonoBehaviour
             heatLevel = 0;
             HoopProtector.SetActive(true);
         }
-        Debug.Log("shotResult: " + shotResult + " | shotResultRange: " + shotRandomRange + " | ShotProbability: " + shotProbability);
+        //Debug.Log("shotResult: " + shotResult + " | shotResultRange: " + shotRandomRange + " | ShotProbability: " + shotProbability);
         shootingcurrently = true; //shootcurrently is same as shoot but needs to be seperate when disabling moving input
         bballscript.shoot = true;
 
