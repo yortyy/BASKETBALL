@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657928, g: 0.4964131, b: 0.5748174, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657993, g: 0.49641424, b: 0.57481825, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5442,7 +5442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotmeterscript: {fileID: 503093542}
   basketballobj: {fileID: 211629149}
-  bbrel: {fileID: 0}
+  bbrel: {fileID: 603673290}
   mscale: 0.6
   jscale: 5
   shotDistance: 0
@@ -6037,6 +6037,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 102632304}
   m_CullTransparentMesh: 1
+--- !u!1 &103858783
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 103858784}
+  m_Layer: 0
+  m_Name: ballOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &103858784
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103858783}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 903364617}
+  m_Father: {fileID: 680164192}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &106072032 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1441981662815344461, guid: 81bb9eea30387e442899949a80011e55, type: 3}
@@ -7103,7 +7135,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 400080, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 880197272}
+      addedObject: {fileID: 1901697080}
     - targetCorrespondingSourceObject: {fileID: 400080, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1538195211}
@@ -20287,7 +20319,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!199 &495574191
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -25310,7 +25342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotmeterscript: {fileID: 503093542}
   basketballobj: {fileID: 211629149}
-  bbrel: {fileID: 0}
+  bbrel: {fileID: 1575329030}
   mscale: 0.6
   jscale: 5
   shotDistance: 0
@@ -26794,13 +26826,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 603673288}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.0277346, z: 0.310625}
-  m_LocalScale: {x: 0.8452216, y: 3.4278991, z: 0.84522164}
+  m_LocalPosition: {x: 0, y: 1.0277348, z: 0.31062508}
+  m_LocalScale: {x: 0.8452215, y: 3.4278991, z: 0.84522164}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1831836806}
   - {fileID: 1965147005}
-  m_Father: {fileID: 537993679}
+  m_Father: {fileID: 1616149095}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &603673290
@@ -39966,13 +39998,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 880197271}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.986243, z: 0.31651065}
-  m_LocalScale: {x: 0.7834914, y: 3.177554, z: 0.7834914}
+  m_LocalPosition: {x: 0, y: 0.986243, z: 0.31651077}
+  m_LocalScale: {x: 0.7834914, y: 3.1775537, z: 0.7834914}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 290208327}
   - {fileID: 1219971988}
-  m_Father: {fileID: 954688106}
+  m_Father: {fileID: 1901697080}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &880197273
@@ -40176,13 +40208,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 903364616}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.986243, z: 0.31651065}
-  m_LocalScale: {x: 0.7834914, y: 3.177554, z: 0.7834914}
+  m_LocalPosition: {x: 0, y: 0.986243, z: 0.31651077}
+  m_LocalScale: {x: 0.7834914, y: 3.1775537, z: 0.7834914}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1383997102}
   - {fileID: 21418285}
-  m_Father: {fileID: 680164192}
+  m_Father: {fileID: 103858784}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &903364618
@@ -46522,6 +46554,38 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -2948237359864281808, guid: 81bb9eea30387e442899949a80011e55, type: 3}
   m_PrefabInstance: {fileID: 1424261701}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1000827623
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1000827624}
+  m_Layer: 0
+  m_Name: ballOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1000827624
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000827623}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.96, z: 0.329}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1575329029}
+  m_Father: {fileID: 483244721}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1002677192
 GameObject:
   m_ObjectHideFlags: 0
@@ -47888,8 +47952,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101842951}
-  m_LocalRotation: {x: 0.16100271, y: -0.000114695074, z: 0.000018710312, w: 0.986954}
-  m_LocalPosition: {x: 0.0013222363, y: 5.906827, z: -5.6889377}
+  m_LocalRotation: {x: 0.16100271, y: -0.000114679, z: 0.00001870769, w: 0.986954}
+  m_LocalPosition: {x: 0.0013220509, y: 5.906827, z: -5.6889377}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -54470,8 +54534,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1245222563}
-  m_LocalRotation: {x: 0.16100271, y: -0.000114695074, z: 0.000018710312, w: 0.986954}
-  m_LocalPosition: {x: 0.0013222364, y: 5.906827, z: -5.688937}
+  m_LocalRotation: {x: 0.16100271, y: -0.000114679, z: 0.00001870769, w: 0.986954}
+  m_LocalPosition: {x: 0.0013220508, y: 5.906827, z: -5.688938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -55893,7 +55957,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 400080, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 903364617}
+      addedObject: {fileID: 103858784}
     - targetCorrespondingSourceObject: {fileID: 400080, guid: c8c1b80e0e148554ab523e26bd2f886c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1398371670}
@@ -56670,7 +56734,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -4216859302048453862, guid: 8f7380da49034cd488ddff94b1ac35d1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 603673289}
+      addedObject: {fileID: 1616149095}
     - targetCorrespondingSourceObject: {fileID: -4216859302048453862, guid: 8f7380da49034cd488ddff94b1ac35d1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 224174832}
@@ -57384,7 +57448,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8bbf8b7b8b5f1144ba263c0e541f0452, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1575329029}
+      addedObject: {fileID: 1000827624}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8bbf8b7b8b5f1144ba263c0e541f0452, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1791179183}
@@ -58326,13 +58390,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575329028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.049826, z: 0.3206451}
-  m_LocalScale: {x: 0.8724839, y: 3.5384777, z: 0.8724839}
+  m_LocalPosition: {x: 0, y: 0.08982605, z: -0.008354872}
+  m_LocalScale: {x: 0.8724836, y: 3.5384777, z: 0.8724836}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 676587595}
   - {fileID: 1267278560}
-  m_Father: {fileID: 483244721}
+  m_Father: {fileID: 1000827624}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1575329030
@@ -58914,6 +58978,38 @@ MonoBehaviour:
     m_HintWeight: 1
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
+--- !u!1 &1616149094
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1616149095}
+  m_Layer: 0
+  m_Name: ballOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1616149095
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616149094}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 603673289}
+  m_Father: {fileID: 537993679}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1616872589
 GameObject:
   m_ObjectHideFlags: 0
@@ -69350,7 +69446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotmeterscript: {fileID: 503093542}
   basketballobj: {fileID: 211629149}
-  bbrel: {fileID: 0}
+  bbrel: {fileID: 903364618}
   mscale: 0.55
   jscale: 7.5
   shotDistance: 0
@@ -70407,7 +70503,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!198 &1751768807
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -75418,7 +75514,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotmeterscript: {fileID: 503093542}
   basketballobj: {fileID: 211629149}
-  bbrel: {fileID: 0}
+  bbrel: {fileID: 880197273}
   mscale: 0.55
   jscale: 7.5
   shotDistance: 0
@@ -82560,6 +82656,38 @@ MonoBehaviour:
   - m_Rig: {fileID: 1851234113}
     m_Active: 1
   m_Effectors: []
+--- !u!1 &1901697079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1901697080}
+  m_Layer: 0
+  m_Name: ballOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1901697080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1901697079}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 880197272}
+  m_Father: {fileID: 954688106}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1903199904
 GameObject:
   m_ObjectHideFlags: 0
