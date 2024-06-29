@@ -31,7 +31,7 @@ public class playermovement : MonoBehaviour
     private int shotsInARow = 0;
     public float shotDistance;
 
-    public int smeter;
+    public int shotMode;
     public float defenceRadius = 2.5f;
     public bool shootbuttonon;
     public bool shootbuttonbuffer;
@@ -428,12 +428,14 @@ public class playermovement : MonoBehaviour
             psr.material = ParticleMaterials[0];
             ps.Play();
             shotProbability = 1;
+            shotMode = 3;
         }
         else if (shotReleasePercent >= 0.98f)
         {
             psr.material = ParticleMaterials[1];
             ps.Play();
             shotProbability = 0.99f;
+            shotMode = 2;
         }
         else if (shotReleasePercent < 0.5f)
         {
@@ -441,6 +443,7 @@ public class playermovement : MonoBehaviour
         }
         else
         {
+            shotMode = 0;
             //irl: FG% AVG = 45%, 3PT% AVG = 35%, 3PT% Unguarded = 45%, Steph AVG  = 45%
             if (in3ptline)
             {

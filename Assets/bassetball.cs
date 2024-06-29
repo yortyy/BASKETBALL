@@ -70,6 +70,7 @@ public class bassetball : MonoBehaviour
         HoopEffrnr = HoopEffObj.GetComponent<ParticleSystemRenderer>();
         target = Hoop.transform;
         HoopEffEmission = HoopEff.emission;
+        Debug.Log(HoopEffEmission);
 
 
         //player script gets bballholdref and bbrelease
@@ -344,12 +345,12 @@ public class bassetball : MonoBehaviour
                 firehoop.SetActive(false);
                 HoopEffEmission.rateOverTime = 12;
             }
-            if (ps.smeter == 0)
+            if (ps.shotMode == 3)
             {
                 HoopEffrnr.material = ParticleMaterials[0];
                 HoopEff.Play();
             }
-            else if (ps.smeter == 1)
+            else if (ps.shotMode == 2)
             {
                 HoopEffrnr.material = ParticleMaterials[1];
                 HoopEff.Play();
@@ -389,6 +390,7 @@ public class bassetball : MonoBehaviour
         }
         else if(!ps.shotResult)
         {
+            asc[2].Play(); //bricksound
             if(ess.gamemode == 2)
             {
                 ess.looseball = false;

@@ -142,8 +142,8 @@ public class SHOTMETER : MonoBehaviour
             coveredText = "Smothered";
         }
 
-        shotRelease.text = "Shot Release: " + "<color=" + releaseColor+ ">" + releaseText + " " + intShotReleasePercent + "%</color>";
-        shotDifficulty.text = "Shot Coverage: " + "<color=" + coveredColor + ">" + coveredText + " " + intCoveredPercent + "%</color>";
+        shotRelease.text = "Release: " + "<color=" + releaseColor+ ">" + releaseText + " " + intShotReleasePercent + "%</color>";
+        shotDifficulty.text = "Coverage: " + "<color=" + coveredColor + ">" + coveredText + " " + intCoveredPercent + "%</color>";
 
     }
 }
